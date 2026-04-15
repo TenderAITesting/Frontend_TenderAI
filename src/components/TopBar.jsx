@@ -3,11 +3,11 @@ import { NJIconButton, NJAvatarRoot } from '@engie-group/fluid-design-system-rea
 export default function TopBar({ view, onGoView }) {
   const backOrDash =
     view === 'rfp' ? (
-      <span style={{ color: 'var(--nj-semantic-color-text-secondary-default)', fontSize: 13 }}>Dashboard</span>
+      <span style={{ color: 'var(--nj-semantic-color-text-neutral-secondary-default)', fontSize: 13, fontWeight: 500 }}>Dashboard</span>
     ) : (
       <button
         onClick={() => onGoView('rfp')}
-        style={{ color: 'var(--nj-semantic-color-text-secondary-default)', fontSize: 13, background: 'none', border: 'none', cursor: 'pointer' }}
+        style={{ color: 'var(--nj-semantic-color-text-neutral-secondary-default)', fontSize: 13, fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
       >
         ← Back to Agent 5 configuration
       </button>

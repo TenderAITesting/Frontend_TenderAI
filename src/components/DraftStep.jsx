@@ -9,12 +9,12 @@ function PhInline({ text }) {
 export default function DraftStep() {
   return (
     <div className="draft-wrap">
-      <div style={{ textAlign: 'center', marginBottom: 30, paddingBottom: 22, borderBottom: '1px solid #E2EBF3' }}>
-        <div style={{ fontSize: 11, letterSpacing: '.12em', color: '#7E95A8', marginBottom: 7, fontWeight: 600 }}>TRACTEBEL INFRASTRUCTURE HUB</div>
+      <div style={{ textAlign: 'center', marginBottom: 30, paddingBottom: 22, borderBottom: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)' }}>
+        <div style={{ fontSize: 11, letterSpacing: '.12em', color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', marginBottom: 7, fontWeight: 700 }}>TRACTEBEL INFRASTRUCTURE HUB</div>
         <h1 style={{ fontSize: 26, fontWeight: 700, marginBottom: 5 }}>Technical Proposal</h1>
-        <div style={{ fontSize: 13, color: '#7E95A8' }}>Ref. TIH-2026-043 — April 2026</div>
+        <div style={{ fontSize: 13, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)' }}>Ref. TIH-2026-043 — April 2026</div>
       </div>
-      <div style={{ fontSize: 11, color: '#13B5CB', fontWeight: 700, letterSpacing: '.08em', marginBottom: 7 }}>02 — BASIS OF DESIGN</div>
+      <div style={{ fontSize: 11, color: 'var(--nj-semantic-color-text-brand-default)', fontWeight: 700, letterSpacing: '.08em', marginBottom: 7 }}>02 — BASIS OF DESIGN</div>
       <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 18 }}>Resource Strategy and Deployment Matrix</h2>
       <p style={{ fontSize: 14, lineHeight: 1.9, marginBottom: 16 }}>
         Our proposed deployment for the <strong>Tractebel Infrastructure Hub</strong> prioritizes local
@@ -35,7 +35,7 @@ export default function DraftStep() {
         Our mobilisation approach draws on previous deployments in comparable environments,
         minimising on-site learning curves and ensuring continuity between project phases.
       </p>
-      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#7E95A8', borderTop: '1px solid #E2EBF3', paddingTop: 13 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', borderTop: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)', paddingTop: 14 }}>
         <span>Page 12 of 28</span>
         <span>Confidential — Draft v0.3</span>
       </div>

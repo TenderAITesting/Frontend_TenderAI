@@ -77,11 +77,12 @@ export default function App() {
   };
 
   return (
-    <>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', overflow: 'hidden' }}>
       <TopBar view={view} onGoView={setView} />
 
       {view === 'rfp' ? (
-        <div>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 }}>
+          <div style={{ overflowY: 'auto', flex: 1, scrollbarWidth: 'auto', scrollbarColor: 'var(--nj-semantic-color-border-neutral-subtle-default) transparent' }}>
           <ProjectCard />
           <div style={{ padding: '0 20px' }}>
             <NJTabs label="Project tabs" activeTab={tab} onClickTabItem={(id) => setTab(id)}>
@@ -114,6 +115,7 @@ export default function App() {
               onLaunchProp={handleLaunchProp}
             />
           )}
+          </div>
         </div>
       ) : (
         <ProposalView
@@ -136,6 +138,6 @@ export default function App() {
           onClose={() => setShowResults(false)}
         />
       )}
-    </>
+    </div>
   );
 }

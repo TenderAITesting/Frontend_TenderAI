@@ -23,27 +23,27 @@ function RfpPreview() {
           <NJTag key={t} scale="sm" variant="brand">{t}</NJTag>
         ))}
       </div>
-      <div style={{ height: 1, background: '#E2EBF3', marginBottom: 16 }} />
+      <div style={{ height: 1, background: 'var(--nj-semantic-color-border-neutral-subtle-default)', marginBottom: 16 }} />
 
       <div style={{ marginBottom: 18 }}>
-        <h3 style={{ fontSize: 12, fontWeight: 600, marginBottom: 7, paddingBottom: 5, borderBottom: '1px solid #E2EBF3' }}>1. Submission Requirements</h3>
+        <h3 style={{ fontSize: 12, fontWeight: 700, marginBottom: 7, paddingBottom: 5, borderBottom: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)', color: 'var(--nj-semantic-color-text-neutral-secondary-default)' }}>1. Submission Requirements</h3>
         <SkelLines n={3} />
         <div style={{ marginTop: 12 }}>
           <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Key Dates</div>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
             <thead>
-              <tr style={{ background: '#F8FAFC' }}>
-                <th style={{ textAlign: 'left', padding: '5px 10px', borderBottom: '1px solid #E2EBF3', fontWeight: 600 }}>Milestone</th>
-                <th style={{ textAlign: 'left', padding: '5px 10px', borderBottom: '1px solid #E2EBF3', fontWeight: 600 }}>Date</th>
-                <th style={{ textAlign: 'left', padding: '5px 10px', borderBottom: '1px solid #E2EBF3', fontWeight: 600 }}>Owner</th>
+              <tr style={{ background: 'var(--nj-semantic-color-background-neutral-secondary-default)' }}>
+                <th style={{ textAlign: 'left', padding: '6px 10px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)', fontWeight: 700 }}>Milestone</th>
+                <th style={{ textAlign: 'left', padding: '6px 10px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)', fontWeight: 700 }}>Date</th>
+                <th style={{ textAlign: 'left', padding: '6px 10px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)', fontWeight: 700 }}>Owner</th>
               </tr>
             </thead>
             <tbody>
               {keyDates.map(([m, d, o]) => (
                 <tr key={m} className="hover-row">
-                  <td style={{ padding: '5px 10px', borderBottom: '1px solid #E2EBF3' }}>{m}</td>
-                  <td style={{ padding: '5px 10px', borderBottom: '1px solid #E2EBF3' }}>{d}</td>
-                  <td style={{ padding: '5px 10px', borderBottom: '1px solid #E2EBF3' }}>{o}</td>
+                  <td style={{ padding: '6px 10px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)' }}>{m}</td>
+                  <td style={{ padding: '6px 10px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)' }}>{d}</td>
+                  <td style={{ padding: '6px 10px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)' }}>{o}</td>
                 </tr>
               ))}
             </tbody>
@@ -114,11 +114,11 @@ export default function DocumentsTab({
   const rfpExpanded = docExpanded === 'rfp';
 
   const agentExpanded = rfpExpanded && (
-    <div style={{ borderTop: '1px solid #E2EBF3', padding: '10px 12px', display: 'flex', gap: 10 }}>
+    <div style={{ borderTop: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)', padding: '12px', background: 'var(--nj-semantic-color-background-neutral-secondary-default)', display: 'flex', gap: 10 }}>
       {/* A1 */}
       <div style={{ flex: 1, opacity: agents.a1 ? 1 : 0.4 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10, flexWrap: 'wrap', cursor: 'pointer' }} onClick={() => onTogAgent('a1')}>
-          <span className="tick" style={{ background: agents.a1 ? '#13B5CB' : '#CBD5E0', flexShrink: 0 }}>{agents.a1 ? '✓' : ''}</span>
+          <span className="tick" style={{ background: agents.a1 ? 'var(--nj-semantic-color-background-brand-default)' : 'var(--nj-semantic-color-border-neutral-subtle-default)', flexShrink: 0 }}>{agents.a1 ? '✓' : ''}</span>
           <span className="ag-badge">A1</span>
           <span style={{ fontSize: 11, fontWeight: 600 }}>Key information and Activities Agent</span>
         </div>
@@ -126,24 +126,24 @@ export default function DocumentsTab({
           style={{ display: 'flex', gap: 6, marginBottom: 7, cursor: 'pointer', ...(agents.a1 ? {} : { pointerEvents: 'none' }) }}
           onClick={() => agents.a1 && onTogTask('tki')}
         >
-          <span className="tick" style={{ width: 13, height: 13, fontSize: 8, marginTop: 1, flexShrink: 0, background: tasks.tki && agents.a1 ? '#13B5CB' : '#CBD5E0' }}>
+          <span className="tick" style={{ width: 13, height: 13, fontSize: 8, marginTop: 1, flexShrink: 0, background: tasks.tki && agents.a1 ? 'var(--nj-semantic-color-background-brand-default)' : 'var(--nj-semantic-color-border-neutral-subtle-default)' }}>
             {tasks.tki && agents.a1 ? '✓' : ''}
           </span>
           <div style={{ opacity: tasks.tki ? 1 : 0.5 }}>
             <div style={{ fontSize: 11, fontWeight: 600 }}>Tender Key Information</div>
-            <div style={{ fontSize: 10, color: '#7E95A8', lineHeight: 1.4 }}>Identify key dates, submission requirements, and legal entities.</div>
+          <div style={{ fontSize: 11, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', lineHeight: 1.4 }}>Identify key dates, submission requirements, and legal entities.</div>
           </div>
         </div>
         <div
           style={{ display: 'flex', gap: 6, cursor: 'pointer', ...(agents.a1 ? {} : { pointerEvents: 'none' }) }}
           onClick={() => agents.a1 && onTogTask('paa')}
         >
-          <span className="tick" style={{ width: 13, height: 13, fontSize: 8, marginTop: 1, flexShrink: 0, background: tasks.paa && agents.a1 ? '#13B5CB' : '#CBD5E0' }}>
+          <span className="tick" style={{ width: 13, height: 13, fontSize: 8, marginTop: 1, flexShrink: 0, background: tasks.paa && agents.a1 ? 'var(--nj-semantic-color-background-brand-default)' : 'var(--nj-semantic-color-border-neutral-subtle-default)' }}>
             {tasks.paa && agents.a1 ? '✓' : ''}
           </span>
           <div style={{ opacity: tasks.paa ? 1 : 0.5 }}>
             <div style={{ fontSize: 11, fontWeight: 600 }}>Pre-Award Activities</div>
-            <div style={{ fontSize: 10, color: '#7E95A8', lineHeight: 1.4 }}>Extract liability clauses, bonding requirements, and NDAs.</div>
+          <div style={{ fontSize: 11, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', lineHeight: 1.4 }}>Extract liability clauses, bonding requirements, and NDAs.</div>
           </div>
         </div>
       </div>
@@ -151,21 +151,21 @@ export default function DocumentsTab({
       {/* A2 */}
       <div style={{ flex: 1, opacity: agents.a2 ? 1 : 0.4 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8, cursor: 'pointer' }} onClick={() => onTogAgent('a2')}>
-          <span className="tick" style={{ background: agents.a2 ? '#13B5CB' : '#CBD5E0', flexShrink: 0 }}>{agents.a2 ? '✓' : ''}</span>
+          <span className="tick" style={{ background: agents.a2 ? 'var(--nj-semantic-color-background-brand-default)' : 'var(--nj-semantic-color-border-neutral-subtle-default)', flexShrink: 0 }}>{agents.a2 ? '✓' : ''}</span>
           <span className="ag-badge">A2</span>
           <span style={{ fontSize: 11, fontWeight: 600 }}>Technical Extraction Agent</span>
         </div>
-        <div style={{ fontSize: 11, color: '#7E95A8', fontStyle: 'italic' }}>No tasks configured for this agent.</div>
+        <div style={{ fontSize: 11, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', fontStyle: 'italic' }}>No tasks configured for this agent.</div>
       </div>
 
       {/* A3 */}
       <div style={{ flex: 1, opacity: agents.a3 ? 1 : 0.4 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8, cursor: 'pointer' }} onClick={() => onTogAgent('a3')}>
-          <span className="tick" style={{ background: agents.a3 ? '#13B5CB' : '#CBD5E0', flexShrink: 0 }}>{agents.a3 ? '✓' : ''}</span>
+          <span className="tick" style={{ background: agents.a3 ? 'var(--nj-semantic-color-background-brand-default)' : 'var(--nj-semantic-color-border-neutral-subtle-default)', flexShrink: 0 }}>{agents.a3 ? '✓' : ''}</span>
           <span className="ag-badge">A3</span>
           <span style={{ fontSize: 11, fontWeight: 600 }}>Risk Analysis Agent</span>
         </div>
-        <div style={{ fontSize: 11, color: '#7E95A8', fontStyle: 'italic' }}>No tasks configured for this agent.</div>
+        <div style={{ fontSize: 11, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', fontStyle: 'italic' }}>No tasks configured for this agent.</div>
       </div>
     </div>
   );
@@ -177,14 +177,14 @@ export default function DocumentsTab({
   );
 
   const previewPanel = showPreview && previewDoc && (
-    <div className="fadein" style={{ flex: 1, minWidth: 0, background: '#fff', border: '1px solid #E2EBF3', borderRadius: 10, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ padding: '10px 16px', borderBottom: '1px solid #E2EBF3', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ fontSize: 12, color: '#7E95A8', fontWeight: 500 }}>
+    <div className="fadein" style={{ flex: 1, minWidth: 0, background: 'var(--nj-semantic-color-background-neutral-primary-default)', border: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)', borderRadius: 16, overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 8px 20px rgba(15,23,42,0.08)' }}>
+      <div style={{ padding: '0.85rem 0.75rem 0.85rem 1.5rem', background: 'var(--nj-semantic-color-background-neutral-secondary-default)', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontSize: 12, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', fontWeight: 600 }}>
           {previewDoc === 'rfp' ? 'RFP_Section_A_Technical_Scope.pdf' : 'Draft_Contract_Agreement.docx'}
         </span>
         <NJIconButton icon="close" aria-label="Close preview" scale="sm" onClick={onClosePrev} />
       </div>
-      <div style={{ padding: 18, overflowY: 'auto', maxHeight: 'calc(100vh - 230px)' }}>
+      <div style={{ padding: 20, overflowY: 'auto', flex: 1, scrollbarWidth: 'auto', scrollbarColor: 'var(--nj-semantic-color-border-neutral-subtle-default) transparent' }}>
         {previewDoc === 'rfp' ? <RfpPreview /> : <ContractPreview />}
       </div>
     </div>
@@ -198,9 +198,9 @@ export default function DocumentsTab({
         {/* upload zone */}
         <div
           style={{
-            border: `2px dashed ${dragOver ? '#13B5CB' : '#E2EBF3'}`,
-            borderRadius: 10, padding: '20px 16px', textAlign: 'center',
-            background: dragOver ? '#E8F8FC' : '#fff', marginBottom: 14,
+            border: `2px dashed ${dragOver ? 'var(--nj-semantic-color-border-brand-default)' : 'var(--nj-semantic-color-border-neutral-subtle-default)'}`,
+            borderRadius: 16, padding: '22px 16px', textAlign: 'center',
+            background: dragOver ? 'var(--nj-semantic-color-background-brand-subtle)' : 'var(--nj-semantic-color-background-neutral-secondary-default)', marginBottom: 14,
             transition: 'border-color .2s, background .2s',
           }}
           onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
@@ -215,9 +215,9 @@ export default function DocumentsTab({
             style={{ display: 'none' }}
             onChange={(e) => { onAddFiles(e.target.files); e.target.value = ''; }}
           />
-          <div style={{ fontSize: 24, color: '#13B5CB', marginBottom: 6 }}>⬆</div>
+          <div style={{ fontSize: 28, color: 'var(--nj-semantic-color-text-brand-default)', marginBottom: 8 }}>⬆</div>
           <div style={{ fontSize: 13, fontWeight: 500, marginBottom: 4 }}>Drag and drop tender documents</div>
-          <div style={{ fontSize: 12, color: '#7E95A8', marginBottom: 12 }}>Support for PDF and DOCX</div>
+          <div style={{ fontSize: 12, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', marginBottom: 14 }}>Support for PDF and DOCX</div>
           <NJButton
             label="Browse Files"
             variant="secondary"
@@ -231,9 +231,9 @@ export default function DocumentsTab({
         {uploadedFiles.length > 0 && (
           <div style={{ marginBottom: 14 }}>
             {uploadedFiles.map((f, i) => (
-              <div key={`${f.name}-${i}`} style={{ fontSize: 11, padding: '5px 8px', background: '#F5F8FB', borderRadius: 5, marginBottom: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>▪ {f.name} <span style={{ color: '#7E95A8' }}>({(f.size / 1024 / 1024).toFixed(1)} MB)</span></span>
-                <button onClick={() => onRemoveFile(i)} style={{ background: 'none', border: 'none', color: '#7E95A8', cursor: 'pointer', fontSize: 13, flexShrink: 0 }}>✕</button>
+              <div key={`${f.name}-${i}`} style={{ fontSize: 11, padding: '6px 10px', background: 'var(--nj-semantic-color-background-neutral-secondary-default)', borderRadius: 8, marginBottom: 5, display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)' }}>
+                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>▪ {f.name} <span style={{ color: 'var(--nj-semantic-color-text-neutral-tertiary-default)' }}>({(f.size / 1024 / 1024).toFixed(1)} MB)</span></span>
+                <button onClick={() => onRemoveFile(i)} style={{ background: 'none', border: 'none', color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', cursor: 'pointer', fontSize: 13, flexShrink: 0 }}>✕</button>
               </div>
             ))}
           </div>
@@ -241,24 +241,24 @@ export default function DocumentsTab({
 
         {/* list header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-          <span style={{ fontSize: 13, fontWeight: 700 }}>Project Documents <span style={{ fontWeight: 400, color: '#7E95A8' }}>({2 + uploadedFiles.length})</span></span>
-          <span style={{ fontSize: 10, color: '#7E95A8', fontWeight: 600, letterSpacing: '.05em', cursor: 'pointer' }}>CONFIGURE AGENTS INDIVIDUALLY</span>
+          <span style={{ fontSize: 13, fontWeight: 700 }}>Project Documents <span style={{ fontWeight: 400, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)' }}>({2 + uploadedFiles.length})</span></span>
+          <span style={{ fontSize: 10, color: 'var(--nj-semantic-color-text-brand-default)', fontWeight: 700, letterSpacing: '.05em', cursor: 'pointer' }}>CONFIGURE AGENTS INDIVIDUALLY</span>
         </div>
 
         {/* doc 1: RFP */}
         <div className={`doc-card ${rfpActive ? 'active-doc' : ''}`}>
           <div style={{ padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 32, height: 32, background: '#F0F4F8', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 15 }}>≡</div>
+            <div style={{ width: 34, height: 34, background: 'var(--nj-semantic-color-background-brand-subtle)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16 }}>≡</div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>RFP_Section_A_Tec...</div>
-              <div style={{ fontSize: 11, color: '#7E95A8' }}>12.4 MB · Uploaded 2h ago</div>
+              <div style={{ fontSize: 13, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>RFP_Section_A_Tec...</div>
+              <div style={{ fontSize: 11, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)' }}>12.4 MB · Uploaded 2h ago</div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0 }}>
               <NJBadge scale="sm" variant="information">A1</NJBadge><NJBadge scale="sm" variant="information">A2</NJBadge><NJBadge scale="sm" variant="information">A3</NJBadge>
               <button className={`eye-btn ${rfpActive ? 'on' : ''}`} onClick={() => onOpenPrev('rfp')} title="Prévisualiser">
                 <span className="eye-ico">👁</span>
               </button>
-              <button onClick={() => onTogExp('rfp')} style={{ background: 'none', border: 'none', color: '#7E95A8', fontSize: 13, cursor: 'pointer' }}>
+              <button onClick={() => onTogExp('rfp')} style={{ background: 'none', border: 'none', color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', fontSize: 13, cursor: 'pointer' }}>
                 {rfpExpanded ? '▾' : '▸'}
               </button>
             </div>
@@ -269,10 +269,10 @@ export default function DocumentsTab({
         {/* doc 2: Contract */}
         <div className={`doc-card ${contActive ? 'active-doc' : ''}`} style={{ marginBottom: 14 }}>
           <div style={{ padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 32, height: 32, background: '#F0F4F8', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 15 }}>≡</div>
+            <div style={{ width: 34, height: 34, background: 'var(--nj-semantic-color-background-neutral-secondary-default)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16 }}>≡</div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 13, fontWeight: 500 }}>Draft_Contract_Agreement.docx</div>
-              <div style={{ fontSize: 11, color: '#7E95A8' }}>2.1 MB · Uploaded 2h ago</div>
+              <div style={{ fontSize: 13, fontWeight: 600 }}>Draft_Contract_Agreement.docx</div>
+              <div style={{ fontSize: 11, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)' }}>2.1 MB · Uploaded 2h ago</div>
             </div>
             <button className={`eye-btn ${contActive ? 'on' : ''}`} onClick={() => onOpenPrev('contract')} title="Prévisualiser">
               <span className="eye-ico">👁</span>
@@ -282,7 +282,7 @@ export default function DocumentsTab({
 
         {/* process */}
         {processBtn}
-        <div style={{ textAlign: 'center', fontSize: 10, color: '#7E95A8', marginTop: 6 }}>
+        <div style={{ textAlign: 'center', fontSize: 10, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', marginTop: 8, letterSpacing: '.04em', fontWeight: 600 }}>
           RUNS ALL CONFIGURED AGENTS FOR {2 + uploadedFiles.length} DOCUMENTS
         </div>
       </div>

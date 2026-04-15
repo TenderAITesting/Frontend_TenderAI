@@ -15,13 +15,13 @@ export default function ProposalView({ proposalStep, activeSection, ph, editingP
   ) : (
     <div style={{ padding: '0 14px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <span style={{ fontSize: 12, fontWeight: 700 }}>Proposal Structure</span>
-      <span style={{ fontSize: 11, color: '#13B5CB', cursor: 'pointer' }}>+ Add Section</span>
+      <span style={{ fontSize: 11, color: 'var(--nj-semantic-color-text-brand-default)', cursor: 'pointer', fontWeight: 600 }}>+ Add Section</span>
     </div>
   );
 
   const navFooter = !frozen && (
     <div style={{ padding: '10px 14px' }}>
-      <div style={{ fontSize: 11, color: '#7E95A8', textAlign: 'center', cursor: 'pointer', padding: 7, border: '1.5px dashed #E2EBF3', borderRadius: 6 }}>+ New Main Section</div>
+      <div style={{ fontSize: 11, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', textAlign: 'center', cursor: 'pointer', padding: 8, border: '1.5px dashed var(--nj-semantic-color-border-neutral-subtle-default)', borderRadius: 8 }}>+ New Main Section</div>
     </div>
   );
 
@@ -58,7 +58,7 @@ export default function ProposalView({ proposalStep, activeSection, ph, editingP
   }
 
   return (
-    <div style={{ minHeight: 'calc(100vh - 50px)', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 }}>
       <Stepper proposalStep={proposalStep} />
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
         {/* nav */}
@@ -70,7 +70,7 @@ export default function ProposalView({ proposalStep, activeSection, ph, editingP
               className={`nav-item ${s.sub ? 'sub' : ''} ${activeSection === s.id ? 'active' : ''}`}
               onClick={() => onSetSection(s.id)}
             >
-              <span style={{ fontSize: 10, color: '#7E95A8' }}>⠿</span>{s.id} {s.label}
+              <span style={{ fontSize: 10, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)' }}>⠿</span>{s.id} {s.label}
             </div>
           ))}
           {navFooter}
@@ -82,7 +82,7 @@ export default function ProposalView({ proposalStep, activeSection, ph, editingP
             {content}
           </div>
           <div className="bottom-bar">
-            <span style={{ fontSize: 12, color: '#7E95A8' }}>{bottomLeft}</span>
+            <span style={{ fontSize: 12, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)' }}>{bottomLeft}</span>
             <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>{bottomRight}</div>
           </div>
         </div>

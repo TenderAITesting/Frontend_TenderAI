@@ -40,9 +40,9 @@ export default function EvidenceStep({ ph, editingPH, onStartPH, onStopPH, onPhC
   return (
     <div style={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
       {/* center draft */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '22px 28px', borderRight: '1px solid #E2EBF3' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '22px 28px', borderRight: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)', scrollbarWidth: 'auto', scrollbarColor: 'var(--nj-semantic-color-border-neutral-subtle-default) transparent' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-          <div style={{ fontSize: 11, color: '#13B5CB', fontWeight: 700, letterSpacing: '.08em' }}>02 BASIS OF DESIGN</div>
+          <div style={{ fontSize: 11, color: 'var(--nj-semantic-color-text-brand-default)', fontWeight: 700, letterSpacing: '.08em' }}>02 BASIS OF DESIGN</div>
           <span style={{ color: 'var(--nj-semantic-color-text-secondary-default)', fontSize: 14, cursor: 'pointer' }} title="Éditer">✏</span>
         </div>
         <h2 style={{ fontSize: 18, fontWeight: 700, lineHeight: 1.3, marginBottom: 18 }}>
@@ -77,9 +77,9 @@ export default function EvidenceStep({ ph, editingPH, onStartPH, onStopPH, onPhC
       </div>
 
       {/* right evidence */}
-      <div style={{ width: 240, padding: '20px 16px', background: '#FAFCFE', overflowY: 'auto', flexShrink: 0 }}>
+      <div style={{ width: 240, padding: '20px 16px', background: 'var(--nj-semantic-color-background-neutral-secondary-default)', overflowY: 'auto', flexShrink: 0, borderLeft: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)', scrollbarWidth: 'thin', scrollbarColor: 'var(--nj-semantic-color-border-neutral-subtle-default) transparent' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-          <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#13B5CB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'var(--nj-semantic-color-background-brand-default)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <span style={{ fontSize: 10, color: '#fff', fontWeight: 700 }}>✓</span>
           </div>
           <span style={{ fontSize: 12, fontWeight: 700 }}>Evidence Repository</span>
@@ -87,8 +87,8 @@ export default function EvidenceStep({ ph, editingPH, onStartPH, onStopPH, onPhC
         {SRCS.map((s) => (
           <div key={s.id} className="src-card">
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-              <span style={{ fontSize: 10, fontWeight: 700, color: '#13B5CB', letterSpacing: '.05em' }}>SOURCE {s.id}</span>
-              <span style={{ fontSize: 10, color: '#7E95A8' }}>PDF PAGE {s.page}</span>
+              <span style={{ fontSize: 10, color: 'var(--nj-semantic-color-text-brand-default)', letterSpacing: '.05em', fontWeight: 700 }}>SOURCE {s.id}</span>
+              <span style={{ fontSize: 10, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)' }}>PDF PAGE {s.page}</span>
             </div>
             <div style={{ fontSize: 11, color: '#1B2B3C', lineHeight: 1.5, marginBottom: 7 }}>{s.q}</div>
             <a className="cyan-link" onClick={(e) => e.preventDefault()} href="#" style={{ fontSize: 11 }}>↗ View Document</a>
