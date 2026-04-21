@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Tender AI — Tractebel</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',system-ui,sans-serif;background:#F0F4F8;color:#1B2B3C;font-size:14px;min-height:100vh}
+button{cursor:pointer;font-family:inherit}
+input,select,textarea{font-family:inherit}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:#f0f4f8}
+::-webkit-scrollbar-thumb{background:#c8d5e0;border-radius:4px}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadein{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse-border{0%,100%{box-shadow:0 0 0 0 rgba(19,181,203,.35)}50%{box-shadow:0 0 0 5px rgba(19,181,203,0)}}
+.spin{animation:spin .85s linear infinite;display:inline-block}
+.fadein{animation:fadein .22s ease}
+
+.topbar{
+  background:#fff;border-bottom:1px solid #E2EBF3;height:52px;
+  padding:0 24px;display:flex;align-items:center;
+  justify-content:space-between;position:sticky;top:0;z-index:500;
+  box-shadow:0 1px 4px rgba(0,0,0,.04)
+}
+.logo{color:#13B5CB;font-weight:700;font-size:15px;letter-spacing:-.3px}
+.tractebel-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;background:#003087;color:#fff;letter-spacing:.06em;flex-shrink:0}
+.avatar{width:32px;height:32px;border-radius:50%;background:#13B5CB;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+
+.step-banner{
+  background:#fff;border-bottom:2px solid #E2EBF3;height:60px;
+  padding:0 24px;display:flex;align-items:center;gap:0;
+  position:sticky;top:52px;z-index:400
+}
+.banner-step{display:flex;align-items:center;gap:10px;padding:0 16px;height:100%;cursor:pointer;position:relative;flex-shrink:0;transition:background .15s}
+.banner-step:hover{background:#F6F9FC}
+.banner-step:first-child{padding-left:0}
+.bs-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;background:#E8EDF3;color:#7E95A8;border:2px solid #D1DBE6;transition:all .2s}
+.banner-step.s-done .bs-num{background:#13B5CB;color:#fff;border-color:#13B5CB}
+.banner-step.s-cur .bs-num{background:#13B5CB;color:#fff;border-color:#0DA3B8;box-shadow:0 0 0 3px rgba(19,181,203,.2)}
+.bs-label{font-size:12px;font-weight:500;color:#9EB0C0;white-space:nowrap;transition:color .2s}
+.banner-step.s-cur .bs-label{color:#13B5CB;font-weight:700}
+.banner-step.s-done .bs-label{color:#0D9DB5}
+.banner-step.s-cur::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;background:#13B5CB}
+.banner-sep{color:#D1DBE6;font-size:16px;flex-shrink:0;margin:0 2px}
+
+.card{background:#fff;border-radius:10px;border:1px solid #E2EBF3}
+
+.btn-cyan{background:#13B5CB;color:#fff;border:none;border-radius:7px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:background .15s}
+.btn-cyan:hover{background:#0CA7BB}
+.btn-ghost{background:#fff;border:1.5px solid #E2EBF3;border-radius:7px;padding:9px 18px;font-size:13px;font-weight:500;color:#1B2B3C;display:inline-flex;align-items:center;gap:6px;cursor:pointer;transition:all .15s}
+.btn-ghost:hover{border-color:#13B5CB;color:#13B5CB}
+.btn-outline{background:#fff;border:1.5px solid #13B5CB;border-radius:7px;padding:9px 18px;font-size:13px;font-weight:600;color:#13B5CB;display:inline-flex;align-items:center;gap:7px;cursor:pointer;transition:all .15s}
+.btn-outline:hover{background:#E8F8FC}
+.btn-nav{background:#fff;border:1.5px solid #E2EBF3;border-radius:7px;padding:8px 14px;font-size:13px;font-weight:500;color:#7E95A8;display:inline-flex;align-items:center;gap:6px;cursor:pointer;transition:all .15s}
+.btn-nav:hover{border-color:#13B5CB;color:#13B5CB}
+.btn-icon{background:none;border:1.5px solid #E2EBF3;border-radius:7px;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:#7E95A8;transition:all .15s;font-size:15px}
+.btn-icon:hover{border-color:#13B5CB;color:#13B5CB;background:#E8F8FC}
+
+.ag-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:#E8F8FC;color:#0D9DB5;border:1px solid #B0E8F2;white-space:nowrap}
+.status-btn{font-size:11px;font-weight:600;padding:4px 14px;border-radius:20px;background:#13B5CB;color:#fff;border:none;cursor:pointer;transition:background .15s}
+.status-btn:hover{background:#0CA7BB}
+
+.data-table{width:100%;border-collapse:collapse}
+.data-table th{text-align:left;padding:11px 16px;border-bottom:2px solid #E2EBF3;font-size:11px;font-weight:700;color:#7E95A8;letter-spacing:.07em;background:#F8FAFC;white-space:nowrap}
+.data-table td{padding:12px 16px;border-bottom:1px solid #EAEFF5;font-size:13px;vertical-align:middle}
+.data-table tbody tr:hover td{background:#F4F9FC}
+.data-table tbody tr:last-child td{border-bottom:none}
+
+.mx-table{width:100%;border-collapse:collapse}
+.mx-table th{padding:11px 14px;font-size:11px;font-weight:700;color:#0D9DB5;letter-spacing:.04em;background:#F0FBFD;border-bottom:1.5px solid #B0E8F2;text-align:center;vertical-align:middle}
+.mx-table th:first-child{text-align:left;color:#7E95A8;background:#F8FAFC;border-bottom:1.5px solid #E2EBF3}
+.mx-table th .ag-head-wrap{display:flex;align-items:center;justify-content:center;gap:7px}
+.mx-table th .ag-tick{width:16px;height:16px;border-radius:3px;background:#13B5CB;display:inline-flex;align-items:center;justify-content:center;font-size:9px;color:#fff;font-weight:700;flex-shrink:0}
+.mx-table td{padding:12px 14px;border-bottom:1px solid #EAEFF5;font-size:13px;text-align:center;vertical-align:middle}
+.mx-table td:first-child{text-align:left}
+.mx-table tbody tr:hover td{background:#F4F9FC}
+.mx-table tbody tr:last-child td{border-bottom:none}
+.cb{width:18px;height:18px;cursor:pointer;accent-color:#13B5CB;border-radius:4px}
+
+.inp{width:100%;border:1.5px solid #E2EBF3;border-radius:7px;padding:10px 13px;font-size:13px;color:#1B2B3C;background:#fff;outline:none;transition:border-color .2s}
+.inp:focus{border-color:#13B5CB;box-shadow:0 0 0 3px rgba(19,181,203,.1)}
+.inp-label{font-size:11px;font-weight:700;color:#7E95A8;letter-spacing:.06em;margin-bottom:5px}
+
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.42);display:flex;align-items:center;justify-content:center;z-index:700}
+.modal-box{background:#fff;border-radius:12px;width:93%;max-width:860px;max-height:88vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.24);animation:fadein .2s ease}
+.modal-tab-btn{padding:10px 0;margin-right:20px;font-size:12px;background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;color:#7E95A8;white-space:nowrap;font-weight:400;transition:color .15s}
+.modal-tab-btn.active{font-weight:700;color:#13B5CB;border-bottom-color:#13B5CB}
+
+.warn-box{background:#FEF8ED;border:1px solid #F5A623;border-radius:8px;padding:11px 16px;display:flex;gap:10px;align-items:flex-start}
+.upload-warn{background:#FFF3CD;border:1.5px solid #F5A623;border-radius:8px;padding:11px 15px;display:flex;gap:10px;align-items:flex-start;margin-bottom:18px}
+.info-box{background:#EEF8FF;border:1px solid #93C5FD;border-radius:8px;padding:10px 14px;display:flex;gap:8px;font-size:12px;color:#1D4ED8}
+.retention-bar{background:#FEF8ED;border-top:1.5px solid #F5A623;padding:10px 24px;display:flex;align-items:center;gap:10px;font-size:12px;color:#8A5A00;flex-shrink:0}
+
+.prop-nav{width:216px;background:#fff;border-right:1px solid #E2EBF3;padding:14px 0;overflow-y:auto;flex-shrink:0}
+.nav-item{padding:8px 14px;font-size:12px;cursor:pointer;border-left:3px solid transparent;transition:background .12s;color:#1B2B3C;display:flex;align-items:center;gap:6px}
+.nav-item.sub{padding-left:28px;font-size:11.5px;color:#4A6070}
+.nav-item:hover{background:#EEF3F8}
+.nav-item.active{background:#E8F8FC;color:#0D9DB5;font-weight:600;border-left-color:#13B5CB}
+
+.bottom-bar{background:#fff;border-top:1px solid #E2EBF3;padding:12px 24px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+
+.elapsed-inline{display:inline-flex;align-items:center;gap:6px;background:#FEF8ED;border:1px solid #F5A623;border-radius:6px;padding:4px 10px;font-size:11px;color:#8A5A00;font-weight:600;margin-top:8px}
+
+.disc-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:800}
+.disc-box{background:#fff;border-radius:12px;width:92%;max-width:460px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.22);animation:fadein .18s ease}
+
+.lang-wrap{display:flex;align-items:center;gap:8px;background:#F5F8FB;border:1px solid #E2EBF3;border-radius:7px;padding:5px 10px}
+.lang-label{font-size:11px;color:#7E95A8;font-weight:600;letter-spacing:.04em;white-space:nowrap}
+.lang-sel{border:none;background:transparent;font-size:12px;font-weight:700;color:#13B5CB;cursor:pointer;outline:none;padding:0 2px;font-family:inherit}
+
+/* Pre-award doc section headers */
+.paa-doc-header{background:#F0FBFD;border:1px solid #B0E8F2;border-radius:7px;padding:8px 14px;margin-bottom:10px;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#0D9DB5}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.8.2/docx.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ═══════════════════════ STATE ═══════════════════════ */
+const USER = { first:'Romain', last:'DEL FABRO', initials:'RD' };
+const LANGS = ['EN','FR','NL','DE','ES','PT'];
+
+const S = {
+  view: 'dashboard',
+  lang: 'EN',
+  tenderStep: 'upload',
+  isNew: true,
+  currentTender: null,
+  currentMaxStepIdx: 0,
+  processing: false,
+  elapsed: 0,
+  showResults: false,
+  resultsAgent: 'a1',
+  resultsTab: 'keyinfo',
+  showDisclaimer: null,
+  showSrcPage: null,
+  showExportModal: false,
+  exportLang: null,
+  exporting: false,
+  showUpdateDocs: false,
+  docsUpdated: false,
+  activeSection: '1.0',
+  templateType: 'standard',
+  enrichedOpts: { context:false, offers:false, refs:false },
+  docs: [
+    {key:'doc1', name:'RFP_Section_A_Technical_Scope.pdf', size:'12.4 MB', ago:'2h ago'},
+    {key:'doc2', name:'Draft_Contract_Agreement.docx',      size:'2.1 MB',  ago:'2h ago'},
+  ],
+  docAgents: {
+    doc1:{ a1:true,  a2:true,  a3:false },
+    doc2:{ a1:false, a2:false, a3:true  },
+  },
+  newForm:{ name:'', client:'', lastName:USER.last, firstName:USER.first },
+  contactOpen: true,
+  tenders:[
+    {name:'CEA UP1 - simplification MA', client:'CEA',        responsible:'Romain DEL FABRO', modified:'23/03/2026', maxStepIdx:1, lastStep:'agents'},
+    {name:'Navigator',                   client:'Navigator',  responsible:'Romain DEL FABRO', modified:'23/03/2026', maxStepIdx:1, lastStep:'agents'},
+    {name:'test',                        client:'sellafield', responsible:'Romain DEL FABRO', modified:'11/03/2026', maxStepIdx:1, lastStep:'agents'},
+    {name:'CISF waste building',         client:'NRWDI',      responsible:'Romain DEL FABRO', modified:'11/02/2026', maxStepIdx:1, lastStep:'agents'},
+    {name:'ANDRA MS4',                   client:'ANDRA',      responsible:'Romain DEL FABRO', modified:'06/02/2026', maxStepIdx:1, lastStep:'agents'},
+    {name:'test',                        client:'Iter',       responsible:'Romain DEL FABRO', modified:'04/02/2026', maxStepIdx:1, lastStep:'agents'},
+    {name:'sdfsdf',                      client:'Sener',      responsible:'Romain DEL FABRO', modified:'28/01/2026', maxStepIdx:1, lastStep:'agents'},
+    {name:'TAQA Test 2',                 client:'TAQA',       responsible:'Romain DEL FABRO', modified:'15/12/2025', maxStepIdx:1, lastStep:'agents'},
+    {name:'FluxysZ4',                    client:'Fluxys',     responsible:'Romain DEL FABRO', modified:'04/12/2025', maxStepIdx:1, lastStep:'agents'},
+    {name:'Test',                        client:'EDF',        responsible:'Romain DEL FABRO', modified:'04/12/2025', maxStepIdx:1, lastStep:'agents'},
+  ],
+};
+
+let _elTimer = null;
+
+function set(patch){
+  Object.assign(S, typeof patch==='function'?patch(S):patch);
+  if(S.processing && !_elTimer){
+    _elTimer = setInterval(()=>{
+      S.elapsed++;
+      const el = document.getElementById('elapsed-a3');
+      if(el) el.textContent = fmtTime(S.elapsed);
+    }, 1000);
+  }
+  if(!S.processing && _elTimer){ clearInterval(_elTimer); _elTimer=null; }
+  document.getElementById('app').innerHTML = buildApp();
+  if(S.showSrcPage){
+    var pg = parseInt((S.showSrcPage||'p.1').replace('p.',''));
+    var container = document.getElementById('src-scroll');
+    var target = document.getElementById('src-page-'+pg);
+    if(container && target) container.scrollTop = target.offsetTop;
+  }
+}
+
+function fmtTime(s){
+  return [Math.floor(s/3600),Math.floor((s%3600)/60),s%60].map(v=>String(v).padStart(2,'0')).join(':');
+}
+
+/* ═══════════════════════ HANDLERS ═══════════════════════ */
+window.setLang = l => set({lang:l});
+
+// Helper — persist current tender progress into the tenders array
+// Works for both new and existing tenders
+function _saveTenderProgress(s) {
+  if (s.currentTender === null || s.view !== 'tender') return null;
+  const tenders = [...s.tenders];
+  tenders[s.currentTender] = {
+    ...tenders[s.currentTender],
+    lastStep:   s.tenderStep,
+    maxStepIdx: s.currentMaxStepIdx,
+  };
+  return tenders;
+}
+
+// Save progress whenever leaving the tender view
+window.goView = v => set(s => {
+  const tenders = _saveTenderProgress(s);
+  return tenders ? { view:v, tenders } : { view:v };
+});
+
+window.goNew = () => set(s => {
+  const tenders = _saveTenderProgress(s);
+  const patch = { view:'new_project', newForm:{name:'',client:'',lastName:USER.last,firstName:USER.first} };
+  if (tenders) patch.tenders = tenders;
+  return patch;
+});
+
+const DEFAULT_DOCS = [
+  {key:'doc1', name:'RFP_Section_A_Technical_Scope.pdf', size:'12.4 MB', ago:'2h ago'},
+  {key:'doc2', name:'Draft_Contract_Agreement.docx',      size:'2.1 MB',  ago:'2h ago'},
+];
+const DEFAULT_DOC_AGENTS = {
+  doc1:{ a1:true,  a2:true,  a3:false },
+  doc2:{ a1:false, a2:false, a3:true  },
+};
+
+window.openTender = idx => {
+  // Save current tender progress (if any) BEFORE switching
+  const updatedTenders = _saveTenderProgress(S) || S.tenders;
+  const t = updatedTenders[idx];
+  const maxStepIdx = t.maxStepIdx !== undefined ? t.maxStepIdx : 1;
+  const lastStep   = t.lastStep   || 'agents';
+  set({
+    view:'tender', currentTender:idx, isNew:false,
+    tenderStep: lastStep,
+    currentMaxStepIdx: maxStepIdx,
+    tenders: updatedTenders,
+    processing:false, elapsed:0, docsUpdated:false,
+    docs: DEFAULT_DOCS.map(d=>({...d})),
+    docAgents: { doc1:{...DEFAULT_DOC_AGENTS.doc1}, doc2:{...DEFAULT_DOC_AGENTS.doc2} },
+  });
+};
+
+window.submitNew = () => {
+  const t = { name:S.newForm.name||'New Tender', client:S.newForm.client||'—', responsible:USER.first+' '+USER.last, modified:new Date().toLocaleDateString('fr-FR'), maxStepIdx:0, lastStep:'upload' };
+  set(s=>({tenders:[t,...s.tenders], view:'tender', currentTender:0, isNew:true, tenderStep:'upload',
+    currentMaxStepIdx:0, processing:false, elapsed:0, docsUpdated:false,
+    docs: DEFAULT_DOCS.map(d=>({...d})),
+    docAgents: { doc1:{...DEFAULT_DOC_AGENTS.doc1}, doc2:{...DEFAULT_DOC_AGENTS.doc2} },
+  }));
+};
+window.goStep = step => {
+  const steps  = ['upload','agents','planning','drafting'];
+  const cur    = steps.indexOf(S.tenderStep);
+  const target = steps.indexOf(step);
+  if (S.isNew  && target > cur)                 return; // new: linear only
+  if (!S.isNew && target > S.currentMaxStepIdx) return; // existing: can't exceed max reached
+  set({ tenderStep:step });
+};
+window.startProc = () => set(s => ({
+  processing:true, tenderStep:'agents', docsUpdated:false,
+  currentMaxStepIdx: Math.max(s.currentMaxStepIdx, 1),
+}));
+window.openRes       = (agId) => set({showResults:true, resultsAgent:agId||'a1', resultsTab:'keyinfo'});
+window.closeRes      = ()   => set({showResults:false});
+window.setResTab     = t    => set({resultsTab:t});
+window.togDA         = (d,a)=> set(s=>{
+  if(a==='a3'){
+    const hasA1orA2 = s.docs.some(doc => s.docAgents[doc.key]?.a1 || s.docAgents[doc.key]?.a2);
+    if(!hasA1orA2) return s;
+  }
+  const x={...s.docAgents}; x[d]={...x[d]}; x[d][a]=!x[d][a]; return{docAgents:x};
+});
+window.togContact    = ()   => set({contactOpen:!S.contactOpen});
+window.openSrc       = pg  => set({showSrcPage: pg});
+window.closeSrc      = ()  => set({showSrcPage: null});
+window.stopOv        = e   => e.stopPropagation();
+window.setSection    = id  => set({activeSection:id});
+window.setTemplate   = t   => set({templateType:t});
+window.togEnriched   = k   => set(s=>{ const o={...s.enrichedOpts}; o[k]=!o[k]; return{enrichedOpts:o}; });
+window.openExport    = ()   => set({showExportModal:true, exportLang:null});
+window.closeExport   = ()   => set({showExportModal:false});
+window.setExportLang = l    => {
+  S.exportLang = l;
+  document.querySelectorAll('[data-lang-btn]').forEach(btn => {
+    const code = btn.getAttribute('data-lang-btn');
+    const sel = code === l;
+    btn.style.borderColor = sel ? '#13B5CB' : '#E2EBF3';
+    btn.style.background  = sel ? '#E8F8FC' : '#fff';
+    btn.style.color       = sel ? '#0D9DB5' : '#1B2B3C';
+    btn.style.fontWeight  = sel ? '700' : '400';
+    btn.querySelector('.lang-check').style.display = sel ? 'inline' : 'none';
+  });
+  const exportBtn = document.getElementById('export-confirm-btn');
+  if(exportBtn){ exportBtn.disabled=false; exportBtn.style.opacity='1'; exportBtn.style.cursor='pointer'; }
+};
+window.confirmExport = async () => {
+  set({showExportModal:false, exporting:true});
+  try {
+    const { Document, Paragraph, TextRun, HeadingLevel, Packer, AlignmentType, BorderStyle, ShadingType } = docx;
+    const tender = S.tenders[S.currentTender] || {name:'Technical Proposal', client:'—'};
+
+    // Parse an HTML body string into docx Paragraphs, handling <strong> and placeholder <span>
+    function htmlToParas(htmlStr) {
+      const wrap = window.document.createElement('div');
+      wrap.innerHTML = htmlStr;
+      const paras = [];
+      wrap.querySelectorAll('p, li').forEach(el => {
+        const runs = [];
+        el.childNodes.forEach(node => {
+          if (node.nodeType === Node.TEXT_NODE) {
+            if (node.textContent) runs.push(new TextRun({text: node.textContent}));
+          } else if (node.nodeName === 'STRONG') {
+            runs.push(new TextRun({text: node.textContent, bold: true}));
+          } else if (node.nodeName === 'SPAN') {
+            // Placeholder spans have amber background
+            const isPlaceholder = node.style.background && node.style.background.includes('254');
+            runs.push(new TextRun({
+              text: node.textContent,
+              bold: isPlaceholder,
+              color: isPlaceholder ? '92400E' : '000000',
+              italics: isPlaceholder,
+            }));
+          } else if (node.textContent) {
+            runs.push(new TextRun({text: node.textContent}));
+          }
+        });
+        if (runs.length) paras.push(new Paragraph({children: runs, spacing:{after:160}}));
+      });
+      return paras.length ? paras : [new Paragraph({
+        children:[new TextRun({text:'[PLACEHOLDER — section à compléter]', italics:true, color:'92400E'})],
+        spacing:{after:160}
+      })];
+    }
+
+    const children = [];
+
+    // Cover
+    children.push(new Paragraph({
+      children:[new TextRun({text:'TRACTEBEL ENGINEERING', bold:true, size:20, color:'003087', allCaps:true})],
+      alignment: AlignmentType.CENTER, spacing:{after:80}
+    }));
+    children.push(new Paragraph({
+      children:[new TextRun({text:'Technical Proposal', bold:true, size:56})],
+      alignment: AlignmentType.CENTER, spacing:{after:120}
+    }));
+    children.push(new Paragraph({
+      children:[new TextRun({text: tender.name + '  ·  ' + tender.client, size:24, color:'4A6070'})],
+      alignment: AlignmentType.CENTER, spacing:{after:80}
+    }));
+    children.push(new Paragraph({
+      children:[new TextRun({text:'Draft v0.1  ·  ' + new Date().toLocaleDateString('fr-FR'), size:20, color:'9EB0C0'})],
+      alignment: AlignmentType.CENTER, spacing:{after:600}
+    }));
+    children.push(new Paragraph({
+      children:[new TextRun({text:'Confidentiel — Usage interne', italics:true, color:'9EB0C0', size:18})],
+      alignment: AlignmentType.CENTER, spacing:{after:0}
+    }));
+    // Page break after cover
+    children.push(new Paragraph({pageBreakBefore: true, children:[new TextRun({text:''})]}));
+
+    // Sections
+    NAV_SECS.forEach(sec => {
+      const draft = DRAFT_SECS[sec.id];
+      children.push(new Paragraph({
+        text: sec.id + '  —  ' + sec.label,
+        heading: sec.sub ? HeadingLevel.HEADING_2 : HeadingLevel.HEADING_1,
+        spacing:{before: sec.sub ? 200 : 400, after:160},
+      }));
+      if (draft) {
+        htmlToParas(draft.body()).forEach(p => children.push(p));
+      } else {
+        children.push(new Paragraph({
+          children:[new TextRun({text:'[PLACEHOLDER — section à compléter]', italics:true, color:'92400E'})],
+          spacing:{after:160}
+        }));
+      }
+    });
+
+    // Footer note
+    children.push(new Paragraph({spacing:{before:600}, children:[new TextRun({text:''})]}));
+    children.push(new Paragraph({
+      children:[new TextRun({text:'Généré par Tender AI — ' + new Date().toLocaleDateString('fr-FR'), size:16, color:'CBD5E0', italics:true})],
+      alignment: AlignmentType.CENTER
+    }));
+
+    const proposal = new Document({
+      styles:{
+        default:{
+          heading1:{run:{bold:true, size:28, color:'003087'}, paragraph:{spacing:{before:400,after:160}}},
+          heading2:{run:{bold:true, size:22, color:'0D9DB5'}, paragraph:{spacing:{before:200,after:120}}},
+          document:{run:{size:24, font:'Calibri'}},
+        }
+      },
+      sections:[{
+        properties:{},
+        children
+      }]
+    });
+
+    const blob = await Packer.toBlob(proposal);
+    const url  = URL.createObjectURL(blob);
+    const link = window.document.createElement('a');
+    link.href  = url;
+    link.download = (tender.name||'proposal').replace(/[^\w\s-]/g,'').trim().replace(/\s+/g,'_') + '_draft_v0.1.docx';
+    window.document.body.appendChild(link);
+    link.click();
+    window.document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    set({exporting:false});
+  } catch(err) {
+    console.error('Export error:', err);
+    set({exporting:false});
+  }
+};
+window.skipToAgents  = ()  => set(s => ({ tenderStep:'agents', currentMaxStepIdx: Math.max(s.currentMaxStepIdx, 1) }));
+window.openDisc      = t   => set({showDisclaimer:t});
+window.closeDisc     = ()  => set({showDisclaimer:null});
+window.confirmDisc   = ()  => {
+  const wasUpload = S.showDisclaimer === 'tenderupload';
+  set({ showDisclaimer:null, ...(wasUpload ? {docsUpdated:true} : {}) });
+};
+window.deleteDoc     = (key) => set(s => {
+  const docs = s.docs.filter(d => d.key !== key);
+  const da = { ...s.docAgents };
+  delete da[key];
+  return { docs, docAgents:da, docsUpdated:true };
+});
+window.launchProp    = ()  => set(s => ({ tenderStep:'planning', activeSection:'1.0', currentMaxStepIdx: Math.max(s.currentMaxStepIdx, 2) }));
+window.freezeAndDraft= ()  => set(s => ({ tenderStep:'drafting', currentMaxStepIdx: Math.max(s.currentMaxStepIdx, 3) }));
+window.updateForm    = (f,v)=> {
+  S.newForm[f]=v;
+  const btn = document.getElementById('submit-new-btn');
+  if(btn){
+    const ok = S.newForm.name.trim().length > 0;
+    btn.disabled = !ok;
+    btn.style.opacity = ok ? '1' : '0.45';
+    btn.style.cursor = ok ? 'pointer' : 'default';
+    btn.style.background = ok ? '#13B5CB' : '#9EB0C0';
+  }
+};
+window.rerun = () => set(s => ({
+  showResults:false, processing:true, tenderStep:'agents', elapsed:0,
+  currentMaxStepIdx: Math.max(s.currentMaxStepIdx, 1),
+}));
+window.updateDocs    = ()  => set({showResults:false, showUpdateDocs:true});
+window.closeUpdateDocs = () => set({showUpdateDocs:false});
+window.confirmUpdateDocs = () => set({showUpdateDocs:false, tenderStep:'upload', docsUpdated:true});
+
+/* ═══════════════════════ DATA ═══════════════════════ */
+const AGENTS = [
+  {id:'a1', badge:'A1', title:'Key Information and Activities Agent'},
+  {id:'a2', badge:'A2', title:'Technical Extraction Agent'},
+  {id:'a3', badge:'A3', title:'Risk Analysis Agent'},
+];
+
+const STD_TOC = [
+  {n:'1',   label:'Executive Summary',                sub:false, pages:'2–3 p.'},
+  {n:'2',   label:'Understanding of Requirements',    sub:false, pages:'4–5 p.'},
+  {n:'2.1', label:'Technical Scope',                  sub:true,  pages:'2 p.'},
+  {n:'2.2', label:'Regulatory & Safety Requirements', sub:true,  pages:'2 p.'},
+  {n:'3',   label:'Technical Approach & Methodology', sub:false, pages:'6–8 p.'},
+  {n:'4',   label:'Relevant Experience & References', sub:false, pages:'3–4 p.', warn:true},
+  {n:'5',   label:'Project Organisation & Team',      sub:false, pages:'3 p.'},
+  {n:'6',   label:'Schedule & Deliverables',          sub:false, pages:'2–3 p.'},
+  {n:'7',   label:'Commercial Proposal',              sub:false, pages:'2 p.'},
+];
+
+const NAV_SECS = [
+  {id:'1.0', label:'Executive Summary',                sub:false},
+  {id:'2.0', label:'Understanding of Requirements',    sub:false},
+  {id:'2.1', label:'Technical Scope',                  sub:true},
+  {id:'2.2', label:'Regulatory & Safety',              sub:true},
+  {id:'3.0', label:'Technical Approach & Methodology', sub:false},
+  {id:'4.0', label:'Relevant Experience',              sub:false},
+  {id:'5.0', label:'Project Organisation & Team',      sub:false},
+  {id:'6.0', label:'Schedule & Deliverables',          sub:false},
+  {id:'7.0', label:'Commercial Proposal',              sub:false},
+];
+
+/* ═══════════════════════ BUILD ═══════════════════════ */
+function buildApp(){
+  let out = topbar();
+  if(S.view==='dashboard')         out += dashboardView();
+  else if(S.view==='new_project')  out += newProjectView();
+  else                             out += tenderView();
+  if(S.showResults)      out += resultsModal();
+  if(S.showDisclaimer)   out += disclaimerModal();
+  if(S.showSrcPage)      out += srcModal();
+  if(S.showExportModal)  out += exportModal();
+  if(S.showUpdateDocs)   out += updateDocsModal();
+  return out;
+}
+
+/* ── TOPBAR ── */
+function topbar(){
+  const left = S.view==='dashboard'
+    ? `<div style="display:flex;align-items:center;gap:9px"><span class="tractebel-badge">TRACTEBEL</span><span class="logo">Tender AI</span></div>`
+    : `<div style="display:flex;align-items:center;gap:10px"><span class="tractebel-badge">TRACTEBEL</span><span class="logo">Tender AI</span><button onclick="goView('dashboard')" class="btn-ghost" style="padding:5px 11px;font-size:12px">← Dashboard</button></div>`;
+  const right = `<div style="display:flex;align-items:center;gap:12px"><span style="font-size:12px;color:#7E95A8;font-weight:500">${USER.first} ${USER.last}</span><div class="avatar">${USER.initials}</div></div>`;
+  return `<div class="topbar">${left}${right}</div>`;
+}
+
+/* ── DASHBOARD ── */
+function dashboardView(){
+  // ── MODIFIÉ : suppression de la colonne Actions et du bouton Edit ──
+  const rows = S.tenders.map((t,i)=>`
+  <tr onclick="openTender(${i})" style="cursor:pointer">
+    <td><span style="color:#13B5CB;font-weight:600">${t.name}</span></td>
+    <td>${t.client}</td>
+    <td>${t.responsible}</td>
+    <td style="color:#7E95A8;font-family:'DM Mono',monospace;font-size:12px">${t.modified}</td>
+    <td><button class="status-btn" onclick="event.stopPropagation()">To validate</button></td>
+    <td></td>
+  </tr>`).join('');
+
+  return `
+  <div style="min-height:calc(100vh - 52px);display:flex;flex-direction:column">
+    <div style="flex:1;padding:24px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <div style="display:flex;gap:10px;align-items:center">
+          <input class="inp" style="width:320px" placeholder="Search projects, clients, or responsible persons…">
+          <button class="btn-cyan" style="padding:10px 18px">Search</button>
+        </div>
+        <button class="btn-cyan" onclick="goNew()">+ New Tender</button>
+      </div>
+      <div class="card" style="overflow:hidden">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Project name</th><th>Client</th><th>Responsible</th>
+              <th>Last Modified</th><th>Status</th><th style="text-align:right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>
+    <div class="retention-bar">
+      <span style="font-size:16px">⚠</span>
+      <span><strong>Document Retention:</strong> Uploaded documents are stored for a maximum of <strong>90 days</strong>. This period is reinitialized each time a document is edited or modified.</span>
+    </div>
+  </div>`;
+}
+
+/* ── NEW PROJECT ── */
+function newProjectView(){
+  const canSubmit = S.newForm.name.trim().length > 0;
+  return `
+  <div style="display:flex;justify-content:center;align-items:flex-start;padding:52px 24px;min-height:calc(100vh - 52px)">
+    <div class="card fadein" style="width:100%;max-width:540px;padding:38px 42px">
+      <h2 style="font-size:20px;font-weight:700;margin-bottom:6px">Project Information</h2>
+      <p style="font-size:13px;color:#7E95A8;margin-bottom:28px">Fill in the project details before uploading your tender documents.</p>
+      <div style="margin-bottom:16px">
+        <div class="inp-label">Project name <span style="color:#e53e3e">*</span></div>
+        <input class="inp" value="${S.newForm.name}" oninput="updateForm('name',this.value)" placeholder="Enter project name">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+        <div><div class="inp-label">Client</div><input class="inp" value="${S.newForm.client}" oninput="updateForm('client',this.value)" placeholder="Client name"></div>
+        <div><div class="inp-label">Project ID</div><input class="inp" value="${S.newForm.projectId||''}" oninput="updateForm('projectId',this.value)" placeholder="e.g. PLW-2024-0892"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:30px">
+        <div><div class="inp-label">Responsible Last name</div><input class="inp" value="${S.newForm.lastName}" oninput="updateForm('lastName',this.value)"></div>
+        <div><div class="inp-label">Responsible First name</div><input class="inp" value="${S.newForm.firstName}" oninput="updateForm('firstName',this.value)"></div>
+      </div>
+      <div style="display:flex;justify-content:flex-end">
+        <button id="submit-new-btn" class="btn-cyan" onclick="submitNew()" style="opacity:${canSubmit?'1':'0.45'};cursor:${canSubmit?'pointer':'default'};background:${canSubmit?'#13B5CB':'#9EB0C0'}" ${canSubmit?'':'disabled'}>Next — Upload Documents →</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ── TENDER VIEW ── */
+function tenderView(){
+  const steps  = ['upload','agents','planning','drafting'];
+  const labels = ['Upload Tender','Agents & Validation','Proposal Planning','Proposal Drafting'];
+  const cur    = steps.indexOf(S.tenderStep);
+  const maxIdx = S.currentMaxStepIdx;
+  const banner = `<div class="step-banner" style="justify-content:space-between">${steps.map((s,i)=>{
+    const isCur   = i===cur;
+    // new tender: done = before current; existing: done = reached (≤ maxIdx) and not current
+    const isDone  = S.isNew ? i<cur : (i<=maxIdx && !isCur);
+    // new tender: blocked = after current; existing: blocked = beyond maxIdx
+    const blocked = S.isNew ? i>cur : i>maxIdx;
+    // Colours: existing tenders get cyan scale; new tenders keep original cyan
+    const numBg    = !S.isNew ? (isCur ? '#0A7A8E' : isDone ? '#7DD4E2' : '#E8EDF3')
+                               : (isDone ? '#13B5CB' : isCur ? '#13B5CB' : '#E8EDF3');
+    const numBd    = !S.isNew ? (isCur ? '#0A7A8E' : isDone ? '#7DD4E2' : '#D1DBE6')
+                               : (isDone ? '#13B5CB' : isCur ? '#0DA3B8' : '#D1DBE6');
+    const numColor = (isDone||isCur) ? '#fff' : '#7E95A8';
+    const lblColor = !S.isNew ? (isCur ? '#0A7A8E' : isDone ? '#8EC8D5' : '#9EB0C0')
+                               : (isCur ? '#13B5CB' : isDone ? '#0D9DB5' : '#9EB0C0');
+    const lblDeco  = !S.isNew && isCur ? 'text-decoration:underline;text-underline-offset:3px;' : '';
+    return `<div class="banner-step" style="flex:1;justify-content:center;cursor:${blocked?'default':'pointer'};opacity:${blocked?'0.38':'1'}" onclick="${blocked?'void(0)':`goStep('${s}')`}"><div class="bs-num" style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;background:${numBg};color:${numColor};border:2px solid ${numBd};${isCur?'box-shadow:0 0 0 3px rgba(19,181,203,.2)':''}">${isDone&&!isCur?'✓':i+1}</div><div class="bs-label" style="color:${lblColor};font-weight:${isCur?'700':'500'};${lblDeco}">${labels[i]}</div></div>${i<3?`<div class="banner-sep" style="flex:0 0 auto">›</div>`:''}`;
+  }).join('')}</div>`;
+  let content = '';
+  if(S.tenderStep==='upload')        content = uploadTab();
+  else if(S.tenderStep==='agents')   content = agentsTab();
+  else if(S.tenderStep==='planning') content = planningView();
+  else                               content = draftingView();
+  return banner + content;
+}
+
+/* ── UPLOAD TAB ── */
+function uploadTab(){
+  const docs = S.docs;
+
+  const agCols = AGENTS.map(a=>`
+    <th>
+      <div class="ag-head-wrap">
+        <span style="font-size:11px;font-weight:600;color:#1B2B3C">${a.title}</span>
+      </div>
+    </th>`).join('');
+
+  const hasA1orA2 = docs.some(d => S.docAgents[d.key]?.a1 || S.docAgents[d.key]?.a2);
+
+  const docRows = docs.map(doc=>`
+  <tr>
+    <td>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:32px;height:32px;background:#F0F4F8;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px">≡</div>
+        <div>
+          <div style="font-size:13px;font-weight:500">${doc.name}</div>
+          <div style="font-size:11px;color:#7E95A8">${doc.size} · Uploaded ${doc.ago}</div>
+        </div>
+      </div>
+    </td>
+    ${AGENTS.map(ag=>{
+      const isA3 = ag.id==='a3';
+      const blocked = isA3 && !hasA1orA2;
+      return `<td style="opacity:${blocked?'0.3':'1'}" title="${blocked?'Select Agent 1 or Agent 2 first':''}">
+        <input type="checkbox" class="cb" ${S.docAgents[doc.key]?.[ag.id]?'checked':''} ${blocked?'disabled':''} onchange="togDA('${doc.key}','${ag.id}')">
+      </td>`;
+    }).join('')}
+    <td style="text-align:right;padding-right:12px">
+      <button onclick="deleteDoc('${doc.key}')" title="Remove document"
+        style="background:none;border:1.5px solid #E2EBF3;border-radius:6px;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:#9EB0C0;font-size:14px;line-height:1;transition:all .15s"
+        onmouseover="this.style.borderColor='#e53e3e';this.style.color='#e53e3e';this.style.background='#FEF2F2'"
+        onmouseout="this.style.borderColor='#E2EBF3';this.style.color='#9EB0C0';this.style.background='none'">✕</button>
+    </td>
+  </tr>`).join('');
+
+  const skipBtn = !S.isNew ? `
+  <button onclick="skipToAgents()" class="btn-ghost" style="font-size:12px;padding:9px 18px;display:flex;align-items:center;gap:7px">
+    Skip — already processed → <span style="font-size:15px">›</span>
+  </button>` : '';
+
+  return `
+  <div style="padding:24px">
+
+    <!-- Drop zone -->
+    <div style="border:2px dashed #D1DBE6;border-radius:10px;padding:22px 16px;text-align:center;background:#fff;margin-bottom:20px;transition:border-color .2s"
+      onmouseover="this.style.borderColor='#13B5CB'" onmouseout="this.style.borderColor='#D1DBE6'">
+      <div style="font-size:24px;color:#13B5CB;margin-bottom:7px">⬆</div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:4px">Drag and drop tender documents</div>
+      <div style="font-size:12px;color:#7E95A8;margin-bottom:14px">PDF and DOCX supported</div>
+      <button class="btn-ghost" style="font-size:12px;padding:7px 18px" onclick="openDisc('tenderupload')">Browse Files</button>
+    </div>
+
+    <!-- List header -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div>
+        <span style="font-size:13px;font-weight:700">Project Documents</span>
+        <span style="font-size:12px;color:#7E95A8;margin-left:6px">(${docs.length} uploaded)</span>
+      </div>
+    </div>
+
+    <!-- Matrix table -->
+    <div class="card" style="overflow:hidden;margin-bottom:20px">
+      <table class="mx-table">
+        <thead>
+          <tr>
+            <th style="width:40%">Document</th>${agCols}<th style="width:44px"></th>
+          </tr>
+        </thead>
+        <tbody>${docRows}</tbody>
+      </table>
+    </div>
+
+    <!-- Proposal Review Language + Process Documents -->
+    <div style="display:flex;justify-content:flex-end;align-items:flex-end">
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px">
+        <div>
+          <div class="inp-label" style="margin-bottom:7px;text-align:right">PROPOSAL REVIEW LANGUAGE</div>
+          <div style="display:flex;gap:7px">
+            ${[['EN','English'],['FR','French']].map(([code,label])=>`
+            <button onclick="setLang('${code}')" style="padding:6px 18px;border-radius:6px;border:1.5px solid ${S.lang===code?'#13B5CB':'#E2EBF3'};background:${S.lang===code?'#E8F8FC':'#fff'};color:${S.lang===code?'#0D9DB5':'#7E95A8'};font-size:12px;font-weight:${S.lang===code?'700':'500'};cursor:pointer;transition:all .15s">${label}</button>`).join('')}
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+          ${(!S.isNew && !S.docsUpdated)
+            ? `<button class="btn-ghost" style="padding:11px 26px;font-size:13px;opacity:0.5;cursor:default;pointer-events:none">✓ Process Documents</button>
+               <span style="font-size:10px;color:#9EB0C0;letter-spacing:.04em">DOCUMENTS ALREADY PROCESSED — ADD NEW DOCS TO RE-PROCESS</span>`
+            : `<button class="btn-cyan" onclick="startProc()" style="padding:11px 26px;font-size:13px">✓ Process Documents</button>
+               <span style="font-size:10px;color:#9EB0C0;letter-spacing:.04em">RUNS ALL CONFIGURED AGENTS FOR ${docs.length} DOCUMENTS</span>`}
+          ${skipBtn}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ── AGENTS TAB ── */
+function agentsTab(){
+  const sel = {
+    a1: S.docs.some(d => S.docAgents[d.key]?.a1),
+    a2: S.docs.some(d => S.docAgents[d.key]?.a2),
+    a3: S.docs.some(d => S.docAgents[d.key]?.a3),
+  };
+
+  const agData = [
+    {id:'a1', icon:'👤', title:'Key Info & Activities Agent',
+     desc:'Extracts key dates, mandatory criteria, submission requirements, and pre-award activities.',
+     status: !sel.a1 ? 'not_selected' : (S.processing||!S.isNew) ? 'completed' : 'pending',
+     time:'09:14', hasView:true},
+    {id:'a2', icon:'⊞', title:'Technical Extraction Agent',
+     desc:'Maps technical architecture requirements to company capabilities.',
+     status: !sel.a2 ? 'not_selected' : (S.processing||!S.isNew) ? 'completed' : 'pending',
+     time:'09:31', hasView:true},
+    {id:'a3', icon:'⚠', title:'Risk Analysis Agent',
+     desc:'Identifies legal liabilities, operational constraints, and compliance risks.',
+     status: !sel.a3 ? 'not_selected' : (S.processing||!S.isNew) ? (!S.isNew ? 'completed' : 'running') : 'pending',
+     time:'09:47', hasView:!S.isNew},
+  ];
+
+  const agCards = agData.map(a=>{
+    const isDone=a.status==='completed', isRun=a.status==='running', isNone=a.status==='not_selected';
+    const badge = isDone
+      ? `<span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:5px;background:#EAFAF3;color:#0E8A5E">COMPLETED</span>`
+      : isRun
+      ? `<span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:5px;background:#FEF2EA;color:#A0440A">RUNNING</span>`
+      : isNone
+      ? `<span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:5px;background:#F0F4F8;color:#9EB0C0">NOT SELECTED</span>`
+      : `<span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:5px;background:#F5F8FB;color:#7E95A8">PENDING</span>`;
+    const timeRow = (isDone||isRun) ? `<div style="font-size:11px;color:#7E95A8;margin-top:6px">🕐 Apr 13, 2026 · ${a.time}</div>` : '';
+    const elapsedRow = isRun
+      ? `<div class="elapsed-inline"><span class="spin" style="font-size:13px">⟳</span> Processing elapsed: <span id="elapsed-a3">${fmtTime(S.elapsed)}</span></div>` : '';
+    const viewBtn = isDone && a.hasView
+      ? `<button class="btn-ghost" style="width:100%;justify-content:center;font-size:12px;margin-top:10px;padding:8px" onclick="openRes('${a.id}')">View Results</button>` : '';
+
+    return `
+    <div class="card" style="padding:16px;opacity:${isNone?'0.5':1};${isRun?'border-color:#13B5CB;animation:pulse-border 2s ease-in-out infinite':''}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:11px">
+        <div style="width:36px;height:36px;border-radius:8px;background:${isRun?'#E8F8FC':'#F5F8FB'};display:flex;align-items:center;justify-content:center;font-size:17px">${a.icon}</div>
+        ${badge}
+      </div>
+      <div style="font-weight:700;font-size:13px;margin-bottom:5px">${a.title}</div>
+      <div style="font-size:12px;color:#7E95A8;line-height:1.55">${a.desc}</div>
+      ${timeRow}${elapsedRow}${viewBtn}
+    </div>`;
+  }).join('');
+
+  const isEnriched = S.templateType==='enriched';
+  const enrichedPanel = isEnriched ? `
+  <div style="margin-top:11px;padding:12px;background:#F8FAFC;border-radius:8px;border:1.5px solid #E2EBF3">
+    <div class="inp-label" style="margin-bottom:9px">INCLUDE IN ENRICHED TOC</div>
+    ${[['context','Current Project Context'],['offers','Past Offers / Methodology'],['refs','Reference Projects']].map(([k,lbl])=>`
+    <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;margin-bottom:7px;${S.enrichedOpts[k]?'color:#13B5CB;font-weight:600':''}">
+      <input type="checkbox" style="accent-color:#13B5CB;width:15px;height:15px" ${S.enrichedOpts[k]?'checked':''} onchange="togEnriched('${k}')"> ${lbl}
+    </label>`).join('')}
+    <div style="margin-top:8px;padding:8px 10px;background:#EEF8FF;border:1px solid #93C5FD;border-radius:6px;font-size:11px;color:#1D4ED8;display:flex;gap:6px;align-items:flex-start">
+      <span style="flex-shrink:0">ℹ</span>
+      <span>You can also upload <strong>methodology documents</strong> (e.g. internal method notes, process frameworks) alongside past offers — Agent 5 will use them to enrich the Table of Contents structure.</span>
+    </div>
+  </div>` : '';
+
+  return `
+  <div style="padding:22px 24px">
+
+    <div style="font-size:10px;color:#7E95A8;font-weight:700;letter-spacing:.1em;margin-bottom:12px;display:flex;align-items:center;gap:7px">
+      <span style="color:#13B5CB;font-size:12px">✦</span> PHASE 1 — ANALYSIS AGENTS
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:28px">${agCards}</div>
+
+    <div style="font-size:10px;color:#7E95A8;font-weight:700;letter-spacing:.1em;margin-bottom:14px;display:flex;align-items:center;gap:7px">
+      <span style="color:#13B5CB;font-size:12px">✦</span> PHASE 2 — PROPOSAL DRAFTING
+    </div>
+    <div class="card" style="padding:22px">
+      <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:28px">
+
+        <!-- LEFT: Configure Draft Parameters -->
+        <div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px">
+            <span style="font-size:15px">⊞</span> Configure Draft Parameters
+          </div>
+
+          <div style="margin-bottom:16px">
+            <div class="inp-label" style="margin-bottom:9px">1. CHOOSE THE TEMPLATE</div>
+            <div style="display:flex;gap:10px">
+              ${['standard','enriched'].map(t=>`
+              <label style="flex:1;cursor:pointer;border:1.5px solid ${S.templateType===t?'#13B5CB':'#E2EBF3'};border-radius:8px;padding:10px 12px;background:${S.templateType===t?'#E8F8FC':'#fff'};transition:all .15s;display:flex;align-items:center">
+                <input type="radio" name="tpl" value="${t}" ${S.templateType===t?'checked':''} onchange="setTemplate('${t}')" style="accent-color:#13B5CB;margin-right:7px">
+                <span style="font-size:12px;font-weight:600">${t==='standard'?'Standard ToC':'Enriched ToC'}</span>
+              </label>`).join('')}
+            </div>
+            ${enrichedPanel}
+          </div>
+
+          <div style="margin-bottom:13px">
+            <div class="inp-label" style="margin-bottom:7px">2. PAST OFFERS</div>
+            <div style="border:1.5px dashed #D1DBE6;border-radius:8px;padding:14px;text-align:center;background:#FAFBFC">
+              <div style="font-size:11px;color:#9EB0C0;margin-bottom:8px">Drop files here or</div>
+              <button class="btn-ghost" style="font-size:11px;padding:6px 14px" onclick="openDisc('pastoffers')">Browse Files</button>
+            </div>
+          </div>
+
+          <div style="margin-bottom:16px">
+            <div class="inp-label" style="margin-bottom:7px">3. PROJECT REFERENCES</div>
+            <div style="border:1.5px dashed #D1DBE6;border-radius:8px;padding:14px;text-align:center;background:#FAFBFC">
+              <div style="font-size:11px;color:#9EB0C0;margin-bottom:8px">Drop files here or</div>
+              <button class="btn-ghost" style="font-size:11px;padding:6px 14px" onclick="openDisc('references')">Browse Files</button>
+            </div>
+          </div>
+
+          <div class="info-box">
+            <span style="flex-shrink:0">ℹ</span>
+            <span><strong>Pro-tip:</strong> Including at least two past proposals from the same sector improves tone-matching by up to 40%.</span>
+          </div>
+        </div>
+
+        <!-- RIGHT: Proposal Generation -->
+        <div style="border-left:1px solid #E2EBF3;padding-left:28px">
+          <div style="font-size:11px;font-weight:700;color:#13B5CB;letter-spacing:.06em;margin-bottom:8px">PROPOSAL GENERATION</div>
+          <p style="font-size:13px;color:#4A6070;line-height:1.75;margin-bottom:20px">
+            Agent 5 synthesizes Phase 1 analysis with your organizational templates and past performance data to generate a complete, structured technical proposal.
+          </p>
+          <button onclick="launchProp()" class="btn-cyan" style="padding:12px 24px;width:100%;justify-content:center">
+            Launch Proposal Generation →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ── RESULTS MODAL ── */
+function resultsModal(){
+  const contactRows = S.contactOpen ? `
+  <table style="width:100%;border-collapse:collapse;font-size:12px">
+    <thead><tr style="background:#F8FAFC">
+      ${['NAME','EMAIL','PHONE','SOURCE'].map(h=>`<th style="text-align:left;padding:7px 10px;border-bottom:1px solid #E2EBF3;font-weight:700;font-size:11px;color:#7E95A8;letter-spacing:.05em">${h}</th>`).join('')}
+    </tr></thead>
+    <tbody>
+      ${[['Jérôme DUCOS','jerome.ducos@cea.fr','04 66 39 78 73','p.15'],
+         ['Yannis OUAKLI','yannis.ouakli@cea.fr','04 66 39 71 77','p.15']]
+        .map(([n,e,p,s])=>`
+        <tr onmouseover="this.style.background='#F4F9FC'" onmouseout="this.style.background=''">
+          <td style="padding:7px 10px;border-bottom:1px solid #EAEFF5;font-weight:500">${n}</td>
+          <td style="padding:7px 10px;border-bottom:1px solid #EAEFF5"><a href="mailto:${e}" style="color:#13B5CB">${e}</a></td>
+          <td style="padding:7px 10px;border-bottom:1px solid #EAEFF5;font-family:'DM Mono',monospace;font-size:11px">${p}</td>
+          <td style="padding:7px 10px;border-bottom:1px solid #EAEFF5"><a onclick="openSrc('${s}');return false" href="#" style="color:#13B5CB;font-size:12px">📄 RFP – ${s} ↗</a></td>
+        </tr>`).join('')}
+    </tbody>
+  </table>` : '';
+
+  const keyInfoRows = [
+    ['Issuing Organization','COMMISSARIAT À L\'ÉNERGIE ATOMIQUE ET AUX ÉNERGIES ALTERNATIVES (CEA)','p.2'],
+    ['Is the project with ENGIE affiliate?','NO',null],
+    ['Submission Deadline','15 April 2024','p.4'],
+  ];
+
+  const preAwardSections = [
+    { label:'Doc 1 — RFP_Section_A_Technical_Scope.pdf', rows:[
+      ['Liability Cap','Limited to 100% of contract value','p.9'],
+      ['Performance Bond Required','Yes – 10% of contract value','p.11'],
+      ['NDA Required','Yes – prior to bid submission','p.7'],
+      ['Insurance Requirements','Min. €10M professional indemnity','p.13'],
+    ]},
+    { label:'Doc 2 — Draft_Contract_Agreement.docx', rows:[
+      ['Advance Payment Guarantee','10% of contract price','p.12'],
+      ['Retention Money','5% – released on project completion','p.14'],
+      ['Termination for Convenience','Client right with 30 days notice','p.16'],
+    ]},
+  ];
+
+  function renderRow([q,v,src]){
+    return `<div style="display:grid;grid-template-columns:220px 1fr;gap:14px;padding:9px 0;border-bottom:1px solid #EAEFF5;align-items:start">
+      <div style="font-size:13px;color:#4A6070">${q}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div><div class="inp-label" style="margin-bottom:4px">VALUE</div><div style="font-size:13px;font-weight:600">${v}</div></div>
+        <div><div class="inp-label" style="margin-bottom:4px">SOURCE</div>${src?`<a onclick="openSrc('${src}');return false" href="#" style="color:#13B5CB;font-size:12px">📄 RFP Section A – ${src} ↗</a>`:'<div style="font-size:12px;color:#9EB0C0;font-style:italic">Not specified</div>'}</div>
+      </div>
+    </div>`;
+  }
+
+  const keyInfoContent = `
+    <div style="font-size:12px;color:#9EB0C0;margin-bottom:16px">Showing ${keyInfoRows.length + 1} rows</div>
+    ${keyInfoRows.map(renderRow).join('')}
+    <div style="margin-top:16px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;color:#7E95A8;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #E2EBF3">CONTACT PERSONS</div>
+      <div style="display:grid;grid-template-columns:220px 1fr;gap:14px;padding:9px 0;align-items:flex-start">
+        <div style="font-size:13px;color:#4A6070">Contact Persons</div>
+        <div>
+          <button onclick="togContact()" style="background:#13B5CB;color:#fff;border:none;border-radius:6px;padding:6px 13px;font-size:12px;font-weight:500;cursor:pointer;margin-bottom:10px;display:inline-flex;align-items:center;gap:5px">
+            ${S.contactOpen?'∨':'›'} View Details (2 items)
+          </button>
+          ${contactRows}
+        </div>
+      </div>
+    </div>`;
+
+  const preAwardContent = `
+    <div style="font-size:12px;color:#9EB0C0;margin-bottom:16px">Showing ${preAwardSections.reduce((a,s)=>a+s.rows.length,0)} rows across ${preAwardSections.length} documents</div>
+    ${preAwardSections.map(doc=>`
+    <div style="margin-bottom:22px">
+      <div style="background:#F0FBFD;border:1px solid #B0E8F2;border-radius:7px;padding:8px 14px;margin-bottom:10px;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#0D9DB5">
+        <span style="font-size:15px">≡</span>${doc.label}
+      </div>
+      ${doc.rows.map(renderRow).join('')}
+    </div>`).join('')}`;
+
+  const a1Body = `
+    <div style="padding:0 20px;border-bottom:1px solid #E2EBF3;display:flex">
+      <button class="modal-tab-btn ${S.resultsTab==='keyinfo'?'active':''}" onclick="setResTab('keyinfo')">Key Information</button>
+      <button class="modal-tab-btn ${S.resultsTab==='preaward'?'active':''}" onclick="setResTab('preaward')">Pre-Award Activities</button>
+    </div>
+    <div style="overflow-y:auto;flex:1;padding:16px 20px">
+      ${S.resultsTab==='preaward' ? preAwardContent : keyInfoContent}
+    </div>`;
+
+  const agentTitles = {
+    a1: 'Key Info & Activities Agent — Results',
+    a2: 'Technical Extraction Agent — Results',
+    a3: 'Risk Analysis Agent — Results',
+  };
+
+  const isA1 = S.resultsAgent === 'a1';
+
+  const agentPlaceholder = `
+  <div style="padding:32px;text-align:center;color:#7E95A8">
+    <div style="font-size:40px;margin-bottom:16px">📊</div>
+    <div style="font-size:15px;font-weight:600;color:#1B2B3C;margin-bottom:8px">Agent's results</div>
+    <div style="font-size:13px;line-height:1.7;max-width:360px;margin:0 auto">The extracted results for this agent are available in the downloaded Excel file. Use the <strong>↓ Download Excel</strong> button below to access the full output.</div>
+  </div>`;
+
+  return `
+  <div class="overlay" onclick="closeRes()">
+    <div class="modal-box" onclick="stopOv(event)">
+      <div style="padding:14px 20px;border-bottom:1px solid #E2EBF3;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:13px;font-weight:700">${agentTitles[S.resultsAgent]||'Agent Results'}</div>
+          <div style="font-size:11px;color:#7E95A8;margin-top:2px">agent${(S.resultsAgent||'a1').slice(1)}_2026_03_23_152534.xlsx — Read-only</div>
+        </div>
+        <button onclick="closeRes()" style="background:none;border:none;font-size:18px;color:#7E95A8;cursor:pointer;line-height:1">✕</button>
+      </div>
+      ${isA1 ? a1Body : `<div style="overflow-y:auto;flex:1;padding:16px 20px">${agentPlaceholder}</div>`}
+      <div style="padding:12px 20px;border-top:1px solid #E2EBF3;display:flex;justify-content:space-between;align-items:center">
+        <div style="display:flex;gap:10px">
+          <button onclick="rerun()" class="btn-ghost" style="font-size:12px;padding:8px 16px">↺ Re-run Agent</button>
+          <button onclick="updateDocs()" class="btn-outline" style="font-size:12px;padding:8px 16px">⬆ Update Documents</button>
+        </div>
+        <div>
+          <button class="btn-cyan" style="padding:8px 20px;font-size:12px">↓ Download Excel</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ── SOURCE DOCUMENT MODAL ── */
+const DOC_PAGES = [
+  { n:1,  content:`<div style="font-size:11px;font-weight:700;color:#7E95A8;letter-spacing:.08em;margin-bottom:14px;text-align:center">APPEL D'OFFRES RESTREINT N° 2025-C-00150</div><h2 style="font-size:16px;font-weight:700;text-align:center;margin-bottom:8px">MARCHÉ DE PRESTATIONS INTELLECTUELLES</h2><h3 style="font-size:13px;font-weight:600;text-align:center;margin-bottom:16px;color:#4A6070">ÉTUDES ET DOSSIER SURETE – SIMPLIFICATION DE LA VENTILATION MA – UP1</h3><p>Lieu d'exécution : France (FR), site nucléaire de Marcoule. Direction des Opérations Nucléaires — CEA Marcoule.</p>` },
+  { n:2,  content:`<p>Le présent marché est conclu entre le <strong>COMMISSARIAT À L'ÉNERGIE ATOMIQUE ET AUX ÉNERGIES ALTERNATIVES (CEA)</strong>, établissement public à caractère industriel et commercial, représenté par son Administrateur Général, dont le siège social est situé au 25 rue Leblanc, 75015 Paris, ci-après dénommé « le Pouvoir Adjudicateur ».</p><br><p>Le titulaire du présent marché est une société spécialisée dans les études de sûreté nucléaire, sélectionnée à l'issue de la procédure d'appel d'offres restreint.</p>` },
+  { n:3,  content:`<p style="font-weight:600;margin-bottom:10px">Article 1 — Objet du marché</p><p>Le présent marché a pour objet la réalisation d'études et de dossiers de sûreté dans le cadre de la simplification de la ventilation des locaux MA sur le site UP1 de Marcoule. Les prestations comprennent l'analyse des installations existantes, la proposition de solutions de simplification, et la rédaction des dossiers réglementaires associés.</p>` },
+  { n:4,  content:`<p style="font-weight:600;margin-bottom:10px">Article 2 — Calendrier</p><p>La date limite de remise des offres est fixée au <strong>15 avril 2024 à 17h00 (heure de Paris)</strong>. Tout dossier reçu après cette date et heure ne sera pas examiné. Les candidats sont invités à soumettre leur offre par voie électronique via le portail dédié.</p><br><p>Calendrier prévisionnel :</p><ul style="margin-left:18px;margin-top:8px;line-height:2"><li>Lancement AO : 01/03/2024</li><li>Date limite Q&A : 22/03/2024</li><li>Remise des offres : 15/04/2024</li><li>Notification du marché : 10/05/2024</li></ul>` },
+  { n:5,  content:`<p style="font-weight:600;margin-bottom:10px">Article 3 — Contenu de l'offre</p><p>Les candidats devront fournir un dossier complet comprenant : une note méthodologique détaillant l'approche technique proposée, un planning de réalisation avec jalons, les CV des intervenants clés, et une proposition financière détaillée.</p>` },
+  { n:6,  content:`<p style="font-weight:600;margin-bottom:10px">Article 4 — Durée du marché</p><p>La durée du marché est fixée à <strong>18 mois à compter de la notification</strong>, avec possibilité de prolongation de 6 mois sur décision du Pouvoir Adjudicateur. Toute modification de délai fera l'objet d'un avenant signé par les deux parties.</p>` },
+  { n:7,  content:`<p style="font-weight:600;margin-bottom:10px">Article 5 — Confidentialité</p><p>Un accord de confidentialité (NDA) est requis avant toute communication d'informations sensibles relatives au projet. Ce document doit être signé et renvoyé au Pouvoir Adjudicateur <strong>avant la soumission de l'offre</strong>. Toute divulgation non autorisée entraînera la disqualification du candidat.</p>` },
+  { n:8,  content:`<p style="font-weight:600;margin-bottom:10px">Article 6 — Garanties</p><p>Le titulaire devra fournir une <strong>garantie de bonne exécution</strong> d'un montant équivalent à 10% du prix du marché dans un délai de 15 jours suivant la notification du marché. Une retenue de garantie de 5% sera prélevée sur chaque acompte.</p>` },
+  { n:9,  content:`<p style="font-weight:600;margin-bottom:10px">Article 7 — Propriété intellectuelle</p><p>L'ensemble des livrables produits dans le cadre du présent marché sera la propriété exclusive du Pouvoir Adjudicateur. Le titulaire cède au CEA l'ensemble des droits de propriété intellectuelle attachés aux travaux réalisés, y compris les droits de reproduction et de modification.</p>` },
+  { n:10, content:`<p style="font-weight:600;margin-bottom:10px">Article 8 — Sous-traitance</p><p>La sous-traitance est autorisée dans la limite de 40% du montant total du marché. Tout sous-traitant pressenti doit être déclaré et agréé par le Pouvoir Adjudicateur avant toute intervention sur site. Le titulaire reste seul responsable de la qualité et du délai des prestations.</p>` },
+  { n:11, content:`<p style="font-weight:600;margin-bottom:10px">Article 9 — Pénalités de retard</p><p>En cas de retard dans la livraison des prestations, des pénalités seront appliquées au taux de 0,5% du montant du marché par semaine de retard, plafonnées à 5% du montant total. Ces pénalités sont applicables de plein droit, sans mise en demeure préalable.</p>` },
+  { n:12, content:`<p style="font-weight:600;margin-bottom:10px">Article 10 — Modalités de paiement</p><p>Une avance de démarrage de <strong>10% du montant du marché</strong> pourra être accordée au titulaire sur demande expresse, sous réserve de la fourniture d'une garantie bancaire à première demande couvrant l'intégralité du montant de l'avance.</p>` },
+  { n:13, content:`<p style="font-weight:600;margin-bottom:10px">Article 11 — Facturation</p><p>Les factures seront établies conformément au planning de facturation joint en annexe. Le délai de paiement est de 30 jours à compter de la réception de la facture correctement établie. Tout litige sur une facture sera notifié au titulaire dans un délai de 15 jours.</p>` },
+  { n:14, content:`<p style="font-weight:600;margin-bottom:10px">Article 12 — Retenue de garantie</p><p>Une retenue de garantie de <strong>5% du montant des prestations</strong> sera prélevée sur chaque acompte. Cette retenue sera libérée à la réception définitive des prestations, après vérification de la conformité des livrables avec les spécifications contractuelles.</p>` },
+  { n:15, content:`<p style="font-weight:600;margin-bottom:10px">Article 13 — Contacts</p><p>Pour toute question relative au présent appel d'offres, les candidats sont invités à contacter les responsables désignés :</p><br><p>• <strong>Jérôme DUCOS</strong> — jerome.ducos@cea.fr — 04 66 39 78 73<br><em>Chargé de projet technique, Direction des Opérations Nucléaires</em></p><br><p>• <strong>Yannis OUAKLI</strong> — yannis.ouakli@cea.fr — 04 66 39 71 77<br><em>Responsable administratif du marché</em></p><br><p>Toute correspondance devra mentionner la référence du marché n° 2025-C-00150.</p>` },
+  { n:16, content:`<p style="font-weight:600;margin-bottom:10px">Article 14 — Résiliation pour convenance</p><p>Le Pouvoir Adjudicateur se réserve le droit de résilier le marché pour convenance, moyennant un préavis de <strong>30 jours calendaires</strong> notifié au titulaire par lettre recommandée avec avis de réception. Dans ce cas, le titulaire a droit à l'indemnisation des prestations réalisées et des frais engagés.</p>` },
+  { n:17, content:`<p style="font-weight:600;margin-bottom:10px">Article 15 — Droit applicable</p><p>Le présent marché est soumis au droit français. Tout litige relatif à l'interprétation ou à l'exécution du présent marché sera soumis aux tribunaux compétents du ressort de Paris, sauf accord des parties pour recourir à une procédure d'arbitrage.</p>` },
+  { n:18, content:`<p style="font-weight:600;margin-bottom:10px">Annexes</p><p>• Annexe A — Cahier des Charges Techniques</p><p>• Annexe B — Planning prévisionnel d'exécution</p><p>• Annexe C — Bordereau des prix unitaires</p><p>• Annexe D — Modèle de garantie bancaire</p><p>• Annexe E — Accord de confidentialité (NDA)</p>` },
+];
+
+function srcModal(){
+  const pg = parseInt((S.showSrcPage||'p.1').replace('p.',''));
+  const pages = DOC_PAGES.map(p=>`
+    <div id="src-page-${p.n}" style="margin-bottom:0;border-bottom:1px solid #E2EBF3">
+      <div style="background:#F8FAFC;padding:6px 24px;font-size:10px;font-weight:700;color:#7E95A8;letter-spacing:.08em;border-bottom:1px solid #E2EBF3;display:flex;justify-content:space-between;align-items:center">
+        <span>RFP_Section_A_Technical_Scope.pdf</span>
+        <span>Page ${p.n} / ${DOC_PAGES.length}</span>
+      </div>
+      <div style="padding:28px 32px;min-height:200px;font-size:13px;line-height:1.8;color:#1B2B3C;background:#fff">
+        ${p.content}
+      </div>
+    </div>`).join('');
+
+  return `
+  <div class="overlay" onclick="closeSrc()" style="z-index:900">
+    <div class="modal-box" style="max-width:700px;height:82vh" onclick="stopOv(event)">
+      <div style="padding:13px 20px;border-bottom:1px solid #E2EBF3;display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:16px">≡</span>
+          <div>
+            <div style="font-size:13px;font-weight:700">RFP_Section_A_Technical_Scope.pdf</div>
+            <div style="font-size:11px;color:#13B5CB;margin-top:1px">Opened at page ${pg} · ${DOC_PAGES.length} pages total</div>
+          </div>
+        </div>
+        <button onclick="closeSrc()" style="background:none;border:none;font-size:18px;color:#7E95A8;cursor:pointer;line-height:1">✕</button>
+      </div>
+      <div id="src-scroll" style="overflow-y:auto;flex:1">
+        ${pages}
+      </div>
+    </div>
+  </div>`;}
+
+/* ── DISCLAIMER MODAL ── */
+function disclaimerModal(){
+  const labels = {pastoffers:'Past Offers', references:'Project References', tenderupload:'Tender Documents'};
+  return `
+  <div class="disc-overlay" onclick="closeDisc()">
+    <div class="disc-box fadein" onclick="stopOv(event)">
+      <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:20px">
+        <div style="width:40px;height:40px;background:#FEF8ED;border:1.5px solid #F5A623;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">⚠</div>
+        <div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:4px">Important Notice</div>
+          <div style="font-size:12px;color:#7E95A8">${labels[S.showDisclaimer]} — Authorization Required</div>
+        </div>
+      </div>
+      <div style="font-size:13.5px;line-height:1.8;color:#1B2B3C;background:#F8FAFC;border-radius:8px;padding:16px;margin-bottom:22px">
+        ${S.showDisclaimer==='tenderupload'
+          ? `Only client tender documents that the client has <strong>authorized for processing using public cloud and AI services</strong> may be uploaded.<br><br>If client authorization is missing or unclear, the document <strong style="color:#C0392B">must not be uploaded</strong>.`
+          : `Only past offers and reference documents that the <strong>client has explicitly authorized for public cloud and AI processing</strong> may be uploaded.<br><br>If client authorization is missing or unclear, the document <strong style="color:#C0392B">must not be uploaded</strong>.`}
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px">
+        <button onclick="closeDisc()" class="btn-ghost">Cancel</button>
+        <button onclick="confirmDisc()" class="btn-cyan">I Understand — Browse Files</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ── PLANNING VIEW ── */
+function planningView(){
+  let toc = [...STD_TOC];
+  if(S.templateType==='enriched'){
+    if(S.enrichedOpts.context) toc.splice(1,0,{n:'0.1',label:'Project Context & Background',sub:true,pages:'2 p.'});
+    if(S.enrichedOpts.offers){ const i=toc.findIndex(r=>r.n==='4'); if(i>=0) toc.splice(i+1,0,{n:'4.1',label:'Past Offer Analysis',sub:true,pages:'2 p.'}); }
+    if(S.enrichedOpts.refs){   const j=toc.findIndex(r=>r.n==='4.1'||r.n==='4'); if(j>=0) toc.splice(j+2,0,{n:'4.2',label:'Reference Projects',sub:true,pages:'2 p.'}); }
+  }
+
+  const TOC_DETAILS = {
+    '1':   { desc:'Summarize company overview, key differentiators, key objectives of the proposal, and high-level solution overview.', guide:'Summarize the company overview, the key differentiators, key objectives of the proposal, and high-level solution overview.', example:'[Company Name] is a leading provider of innovative engineering solutions. This proposal outlines our unique qualifications and approach to delivering…' },
+    '2':   { desc:'Define scope of interpretation, outline technical challenges, and align with client\'s key objectives and expectations.' },
+    '2.1': { desc:'Detail the project involve [drop details]. Key technical challenges include [challenge 1], [challenge 2]…', note:'The project requires (page 15 of RFP…)' },
+    '2.2': { desc:'Summarize regulatory compliance requirements for safety standards and interpret safety measures…' },
+    '3':   { desc:'Describe proposed solution, methodology, key phases, and overall approach. Our approach will utilize a phased methodology including initial assessment, detailed design and testing…' },
+    '4':   { desc:'Highlight past projects, analogies, and lessons learned relevant to the current proposal. Completed [Project Name], similar in scope, overcoming [specific challenge]. Results: [measurable outcome]…' },
+    '5':   { desc:'Outline key personnel, roles, organizational chart, and team credentials. Our team includes [Name][Role], [Credential]. An org chart is provided on page 24…' },
+    '6':   { desc:'Detail the project milestone plan, key deliverables, and key assumptions where regarding to the RFP. Proposed pricing is outlined below, with terms and conditions, including…' },
+    '7':   { desc:'Detail pricing, any terms and conditions, and payment milestones according to the RFP. Proposed pricing is outlined below, with terms and conditions. Payments will be milestone based, including…' },
+  };
+
+  const rows = toc.map(r=>{
+    const det = TOC_DETAILS[r.n] || {};
+    return `
+  <tr onmouseover="this.style.background='#F4F9FC'" onmouseout="this.style.background=''">
+    <td style="padding:10px 12px;border-bottom:1px solid #EAEFF5;font-size:11px;color:#9EB0C0;font-family:'DM Mono',monospace;padding-left:${r.sub?'28':'12'}px;vertical-align:top;width:44px">${r.n}</td>
+    <td style="padding:10px 12px;border-bottom:1px solid #EAEFF5;padding-left:${r.sub?'28':'12'}px">
+      <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:${det.desc?'4':'0'}px">
+        <span style="font-size:13px;font-weight:${r.sub?'500':'700'}">${r.label}</span>
+        ${r.warn?`<span style="font-size:10px;background:#FEF8ED;color:#8A5A00;border:1px solid #F5A623;padding:2px 8px;border-radius:4px;white-space:nowrap">⚠ No past offer loaded</span>`:''}
+        ${det.desc?`<span style="font-size:11px;color:#9EB0C0;font-style:italic">${det.desc.length>80?det.desc.slice(0,80)+'…':det.desc}</span>`:''}
+      </div>
+      ${det.guide?`<div style="font-size:11px;color:#7E95A8;margin-bottom:4px"><strong>Writing Guidelines</strong> <span style="color:#9EB0C0">${det.guide.length>90?det.guide.slice(0,90)+'…':det.guide}</span></div>`:''}
+      ${det.example?`<div style="font-size:11px;color:#9EB0C0;margin-bottom:4px"><strong style="color:#7E95A8">Content Example:</strong> ${det.example.length>100?det.example.slice(0,100)+'…':det.example} <span style="color:#13B5CB;cursor:pointer">Review & Edit ›</span></div>`:''}
+      ${det.note?`<div style="font-size:10px;color:#8A5A00;background:#FEF8ED;border:1px solid #F5A623;border-radius:5px;padding:3px 8px;display:inline-block;margin-top:2px">⚠ ${det.note}</div>`:''}
+    </td>
+    <td style="padding:10px 12px;border-bottom:1px solid #EAEFF5;text-align:right;font-size:12px;color:#9EB0C0;font-family:'DM Mono',monospace;vertical-align:top">${r.pages||'—'}</td>
+    <td style="padding:10px 12px;border-bottom:1px solid #EAEFF5;text-align:right;vertical-align:top">
+      <button class="btn-cyan" style="font-size:11px;padding:5px 12px;white-space:nowrap">Edit Section</button>
+    </td>
+  </tr>`}).join('');
+
+  const navItems = NAV_SECS.map(s=>`
+  <div class="nav-item ${s.sub?'sub':''} ${S.activeSection===s.id?'active':''}" onclick="setSection('${s.id}')">
+    <span style="font-size:9px;color:#CBD5E0">⠿</span>${s.id} ${s.label}
+  </div>`).join('');
+
+  return `
+  <div style="display:flex;min-height:calc(100vh - 112px)">
+    <div class="prop-nav">
+      <div style="padding:0 14px 10px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:12px;font-weight:700">Proposal Structure</span>
+        <span style="font-size:11px;color:#13B5CB;cursor:pointer;font-weight:600">+ Add</span>
+      </div>
+      ${navItems}
+      <div style="padding:10px 14px">
+        <div style="font-size:11px;color:#9EB0C0;text-align:center;cursor:pointer;padding:8px;border:1.5px dashed #E2EBF3;border-radius:6px"
+          onmouseover="this.style.borderColor='#13B5CB'" onmouseout="this.style.borderColor='#E2EBF3'">+ New Main Section</div>
+      </div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+      <div style="flex:1;overflow-y:auto;padding:22px 28px">
+        <div class="warn-box" style="margin-bottom:20px">
+          <span style="color:#F5A623;font-size:16px;flex-shrink:0">⚠</span>
+          <div style="font-size:13px;line-height:1.6">
+            <strong>Your validation is required.</strong> The proposal will not proceed to drafting until you confirm this Table of Contents. You can edit section titles or add new sections before freezing.
+            <div style="margin-top:4px;font-size:12px;color:#8A5A00">Template: <strong>${S.templateType==='enriched'?'Enriched':'Standard'} ToC</strong></div>
+          </div>
+        </div>
+        <div class="card" style="overflow:hidden">
+          <table style="width:100%;border-collapse:collapse">
+            <thead>
+              <tr style="background:#F8FAFC">
+                <th style="text-align:left;padding:9px 12px;border-bottom:1.5px solid #E2EBF3;font-size:11px;font-weight:700;color:#7E95A8;letter-spacing:.06em;width:50px">#</th>
+                <th style="text-align:left;padding:9px 12px;border-bottom:1.5px solid #E2EBF3;font-size:11px;font-weight:700;color:#7E95A8;letter-spacing:.06em">SECTION TITLE</th>
+                <th style="text-align:right;padding:9px 12px;border-bottom:1.5px solid #E2EBF3;font-size:11px;font-weight:700;color:#7E95A8;letter-spacing:.06em;width:90px">EST. PAGES</th>
+                <th style="text-align:right;padding:9px 12px;border-bottom:1.5px solid #E2EBF3;font-size:11px;font-weight:700;color:#7E95A8;letter-spacing:.06em;width:120px">ACTION</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      </div>
+      <div class="bottom-bar">
+        <button onclick="goStep('agents')" class="btn-ghost" style="font-size:12px">← Agents & Validation</button>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button class="btn-ghost" style="font-size:12px">✎ Edit Structure</button>
+          <button class="btn-cyan" onclick="freezeAndDraft()">Freeze Golden ToC & Draft the Proposal →</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ── DRAFTING VIEW ── */
+function phInline(t){
+  return `<span style="background:#FEF3C7;color:#92400E;font-style:italic;padding:1px 7px;border-radius:4px;font-size:.875em;border:1px solid #FCD34D">[${t}]</span>`;
+}
+
+const DRAFT_SECS = {
+  '1.0':{title:'Executive Summary',body:()=>`
+    <p style="font-size:14px;line-height:1.9;margin-bottom:16px">This proposal is submitted by <strong>Tractebel Engineering</strong> in response to the Request for Proposal issued by Tractebel Global for the Offshore Wind Farm — North Sea Phase IV project (Ref. PLW-2024-0892-NW).</p>
+    <p style="font-size:14px;line-height:1.9;margin-bottom:16px">Tractebel Engineering brings over 30 years of offshore infrastructure expertise. Our team of ${phInline('team size')} specialists will be mobilised within ${phInline('mobilisation timeline')} of contract award.</p>
+    <p style="font-size:14px;line-height:1.9">We are confident our technical approach, organisational structure, and track record uniquely position us to deliver this project on schedule and within budget.</p>`
+  },
+  '3.0':{title:'Technical Approach & Methodology',body:()=>`
+    <p style="font-size:14px;line-height:1.9;margin-bottom:16px">Our proposed deployment prioritizes local expertise combined with global oversight. The project will be structured across ${phInline('number of phases')} distinct phases, with a dedicated steering committee ensuring that all sustainability milestones are met within the ${phInline('equipment type')} framework.</p>
+    <p style="font-size:14px;line-height:1.9;margin-bottom:16px">Key personnel will include a Lead Civil Engineer with over 15 years of experience. The allocation of heavy machinery, specifically the ${phInline('machinery spec')}, follows the phased rollout schedule agreed upon during pre-qualification.</p>
+    <p style="font-size:14px;line-height:1.9">Our mobilisation approach draws on previous deployments in comparable environments, minimising on-site learning curves and ensuring continuity between project phases.</p>`
+  },
+};
+
+const FALLBACK_SEC = {
+  title:'Section Content',
+  body:()=>`<p style="font-size:14px;line-height:1.9;color:#7E95A8;font-style:italic">This section is being drafted by Agent 5. Content will appear here shortly.</p>`
+};
+
+function draftingView(){
+  const sec     = DRAFT_SECS[S.activeSection] || FALLBACK_SEC;
+  const secLabel= NAV_SECS.find(n=>n.id===S.activeSection)?.label || sec.title;
+  const navItems = NAV_SECS.map(s=>`
+  <div class="nav-item ${s.sub?'sub':''} ${S.activeSection===s.id?'active':''}" onclick="setSection('${s.id}')">
+    <span style="font-size:9px;color:#CBD5E0">⠿</span>${s.id} ${s.label}
+    ${DRAFT_SECS[s.id]?`<span style="margin-left:auto;width:6px;height:6px;background:#13B5CB;border-radius:50%;flex-shrink:0"></span>`:''}
+  </div>`).join('');
+
+  return `
+  <div style="display:flex;min-height:calc(100vh - 112px)">
+    <div class="prop-nav">
+      <div style="padding:0 14px 5px;font-size:12px;font-weight:700">Proposal Sections</div>
+      <div style="padding:0 14px 9px;font-size:10px;color:#9EB0C0;display:flex;align-items:center;gap:5px">
+        <span style="width:6px;height:6px;background:#13B5CB;border-radius:50%;display:inline-block"></span> = drafted
+      </div>
+      ${navItems}
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+      <div style="flex:1;overflow-y:auto">
+        <div style="padding:36px 56px;max-width:800px;margin:0 auto">
+          <div style="text-align:center;margin-bottom:32px;padding-bottom:24px;border-bottom:2px solid #E2EBF3">
+            <div style="font-size:10px;letter-spacing:.16em;color:#9EB0C0;margin-bottom:8px;font-weight:700">TRACTEBEL ENGINEERING — CONFIDENTIAL</div>
+            <h1 style="font-size:28px;font-weight:700;margin-bottom:6px;letter-spacing:-.5px">Technical Proposal</h1>
+            <div style="font-size:13px;color:#9EB0C0">Ref. PLW-2024-0892-NW &nbsp;·&nbsp; April 2026 &nbsp;·&nbsp; Draft v0.1</div>
+          </div>
+          <div style="font-size:10px;color:#13B5CB;font-weight:700;letter-spacing:.1em;margin-bottom:8px">${S.activeSection} — ${secLabel.toUpperCase()}</div>
+          <h2 style="font-size:22px;font-weight:700;margin-bottom:22px;letter-spacing:-.3px">${sec.title}</h2>
+          ${sec.body()}
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:#CBD5E0;border-top:1px solid #E2EBF3;padding-top:14px;margin-top:48px;font-family:'DM Mono',monospace">
+            <span>Generated by Tender AI · April 2026</span>
+            <span>Confidential — Draft v0.1</span>
+          </div>
+        </div>
+      </div>
+      <div class="bottom-bar">
+        <button onclick="goStep('planning')" class="btn-ghost" style="font-size:12px">← Proposal Planning</button>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button class="btn-ghost" style="font-size:12px">✎ Edit Section</button>
+          <button class="btn-outline" style="font-size:12px;padding:9px 18px">👁 Preview Full Document</button>
+          <button onclick="${S.exporting?'':'openExport()'}" class="btn-cyan" style="padding:9px 20px;font-size:13px;${S.exporting?'opacity:0.8;cursor:default':''}">
+            ${S.exporting?'<span class="spin">⟳</span> Exporting…':'↓ Export Word (.docx)'}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ── EXPORT MODAL ── */
+function exportModal(){
+  const langs = [['EN','English'],['FR','French'],['NL','Dutch'],['DE','German'],['ES','Spanish'],['PT','Portuguese']];
+  const canConfirm = S.exportLang !== null;
+  return `
+  <div class="disc-overlay" onclick="closeExport()">
+    <div class="disc-box fadein" style="max-width:400px" onclick="stopOv(event)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <div style="font-size:15px;font-weight:700">Export Language</div>
+        <button onclick="closeExport()" style="background:none;border:none;font-size:18px;color:#7E95A8;cursor:pointer;line-height:1">✕</button>
+      </div>
+      <p style="font-size:13px;color:#7E95A8;margin-bottom:18px">Select the language for the exported Word document.</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px">
+        ${langs.map(([code,label])=>`
+        <button data-lang-btn="${code}" onclick="setExportLang('${code}')" style="text-align:left;padding:10px 14px;border-radius:7px;border:1.5px solid ${S.exportLang===code?'#13B5CB':'#E2EBF3'};background:${S.exportLang===code?'#E8F8FC':'#fff'};color:${S.exportLang===code?'#0D9DB5':'#1B2B3C'};font-size:13px;font-weight:${S.exportLang===code?'700':'400'};cursor:pointer;display:flex;align-items:center;justify-content:space-between">
+          <span>${label}</span>
+          <span class="lang-check" style="font-size:14px;color:#13B5CB;display:${S.exportLang===code?'inline':'none'}">✓</span>
+        </button>`).join('')}
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px">
+        <button onclick="closeExport()" class="btn-ghost">Cancel</button>
+        <button id="export-confirm-btn" onclick="${canConfirm?'confirmExport()':'void(0)'}" class="btn-cyan" style="opacity:${canConfirm?'1':'0.45'};cursor:${canConfirm?'pointer':'default'}" ${canConfirm?'':'disabled'}>
+          Export →
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ── UPDATE DOCUMENTS MODAL ── */
+function updateDocsModal(){
+  return `
+  <div class="disc-overlay" onclick="closeUpdateDocs()">
+    <div class="disc-box fadein" style="max-width:480px" onclick="stopOv(event)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+        <div style="font-size:15px;font-weight:700">Update Documents</div>
+        <button onclick="closeUpdateDocs()" style="background:none;border:none;font-size:18px;color:#7E95A8;cursor:pointer;line-height:1">✕</button>
+      </div>
+      <div style="background:#FEF8ED;border:1.5px solid #F5A623;border-radius:8px;padding:12px 14px;margin-bottom:18px;display:flex;gap:10px;align-items:flex-start;font-size:13px;color:#7D4A00;line-height:1.6">
+        <span style="font-size:16px;flex-shrink:0">⚠</span>
+        <span><strong>Authorization required:</strong> Only client tender documents that the client has authorized for processing using public cloud and AI services may be uploaded. If client authorization is missing or unclear, do not upload the document.</span>
+      </div>
+      <div style="border:2px dashed #D1DBE6;border-radius:10px;padding:20px 16px;text-align:center;background:#FAFBFC;margin-bottom:18px">
+        <div style="font-size:22px;color:#13B5CB;margin-bottom:6px">⬆</div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:4px">Drag and drop updated documents</div>
+        <div style="font-size:12px;color:#7E95A8;margin-bottom:12px">PDF and DOCX supported</div>
+        <button class="btn-ghost" style="font-size:12px;padding:7px 18px">Browse Files</button>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px">
+        <button onclick="closeUpdateDocs()" class="btn-ghost">Cancel</button>
+        <button onclick="confirmUpdateDocs()" class="btn-cyan">Confirm & Go to Upload →</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ═══════════════════════ INIT ═══════════════════════ */
+document.getElementById('app').innerHTML = buildApp();
+</script>
+</body>
+</html>
