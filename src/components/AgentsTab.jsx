@@ -1,53 +1,86 @@
-import { NJButton, NJBadge, NJSpinner, NJIcon } from '@engie-group/fluid-design-system-react';
-import SkelLines from './SkelLines';
+import { NJButton, NJTag, NJSpinner, NJRadioGroup, NJRadio, NJCheckbox, NJInlineMessage } from '@engie-group/fluid-design-system-react';
 
-export default function AgentsTab({ processing, onOpenRes, onLaunchProp }) {
-  const agentsData = [
-    { icon: '👤', title: 'Agent 1: Key Info', desc: 'Extracting executive summaries, deadlines, and mandatory criteria.', status: processing ? 'completed' : 'pending', time: processing ? 'Last run: Apr 13, 2026 · 09:14' : '', hasView: true },
-    { icon: '⊞', title: 'Agent 2: Technical', desc: 'Mapping technical architecture requirements to company capabilities.', status: processing ? 'completed' : 'pending', time: processing ? 'Last run: Apr 13, 2026 · 09:31' : '', hasView: false },
-    { icon: '⚠', title: 'Agent 3: Risks', desc: 'Identifying legal liabilities and operational constraints.', status: processing ? 'running' : 'pending', time: processing ? 'Started: Apr 13, 2026 · 09:47' : '', hasView: false },
+export default function AgentsTab({ s, handlers, fmtTime }) {
+  const { docs, docAgents, processing, isNew, elapsed, templateType, enrichedOpts } = s;
+  const { openRes, launchProp, setTemplate, togEnriched, openDisc } = handlers;
+
+  const sel = {
+    a1: docs.some(d => docAgents[d.key]?.a1),
+    a2: docs.some(d => docAgents[d.key]?.a2),
+    a3: docs.some(d => docAgents[d.key]?.a3),
+  };
+
+  const agData = [
+    {
+      id: 'a1', icon: '👤', title: 'Key Info & Activities Agent',
+      desc: 'Extracts key dates, mandatory criteria, submission requirements, and pre-award activities.',
+      status: !sel.a1 ? 'not_selected' : (processing || !isNew) ? 'completed' : 'pending',
+      time: '09:14', hasView: true,
+    },
+    {
+      id: 'a2', icon: '⊞', title: 'Technical Extraction Agent',
+      desc: 'Maps technical architecture requirements to company capabilities.',
+      status: !sel.a2 ? 'not_selected' : (processing || !isNew) ? 'completed' : 'pending',
+      time: '09:31', hasView: true,
+    },
+    {
+      id: 'a3', icon: '⚠', title: 'Risk Analysis Agent',
+      desc: 'Identifies legal liabilities, operational constraints, and compliance risks.',
+      status: !sel.a3 ? 'not_selected' : (processing || !isNew) ? (!isNew ? 'completed' : 'running') : 'pending',
+      time: '09:47', hasView: !isNew,
+    },
   ];
 
+  function statusBadge(status) {
+    if (status === 'completed')    return <NJTag variant="green" scale="xs">COMPLETED</NJTag>;
+    if (status === 'running')      return <NJTag variant="orange" scale="xs">RUNNING</NJTag>;
+    if (status === 'not_selected') return <NJTag variant="grey" scale="xs">NOT SELECTED</NJTag>;
+    return <NJTag scale="xs">PENDING</NJTag>;
+  }
+
+  const isEnriched = templateType === 'enriched';
+
   return (
-    <div style={{ padding: '16px 20px 24px' }}>
-      <div style={{ fontSize: 10, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', fontWeight: 700, letterSpacing: '.1em', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span style={{ color: 'var(--nj-semantic-color-text-brand-default)' }}>✶</span> PHASE 1: ANALYSIS AGENTS (1–3)
+    <div style={{ padding: '22px 24px' }}>
+      {/* Phase 1 */}
+      <div style={{ fontSize: 10, color: '#7E95A8', fontWeight: 700, letterSpacing: '.1em', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 7 }}>
+        <span style={{ color: '#13B5CB', fontSize: 12 }}>✦</span> PHASE 1 — ANALYSIS AGENTS
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14, marginBottom: 26 }}>
-        {agentsData.map((a) => {
-          const isRun = a.status === 'running';
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14, marginBottom: 28 }}>
+        {agData.map(a => {
           const isDone = a.status === 'completed';
+          const isRun = a.status === 'running';
+          const isNone = a.status === 'not_selected';
           return (
-            <div key={a.title} className={`agent-card ${isRun ? 'running' : ''}`}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
-                <div style={{ width: 38, height: 38, borderRadius: 10, background: isRun ? 'var(--nj-semantic-color-background-brand-subtle)' : 'var(--nj-semantic-color-background-neutral-secondary-default)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>{a.icon}</div>
-                {isDone && <NJBadge variant="success" emphasis="subtle" scale="sm">COMPLETED</NJBadge>}
-                {isRun && <NJBadge variant="warning" emphasis="subtle" scale="sm">RUNNING</NJBadge>}
-                {!isDone && !isRun && <NJBadge variant="neutral" emphasis="subtle" scale="sm">NO PROCESSING LAUNCHED</NJBadge>}
+            <div
+              key={a.id}
+              className={`agent-card${isRun ? ' running' : ''}`}
+              style={{ opacity: isNone ? 0.5 : 1 }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 11 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 8, background: isRun ? '#E8F8FC' : '#F5F8FB', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17 }}>{a.icon}</div>
+                {statusBadge(a.status)}
               </div>
-              <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 5 }}>{a.title}</div>
-              <div style={{ fontSize: 12, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', lineHeight: 1.5, marginBottom: 11 }}>{a.desc}</div>
-              {a.time && <div style={{ fontSize: 11, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', marginBottom: 11 }}>🕐 {a.time}</div>}
-              {isDone && (
+              <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 5 }}>{a.title}</div>
+              <div style={{ fontSize: 12, color: '#7E95A8', lineHeight: 1.55 }}>{a.desc}</div>
+              {(isDone || isRun) && (
+                <div style={{ fontSize: 11, color: '#7E95A8', marginTop: 6 }}>🕐 Apr 13, 2026 · {a.time}</div>
+              )}
+              {isRun && (
+                <div className="elapsed-inline">
+                  <NJSpinner scale="2xs" />
+                  Processing elapsed: {fmtTime(elapsed)}
+                </div>
+              )}
+              {isDone && a.hasView && (
                 <NJButton
-                  label="View Results"
                   variant="secondary"
                   emphasis="subtle"
                   scale="sm"
-                  onClick={a.hasView ? onOpenRes : undefined}
-                  disabled={!a.hasView}
-                  style={{ width: '100%' }}
-                />
-              )}
-              {isRun && (
-                <NJButton
-                  label="Processing..."
-                  variant="primary"
-                  emphasis="bold"
-                  scale="sm"
-                  disabled
-                  iconName="sync"
-                  style={{ width: '100%' }}
+                  label="View Results"
+                  style={{ width: '100%', justifyContent: 'center', marginTop: 10 }}
+                  onClick={() => openRes(a.id)}
                 />
               )}
             </div>
@@ -55,56 +88,83 @@ export default function AgentsTab({ processing, onOpenRes, onLaunchProp }) {
         })}
       </div>
 
-      <div style={{ fontSize: 10, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', fontWeight: 700, letterSpacing: '.1em', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span style={{ color: 'var(--nj-semantic-color-text-brand-default)' }}>✶</span> PHASE 2: AGENT 5 CONFIGURATION
+      {/* Phase 2 */}
+      <div style={{ fontSize: 10, color: '#7E95A8', fontWeight: 700, letterSpacing: '.1em', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 7 }}>
+        <span style={{ color: '#13B5CB', fontSize: 12 }}>✦</span> PHASE 2 — PROPOSAL DRAFTING
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-        <div>
-          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--nj-semantic-color-text-brand-default)', letterSpacing: '.05em', marginBottom: 8 }}>PROPOSAL DRAFTING</div>
-          <p style={{ fontSize: 13, color: 'var(--nj-semantic-color-text-neutral-primary-default)', lineHeight: 1.65, marginBottom: 20 }}>
-            Transform extracted requirements into a comprehensive technical proposal. Agent 5 synthesizes analysis from Phase 1 with your organizational templates and past performance data.
-          </p>
-          <NJButton
-            label="Launch Proposal Generation →"
-            variant="primary"
-            emphasis="bold"
-            onClick={onLaunchProp}
-          />
-        </div>
-        <div>
-          <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 16 }}>⊞</span> Configure Draft Parameters
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-            <div>
-              <div style={{ fontSize: 10, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', fontWeight: 700, letterSpacing: '.05em', marginBottom: 7 }}>1. REFERENCE PAST PROPOSALS</div>
-              <div style={{ border: '1.5px dashed var(--nj-semantic-color-border-neutral-subtle-default)', borderRadius: 12, padding: '18px 12px', textAlign: 'center', background: 'var(--nj-semantic-color-background-neutral-secondary-default)', marginBottom: 8 }}>
-                <div style={{ fontSize: 20, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', marginBottom: 4 }}>+</div>
-                <div style={{ fontSize: 11, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)' }}>Drop past offers or <span style={{ color: 'var(--nj-semantic-color-text-brand-default)', cursor: 'pointer', fontWeight: 600 }}>browse</span></div>
-              </div>
-              <div style={{ fontSize: 11, padding: '6px 10px', background: 'var(--nj-semantic-color-background-neutral-secondary-default)', borderRadius: 6, marginBottom: 5, display: 'flex', justifyContent: 'space-between', border: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)' }}>
-                <span>▪ Offshore_Grid_202...</span><span style={{ color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', cursor: 'pointer' }}>✕</span>
-              </div>
-              <div style={{ fontSize: 11, padding: '6px 10px', background: 'var(--nj-semantic-color-background-neutral-secondary-default)', borderRadius: 6, display: 'flex', justifyContent: 'space-between', border: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)' }}>
-                <span>▪ Solar_Plant_Specs...</span><span style={{ color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', cursor: 'pointer' }}>✕</span>
+      <div className="card" style={{ padding: 22 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 28 }}>
+          {/* Left: Configure */}
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 15 }}>⊞</span> Configure Draft Parameters
+            </div>
+
+            {/* Template choice */}
+            <div style={{ marginBottom: 16 }}>
+              <div className="inp-label" style={{ marginBottom: 9 }}>1. CHOOSE THE TEMPLATE</div>
+              <NJRadioGroup orientation="row" style={{ gap: 10 }}>
+                {['standard', 'enriched'].map(t => (
+                  <NJRadio
+                    key={t}
+                    value={t}
+                    label={t === 'standard' ? 'Standard ToC' : 'Enriched ToC'}
+                    checked={templateType === t}
+                    onChange={() => setTemplate(t)}
+                  />
+                ))}
+              </NJRadioGroup>
+              {isEnriched && (
+                <div style={{ marginTop: 11, padding: 12, background: '#F8FAFC', borderRadius: 8, border: '1.5px solid #E2EBF3' }}>
+                  <div className="inp-label" style={{ marginBottom: 9 }}>INCLUDE IN ENRICHED TOC</div>
+                  {[['context', 'Current Project Context'], ['offers', 'Past Offers / Methodology'], ['refs', 'Reference Projects']].map(([k, lbl]) => (
+                    <div key={k} style={{ marginBottom: 7, display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <NJCheckbox
+                        checked={enrichedOpts[k]}
+                        onChange={() => togEnriched(k)}
+                      />
+                      <span style={{ fontSize: 12, cursor: 'pointer', color: enrichedOpts[k] ? '#13B5CB' : 'inherit', fontWeight: enrichedOpts[k] ? 600 : 400 }}
+                        onClick={() => togEnriched(k)}>{lbl}</span>
+                    </div>
+                  ))}
+                  <NJInlineMessage variant="information" style={{ marginTop: 8 }}>
+                    You can also upload <strong>methodology documents</strong> alongside past offers — Agent 5 will use them to enrich the Table of Contents structure.
+                  </NJInlineMessage>
+                </div>
+              )}
+            </div>
+
+            {/* Past offers */}
+            <div style={{ marginBottom: 13 }}>
+              <div className="inp-label" style={{ marginBottom: 7 }}>2. PAST OFFERS</div>
+              <div style={{ border: '1.5px dashed #D1DBE6', borderRadius: 8, padding: 14, textAlign: 'center', background: '#FAFBFC' }}>
+                <div style={{ fontSize: 11, color: '#9EB0C0', marginBottom: 8 }}>Drop files here or</div>
+                <NJButton variant="secondary" emphasis="subtle" scale="sm" label="Browse Files" onClick={() => openDisc('pastoffers')} />
               </div>
             </div>
-            <div>
-              <div style={{ fontSize: 10, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', fontWeight: 700, letterSpacing: '.05em', marginBottom: 7 }}>2. ORIGINAL TOC TEMPLATE</div>
-              <select style={{ width: '100%', border: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)', borderRadius: 8, padding: '8px 10px', fontSize: 12, background: 'var(--nj-semantic-color-background-neutral-primary-default)', color: 'var(--nj-semantic-color-text-neutral-primary-default)', cursor: 'pointer', outline: 'none' }}>
-                <option>Engineering Master Template</option>
-                <option>Standard Proposal Template</option>
-              </select>
-              <div style={{ marginTop: 10 }}>
-                <div style={{ fontSize: 10, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', fontWeight: 700, letterSpacing: '.05em', marginBottom: 6 }}>TOC PREVIEW</div>
-                <SkelLines n={3} />
+
+            {/* Project references */}
+            <div style={{ marginBottom: 16 }}>
+              <div className="inp-label" style={{ marginBottom: 7 }}>3. PROJECT REFERENCES</div>
+              <div style={{ border: '1.5px dashed #D1DBE6', borderRadius: 8, padding: 14, textAlign: 'center', background: '#FAFBFC' }}>
+                <div style={{ fontSize: 11, color: '#9EB0C0', marginBottom: 8 }}>Drop files here or</div>
+                <NJButton variant="secondary" emphasis="subtle" scale="sm" label="Browse Files" onClick={() => openDisc('references')} />
               </div>
             </div>
+
+            <NJInlineMessage variant="information">
+              <strong>Pro-tip:</strong> Including at least two past proposals from the same sector improves tone-matching by up to 40%.
+            </NJInlineMessage>
           </div>
-          <div style={{ marginTop: 14, padding: '10px 14px', background: 'var(--nj-semantic-color-background-neutral-secondary-default)', borderRadius: 10, fontSize: 11, color: 'var(--nj-semantic-color-text-neutral-secondary-default)', display: 'flex', gap: 8, border: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)' }}>
-            <span style={{ flexShrink: 0 }}>ℹ</span>
-            <span><strong>Pro-tip:</strong> Including at least two past proposals from the energy sector improves Agent 5's tone-matching by up to 40%.</span>
+
+          {/* Right: Launch */}
+          <div style={{ borderLeft: '1px solid #E2EBF3', paddingLeft: 28 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#13B5CB', letterSpacing: '.06em', marginBottom: 8 }}>PROPOSAL GENERATION</div>
+            <p style={{ fontSize: 13, color: '#4A6070', lineHeight: 1.75, marginBottom: 20 }}>
+              Agent 5 synthesizes Phase 1 analysis with your organizational templates and past performance data to generate a complete, structured technical proposal.
+            </p>
+            <NJButton variant="primary" label="Launch Proposal Generation →" onClick={launchProp} style={{ width: '100%', justifyContent: 'center' }} />
           </div>
         </div>
       </div>

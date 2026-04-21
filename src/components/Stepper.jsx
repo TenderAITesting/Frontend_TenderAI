@@ -1,28 +1,32 @@
-export default function Stepper({ proposalStep }) {
-  const steps = [
-    ['1', 'PLAN TOC'],
-    ['2', 'EVIDENCE'],
-    ['3', 'DRAFT & EXPORT'],
-  ];
+const STEPS = ['upload', 'agents', 'planning', 'drafting'];
+const LABELS = ['Upload Tender', 'Agents & Validation', 'Proposal Planning', 'Proposal Drafting'];
+
+export default function BannerStepper({ tenderStep, isNew, currentMaxStepIdx, onGoStep }) {
+  const cur = STEPS.indexOf(tenderStep);
 
   return (
-    <div className="stepper">
-      <div className="step-wrap">
-        {steps.map(([n, lbl], i) => {
-          const num = parseInt(n);
-          const done = num < proposalStep;
-          const cur = num === proposalStep;
-          return (
-            <div key={n} style={{ display: 'contents' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <div className={`step-dot ${done ? 'done' : cur ? 'cur' : ''}`}>{done ? '✓' : n}</div>
-                <div className={`step-label ${cur ? 'cur' : ''}`}>{i + 1}. {lbl}</div>
+    <div className="step-banner">
+      {STEPS.map((step, i) => {
+        const isCur = i === cur;
+        const isDone = isNew ? i < cur : (i <= currentMaxStepIdx && !isCur);
+        const blocked = isNew ? i > cur : i > currentMaxStepIdx;
+
+        return (
+          <div key={step} style={{ display: 'contents' }}>
+            <div
+              className={`banner-step${isCur ? ' s-cur' : isDone ? ' s-done' : ''}`}
+              style={{ cursor: blocked ? 'default' : 'pointer', opacity: blocked ? 0.38 : 1 }}
+              onClick={() => !blocked && onGoStep(step)}
+            >
+              <div className="bs-num">
+                {isDone && !isCur ? '✓' : i + 1}
               </div>
-              {i < 2 && <div className={`step-line ${num < proposalStep ? 'done' : ''}`} />}
+              <div className="bs-label">{LABELS[i]}</div>
             </div>
-          );
-        })}
-      </div>
+            {i < 3 && <div className="banner-sep">›</div>}
+          </div>
+        );
+      })}
     </div>
   );
 }

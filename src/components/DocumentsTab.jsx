@@ -1,294 +1,148 @@
 import { useRef, useState } from 'react';
-import { NJButton, NJTag, NJBadge, NJIconButton, NJSpinner, NJCheckbox } from '@engie-group/fluid-design-system-react';
-import SkelLines from './SkelLines';
+import { NJButton, NJCheckbox } from '@engie-group/fluid-design-system-react';
+import { AGENTS } from '../data/constants';
 
-function RfpPreview() {
-  const keyDates = [
-    ['RFP Issue', '2024-03-01', 'Tractebel'],
-    ['Q&A Deadline', '2024-03-22', 'All parties'],
-    ['Bid Submission', '2024-04-15', 'Contractors'],
-    ['Award Notice', '2024-05-10', 'Tractebel'],
-  ];
-  const turbines = [
-    ['Rated Power', '15 MW'],
-    ['Rotor Diameter', '236 m'],
-    ['Hub Height', '150 m'],
-  ];
-
-  return (
-    <>
-      <h2 style={{ fontSize: 15, fontWeight: 700, marginBottom: 10 }}>Section A — Technical Scope</h2>
-      <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
-        {['Offshore Wind', 'North Sea', 'Phase IV'].map((t) => (
-          <NJTag key={t} scale="sm" variant="brand">{t}</NJTag>
-        ))}
-      </div>
-      <div style={{ height: 1, background: 'var(--nj-semantic-color-border-neutral-subtle-default)', marginBottom: 16 }} />
-
-      <div style={{ marginBottom: 18 }}>
-        <h3 style={{ fontSize: 12, fontWeight: 700, marginBottom: 7, paddingBottom: 5, borderBottom: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)', color: 'var(--nj-semantic-color-text-neutral-secondary-default)' }}>1. Submission Requirements</h3>
-        <SkelLines n={3} />
-        <div style={{ marginTop: 12 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Key Dates</div>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
-            <thead>
-              <tr style={{ background: 'var(--nj-semantic-color-background-neutral-secondary-default)' }}>
-                <th style={{ textAlign: 'left', padding: '6px 10px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)', fontWeight: 700 }}>Milestone</th>
-                <th style={{ textAlign: 'left', padding: '6px 10px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)', fontWeight: 700 }}>Date</th>
-                <th style={{ textAlign: 'left', padding: '6px 10px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)', fontWeight: 700 }}>Owner</th>
-              </tr>
-            </thead>
-            <tbody>
-              {keyDates.map(([m, d, o]) => (
-                <tr key={m} className="hover-row">
-                  <td style={{ padding: '6px 10px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)' }}>{m}</td>
-                  <td style={{ padding: '6px 10px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)' }}>{d}</td>
-                  <td style={{ padding: '6px 10px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)' }}>{o}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div style={{ marginBottom: 18 }}>
-        <h3 style={{ fontSize: 12, fontWeight: 600, marginBottom: 7, paddingBottom: 5, borderBottom: '1px solid #E2EBF3' }}>2. Legal Entities</h3>
-        <SkelLines n={2} />
-      </div>
-      <div style={{ marginBottom: 18 }}>
-        <h3 style={{ fontSize: 12, fontWeight: 600, marginBottom: 7, paddingBottom: 5, borderBottom: '1px solid #E2EBF3' }}>3. Liability &amp; Bonding</h3>
-        <SkelLines n={3} />
-      </div>
-      <div style={{ marginBottom: 18 }}>
-        <h3 style={{ fontSize: 12, fontWeight: 600, marginBottom: 7, paddingBottom: 5, borderBottom: '1px solid #E2EBF3' }}>5. Technical Specifications</h3>
-        <SkelLines n={2} />
-        <div style={{ marginTop: 12 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Turbine Ratings</div>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
-            <thead>
-              <tr style={{ background: '#F8FAFC' }}>
-                <th style={{ textAlign: 'left', padding: '5px 10px', borderBottom: '1px solid #E2EBF3', fontWeight: 600 }}>Parameter</th>
-                <th style={{ textAlign: 'left', padding: '5px 10px', borderBottom: '1px solid #E2EBF3', fontWeight: 600 }}>Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              {turbines.map(([p, v]) => (
-                <tr key={p} className="hover-row">
-                  <td style={{ padding: '5px 10px', borderBottom: '1px solid #E2EBF3' }}>{p}</td>
-                  <td style={{ padding: '5px 10px', borderBottom: '1px solid #E2EBF3' }}>{v}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </>
-  );
-}
-
-function ContractPreview() {
-  const sections = ['1. Parties', '2. Scope of Work', '3. Payment Terms', '4. Confidentiality'];
-  const lineCounts = [3, 4, 2, 2];
-  return (
-    <>
-      <h2 style={{ fontSize: 15, fontWeight: 700, marginBottom: 16 }}>Draft Contract Agreement</h2>
-      {sections.map((t, i) => (
-        <div key={t} style={{ marginBottom: 18 }}>
-          <h3 style={{ fontSize: 12, fontWeight: 600, marginBottom: 7, paddingBottom: 5, borderBottom: '1px solid #E2EBF3' }}>{t}</h3>
-          <SkelLines n={lineCounts[i]} />
-        </div>
-      ))}
-    </>
-  );
-}
-
-export default function DocumentsTab({
-  previewDoc, showPreview, processing, docExpanded, agents, tasks,
-  uploadedFiles, onOpenPrev, onClosePrev, onTogExp, onStartProc, onTogAgent, onTogTask,
-  onAddFiles, onRemoveFile,
-}) {
-  const fileInputRef = useRef(null);
+export default function UploadTab({ s, handlers }) {
+  const { docs, docAgents, isNew, docsUpdated, lang } = s;
+  const { setLang, togDA, deleteDoc, startProc, skipToAgents, openDisc } = handlers;
   const [dragOver, setDragOver] = useState(false);
-  const rfpActive = previewDoc === 'rfp' && showPreview;
-  const contActive = previewDoc === 'contract' && showPreview;
-  const rfpExpanded = docExpanded === 'rfp';
+  const fileInputRef = useRef(null);
 
-  const agentExpanded = rfpExpanded && (
-    <div style={{ borderTop: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)', padding: '12px', background: 'var(--nj-semantic-color-background-neutral-secondary-default)', display: 'flex', gap: 10 }}>
-      {/* A1 */}
-      <div style={{ flex: 1, opacity: agents.a1 ? 1 : 0.4 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10, flexWrap: 'wrap', cursor: 'pointer' }} onClick={() => onTogAgent('a1')}>
-          <span className="tick" style={{ background: agents.a1 ? 'var(--nj-semantic-color-background-brand-default)' : 'var(--nj-semantic-color-border-neutral-subtle-default)', flexShrink: 0 }}>{agents.a1 ? '✓' : ''}</span>
-          <span className="ag-badge">A1</span>
-          <span style={{ fontSize: 11, fontWeight: 600 }}>Key information and Activities Agent</span>
-        </div>
-        <div
-          style={{ display: 'flex', gap: 6, marginBottom: 7, cursor: 'pointer', ...(agents.a1 ? {} : { pointerEvents: 'none' }) }}
-          onClick={() => agents.a1 && onTogTask('tki')}
-        >
-          <span className="tick" style={{ width: 13, height: 13, fontSize: 8, marginTop: 1, flexShrink: 0, background: tasks.tki && agents.a1 ? 'var(--nj-semantic-color-background-brand-default)' : 'var(--nj-semantic-color-border-neutral-subtle-default)' }}>
-            {tasks.tki && agents.a1 ? '✓' : ''}
-          </span>
-          <div style={{ opacity: tasks.tki ? 1 : 0.5 }}>
-            <div style={{ fontSize: 11, fontWeight: 600 }}>Tender Key Information</div>
-          <div style={{ fontSize: 11, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', lineHeight: 1.4 }}>Identify key dates, submission requirements, and legal entities.</div>
-          </div>
-        </div>
-        <div
-          style={{ display: 'flex', gap: 6, cursor: 'pointer', ...(agents.a1 ? {} : { pointerEvents: 'none' }) }}
-          onClick={() => agents.a1 && onTogTask('paa')}
-        >
-          <span className="tick" style={{ width: 13, height: 13, fontSize: 8, marginTop: 1, flexShrink: 0, background: tasks.paa && agents.a1 ? 'var(--nj-semantic-color-background-brand-default)' : 'var(--nj-semantic-color-border-neutral-subtle-default)' }}>
-            {tasks.paa && agents.a1 ? '✓' : ''}
-          </span>
-          <div style={{ opacity: tasks.paa ? 1 : 0.5 }}>
-            <div style={{ fontSize: 11, fontWeight: 600 }}>Pre-Award Activities</div>
-          <div style={{ fontSize: 11, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', lineHeight: 1.4 }}>Extract liability clauses, bonding requirements, and NDAs.</div>
-          </div>
-        </div>
-      </div>
-
-      {/* A2 */}
-      <div style={{ flex: 1, opacity: agents.a2 ? 1 : 0.4 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8, cursor: 'pointer' }} onClick={() => onTogAgent('a2')}>
-          <span className="tick" style={{ background: agents.a2 ? 'var(--nj-semantic-color-background-brand-default)' : 'var(--nj-semantic-color-border-neutral-subtle-default)', flexShrink: 0 }}>{agents.a2 ? '✓' : ''}</span>
-          <span className="ag-badge">A2</span>
-          <span style={{ fontSize: 11, fontWeight: 600 }}>Technical Extraction Agent</span>
-        </div>
-        <div style={{ fontSize: 11, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', fontStyle: 'italic' }}>No tasks configured for this agent.</div>
-      </div>
-
-      {/* A3 */}
-      <div style={{ flex: 1, opacity: agents.a3 ? 1 : 0.4 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8, cursor: 'pointer' }} onClick={() => onTogAgent('a3')}>
-          <span className="tick" style={{ background: agents.a3 ? 'var(--nj-semantic-color-background-brand-default)' : 'var(--nj-semantic-color-border-neutral-subtle-default)', flexShrink: 0 }}>{agents.a3 ? '✓' : ''}</span>
-          <span className="ag-badge">A3</span>
-          <span style={{ fontSize: 11, fontWeight: 600 }}>Risk Analysis Agent</span>
-        </div>
-        <div style={{ fontSize: 11, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', fontStyle: 'italic' }}>No tasks configured for this agent.</div>
-      </div>
-    </div>
-  );
-
-  const processBtn = processing ? (
-    <NJButton label="Processing unavailable — agents still running" variant="primary" emphasis="bold" disabled style={{ width: '100%' }} iconName="sync" />
-  ) : (
-    <NJButton label="✓ Process Documents" variant="primary" emphasis="bold" onClick={onStartProc} style={{ width: '100%' }} />
-  );
-
-  const previewPanel = showPreview && previewDoc && (
-    <div className="fadein" style={{ flex: 1, minWidth: 0, background: 'var(--nj-semantic-color-background-neutral-primary-default)', border: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)', borderRadius: 16, overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 8px 20px rgba(15,23,42,0.08)' }}>
-      <div style={{ padding: '0.85rem 0.75rem 0.85rem 1.5rem', background: 'var(--nj-semantic-color-background-neutral-secondary-default)', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ fontSize: 12, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', fontWeight: 600 }}>
-          {previewDoc === 'rfp' ? 'RFP_Section_A_Technical_Scope.pdf' : 'Draft_Contract_Agreement.docx'}
-        </span>
-        <NJIconButton icon="close" aria-label="Close preview" scale="sm" onClick={onClosePrev} />
-      </div>
-      <div style={{ padding: 20, overflowY: 'auto', flex: 1, scrollbarWidth: 'auto', scrollbarColor: 'var(--nj-semantic-color-border-neutral-subtle-default) transparent' }}>
-        {previewDoc === 'rfp' ? <RfpPreview /> : <ContractPreview />}
-      </div>
-    </div>
-  );
-
-  const leftStyle = showPreview && previewDoc ? { flex: '0 0 385px' } : { width: '100%' };
+  const hasA1orA2 = docs.some(d => docAgents[d.key]?.a1 || docAgents[d.key]?.a2);
 
   return (
-    <div style={{ display: 'flex', gap: 14, padding: '14px 20px 22px', alignItems: 'flex-start' }}>
-      <div style={leftStyle}>
-        {/* upload zone */}
-        <div
-          style={{
-            border: `2px dashed ${dragOver ? 'var(--nj-semantic-color-border-brand-default)' : 'var(--nj-semantic-color-border-neutral-subtle-default)'}`,
-            borderRadius: 16, padding: '22px 16px', textAlign: 'center',
-            background: dragOver ? 'var(--nj-semantic-color-background-brand-subtle)' : 'var(--nj-semantic-color-background-neutral-secondary-default)', marginBottom: 14,
-            transition: 'border-color .2s, background .2s',
-          }}
-          onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-          onDragLeave={() => setDragOver(false)}
-          onDrop={(e) => { e.preventDefault(); setDragOver(false); onAddFiles(e.dataTransfer.files); }}
-        >
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".pdf,.docx"
-            multiple
-            style={{ display: 'none' }}
-            onChange={(e) => { onAddFiles(e.target.files); e.target.value = ''; }}
-          />
-          <div style={{ fontSize: 28, color: 'var(--nj-semantic-color-text-brand-default)', marginBottom: 8 }}>⬆</div>
-          <div style={{ fontSize: 13, fontWeight: 500, marginBottom: 4 }}>Drag and drop tender documents</div>
-          <div style={{ fontSize: 12, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', marginBottom: 14 }}>Support for PDF and DOCX</div>
-          <NJButton
-            label="Browse Files"
-            variant="secondary"
-            emphasis="subtle"
-            scale="sm"
-            onClick={() => fileInputRef.current?.click()}
-          />
-        </div>
+    <div style={{ padding: 24 }}>
+      {/* Drop zone */}
+      <div
+        style={{
+          border: `2px dashed ${dragOver ? '#13B5CB' : '#D1DBE6'}`,
+          borderRadius: 10, padding: '22px 16px', textAlign: 'center',
+          background: '#fff', marginBottom: 20, transition: 'border-color .2s',
+        }}
+        onMouseOver={() => setDragOver(true)}
+        onMouseLeave={() => setDragOver(false)}
+        onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={e => { e.preventDefault(); setDragOver(false); }}
+      >
+        <input ref={fileInputRef} type="file" accept=".pdf,.docx" multiple style={{ display: 'none' }} />
+        <div style={{ fontSize: 24, color: '#13B5CB', marginBottom: 7 }}>⬆</div>
+        <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Drag and drop tender documents</div>
+        <div style={{ fontSize: 12, color: '#7E95A8', marginBottom: 14 }}>PDF and DOCX supported</div>
+        <NJButton variant="secondary" emphasis="subtle" scale="sm" label="Browse Files" onClick={() => openDisc('tenderupload')} />
+      </div>
 
-        {/* uploaded files */}
-        {uploadedFiles.length > 0 && (
-          <div style={{ marginBottom: 14 }}>
-            {uploadedFiles.map((f, i) => (
-              <div key={`${f.name}-${i}`} style={{ fontSize: 11, padding: '6px 10px', background: 'var(--nj-semantic-color-background-neutral-secondary-default)', borderRadius: 8, marginBottom: 5, display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)' }}>
-                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>▪ {f.name} <span style={{ color: 'var(--nj-semantic-color-text-neutral-tertiary-default)' }}>({(f.size / 1024 / 1024).toFixed(1)} MB)</span></span>
-                <button onClick={() => onRemoveFile(i)} style={{ background: 'none', border: 'none', color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', cursor: 'pointer', fontSize: 13, flexShrink: 0 }}>✕</button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* list header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-          <span style={{ fontSize: 13, fontWeight: 700 }}>Project Documents <span style={{ fontWeight: 400, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)' }}>({2 + uploadedFiles.length})</span></span>
-          <span style={{ fontSize: 10, color: 'var(--nj-semantic-color-text-brand-default)', fontWeight: 700, letterSpacing: '.05em', cursor: 'pointer' }}>CONFIGURE AGENTS INDIVIDUALLY</span>
-        </div>
-
-        {/* doc 1: RFP */}
-        <div className={`doc-card ${rfpActive ? 'active-doc' : ''}`}>
-          <div style={{ padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 34, height: 34, background: 'var(--nj-semantic-color-background-brand-subtle)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16 }}>≡</div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>RFP_Section_A_Tec...</div>
-              <div style={{ fontSize: 11, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)' }}>12.4 MB · Uploaded 2h ago</div>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0 }}>
-              <NJBadge scale="sm" variant="information">A1</NJBadge><NJBadge scale="sm" variant="information">A2</NJBadge><NJBadge scale="sm" variant="information">A3</NJBadge>
-              <button className={`eye-btn ${rfpActive ? 'on' : ''}`} onClick={() => onOpenPrev('rfp')} title="Prévisualiser">
-                <span className="eye-ico">👁</span>
-              </button>
-              <button onClick={() => onTogExp('rfp')} style={{ background: 'none', border: 'none', color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', fontSize: 13, cursor: 'pointer' }}>
-                {rfpExpanded ? '▾' : '▸'}
-              </button>
-            </div>
-          </div>
-          {agentExpanded}
-        </div>
-
-        {/* doc 2: Contract */}
-        <div className={`doc-card ${contActive ? 'active-doc' : ''}`} style={{ marginBottom: 14 }}>
-          <div style={{ padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 34, height: 34, background: 'var(--nj-semantic-color-background-neutral-secondary-default)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16 }}>≡</div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 13, fontWeight: 600 }}>Draft_Contract_Agreement.docx</div>
-              <div style={{ fontSize: 11, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)' }}>2.1 MB · Uploaded 2h ago</div>
-            </div>
-            <button className={`eye-btn ${contActive ? 'on' : ''}`} onClick={() => onOpenPrev('contract')} title="Prévisualiser">
-              <span className="eye-ico">👁</span>
-            </button>
-          </div>
-        </div>
-
-        {/* process */}
-        {processBtn}
-        <div style={{ textAlign: 'center', fontSize: 10, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', marginTop: 8, letterSpacing: '.04em', fontWeight: 600 }}>
-          RUNS ALL CONFIGURED AGENTS FOR {2 + uploadedFiles.length} DOCUMENTS
+      {/* List header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+        <div>
+          <span style={{ fontSize: 13, fontWeight: 700 }}>Project Documents</span>
+          <span style={{ fontSize: 12, color: '#7E95A8', marginLeft: 6 }}>({docs.length} uploaded)</span>
         </div>
       </div>
 
-      {/* preview panel */}
-      {previewPanel}
+      {/* Matrix table */}
+      <div className="card" style={{ overflow: 'hidden', marginBottom: 20 }}>
+        <table className="mx-table">
+          <thead>
+            <tr>
+              <th style={{ width: '40%' }}>Document</th>
+              {AGENTS.map(a => (
+                <th key={a.id}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
+                    <span style={{ width: 16, height: 16, borderRadius: 3, background: '#13B5CB', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: '#fff', fontWeight: 700, flexShrink: 0 }}>✓</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: '#1B2B3C' }}>{a.title}</span>
+                  </div>
+                </th>
+              ))}
+              <th style={{ width: 44 }} />
+            </tr>
+          </thead>
+          <tbody>
+            {docs.map(doc => (
+              <tr key={doc.key}>
+                <td>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={{ width: 32, height: 32, background: '#F0F4F8', borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 15 }}>≡</div>
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 500 }}>{doc.name}</div>
+                      <div style={{ fontSize: 11, color: '#7E95A8' }}>{doc.size} · Uploaded {doc.ago}</div>
+                    </div>
+                  </div>
+                </td>
+                {AGENTS.map(ag => {
+                  const isA3 = ag.id === 'a3';
+                  const blocked = isA3 && !hasA1orA2;
+                  return (
+                    <td key={ag.id} style={{ opacity: blocked ? 0.3 : 1 }} title={blocked ? 'Select Agent 1 or Agent 2 first' : ''}>
+                      <NJCheckbox
+                        checked={!!docAgents[doc.key]?.[ag.id]}
+                        disabled={blocked}
+                        onChange={() => togDA(doc.key, ag.id)}
+                      />
+                    </td>
+                  );
+                })}
+                <td style={{ textAlign: 'right', paddingRight: 12 }}>
+                  <button
+                    onClick={() => deleteDoc(doc.key)}
+                    title="Remove document"
+                    style={{ background: 'none', border: '1.5px solid #E2EBF3', borderRadius: 6, width: 28, height: 28, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#9EB0C0', fontSize: 14, transition: 'all .15s' }}
+                    onMouseOver={e => { e.currentTarget.style.borderColor = '#e53e3e'; e.currentTarget.style.color = '#e53e3e'; e.currentTarget.style.background = '#FEF2F2'; }}
+                    onMouseOut={e => { e.currentTarget.style.borderColor = '#E2EBF3'; e.currentTarget.style.color = '#9EB0C0'; e.currentTarget.style.background = 'none'; }}
+                  >✕</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Language + Process */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 10 }}>
+          <div>
+            <div className="inp-label" style={{ marginBottom: 7, textAlign: 'right' }}>PROPOSAL REVIEW LANGUAGE</div>
+            <div style={{ display: 'flex', gap: 7 }}>
+              {[['EN', 'English'], ['FR', 'French']].map(([code, label]) => (
+                <button
+                  key={code}
+                  onClick={() => setLang(code)}
+                  style={{
+                    padding: '6px 18px', borderRadius: 6, cursor: 'pointer',
+                    border: `1.5px solid ${lang === code ? '#13B5CB' : '#E2EBF3'}`,
+                    background: lang === code ? '#E8F8FC' : '#fff',
+                    color: lang === code ? '#0D9DB5' : '#7E95A8',
+                    fontSize: 12, fontWeight: lang === code ? 700 : 500, transition: 'all .15s',
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
+            {(!isNew && !docsUpdated) ? (
+              <>
+                <NJButton variant="secondary" emphasis="subtle" disabled label="✓ Process Documents" style={{ pointerEvents: 'none' }} />
+                <span style={{ fontSize: 10, color: '#9EB0C0', letterSpacing: '.04em' }}>
+                  DOCUMENTS ALREADY PROCESSED — ADD NEW DOCS TO RE-PROCESS
+                </span>
+              </>
+            ) : (
+              <>
+                <NJButton variant="primary" label="✓ Process Documents" onClick={startProc} />
+                <span style={{ fontSize: 10, color: '#9EB0C0', letterSpacing: '.04em' }}>
+                  RUNS ALL CONFIGURED AGENTS FOR {docs.length} DOCUMENTS
+                </span>
+              </>
+            )}
+            {!isNew && (
+              <NJButton variant="secondary" emphasis="subtle" scale="sm" label="Skip — already processed → ›" onClick={skipToAgents} />
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
