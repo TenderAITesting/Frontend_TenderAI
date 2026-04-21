@@ -20,7 +20,7 @@ export default function TopBar({ view, user, onGoView }) {
         <span style={{ fontSize: 12, color: '#7E95A8', fontWeight: 500 }}>
           {user.first} {user.last}
         </span>
-        <NJAvatarRoot scale="sm">{user.initials}</NJAvatarRoot>
+        <NJAvatarRoot scale="sm" initials={user.initials} />
       </div>
     </div>
   );

@@ -72,11 +72,10 @@ export default function ResultsModal({ s, handlers }) {
             <NJButton
               variant="primary"
               scale="sm"
+              label={`${contactOpen ? '∨' : '›'} View Details (2 items)`}
               onClick={togContact}
               style={{ marginBottom: 10 }}
-            >
-              {contactOpen ? '∨' : '›'} View Details (2 items)
-            </NJButton>
+            />
             {contactOpen && (
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
                 <thead>
@@ -150,23 +149,25 @@ export default function ResultsModal({ s, handlers }) {
 
         {/* Tabs + body */}
         {isA1 ? (
-          <>
-            <div style={{ padding: '0 20px', borderBottom: '1px solid #E2EBF3' }}>
-              <NJTabs
-                label="Agent results tabs"
-                activeTab={resultsTab}
-                onClickTabItem={(id) => setResTab(id)}
-                scale="sm"
-              >
-                <NJTab id="keyinfo" label="Key Information" aria-controls="panel-keyinfo">
+          <div style={{ padding: '0 20px', borderBottom: '1px solid #E2EBF3' }}>
+            <NJTabs
+              label="Agent results tabs"
+              activeTab={resultsTab}
+              onClickTabItem={(id) => setResTab(id)}
+              scale="sm"
+            >
+              <NJTab id="keyinfo" label="Key Information" aria-controls="panel-keyinfo">
+                <div style={{ overflowY: 'auto', maxHeight: 'calc(88vh - 170px)', padding: '16px 0' }}>
                   {keyInfoContent}
-                </NJTab>
-                <NJTab id="preaward" label="Pre-Award Activities" aria-controls="panel-preaward">
+                </div>
+              </NJTab>
+              <NJTab id="preaward" label="Pre-Award Activities" aria-controls="panel-preaward">
+                <div style={{ overflowY: 'auto', maxHeight: 'calc(88vh - 170px)', padding: '16px 0' }}>
                   {preAwardContent}
-                </NJTab>
-              </NJTabs>
-            </div>
-          </>
+                </div>
+              </NJTab>
+            </NJTabs>
+          </div>
         ) : (
           <div style={{ overflowY: 'auto', flex: 1, padding: '16px 20px' }}>{agentPlaceholder}</div>
         )}
@@ -174,10 +175,10 @@ export default function ResultsModal({ s, handlers }) {
         {/* Footer */}
         <div style={{ padding: '12px 20px', borderTop: '1px solid #E2EBF3', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', gap: 10 }}>
-            <NJButton variant="secondary" emphasis="subtle" scale="sm" onClick={rerun}>↺ Re-run Agent</NJButton>
-            <NJButton variant="primary" emphasis="subtle" scale="sm" onClick={updateDocs}>⬆ Update Documents</NJButton>
+            <NJButton variant="secondary" emphasis="subtle" scale="sm" label="↺ Re-run Agent" onClick={rerun} />
+            <NJButton variant="primary" emphasis="subtle" scale="sm" label="⬆ Update Documents" onClick={updateDocs} />
           </div>
-          <NJButton variant="primary" scale="sm">↓ Download Excel</NJButton>
+          <NJButton variant="primary" scale="sm" label="↓ Download Excel" />
         </div>
       </div>
     </div>

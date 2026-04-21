@@ -32,10 +32,10 @@ export default function AgentsTab({ s, handlers, fmtTime }) {
   ];
 
   function statusBadge(status) {
-    if (status === 'completed')    return <NJTag variant="green" scale="xs">COMPLETED</NJTag>;
-    if (status === 'running')      return <NJTag variant="orange" scale="xs">RUNNING</NJTag>;
-    if (status === 'not_selected') return <NJTag variant="grey" scale="xs">NOT SELECTED</NJTag>;
-    return <NJTag scale="xs">PENDING</NJTag>;
+    if (status === 'completed')    return <NJTag variant="green" scale="xs" label="COMPLETED" />;
+    if (status === 'running')      return <NJTag variant="orange" scale="xs" label="RUNNING" />;
+    if (status === 'not_selected') return <NJTag variant="grey" scale="xs" label="NOT SELECTED" />;
+    return <NJTag scale="xs" label="PENDING" />;
   }
 
   const isEnriched = templateType === 'enriched';

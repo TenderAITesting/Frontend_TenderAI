@@ -104,7 +104,7 @@ export default function PlanningStep({ s, handlers }) {
                       </td>
                       <td style={{ padding: '10px 12px', borderBottom: '1px solid #EAEFF5', textAlign: 'right', fontSize: 12, color: '#9EB0C0', fontFamily: "'DM Mono', monospace", verticalAlign: 'top' }}>{r.pages || '—'}</td>
                       <td style={{ padding: '10px 12px', borderBottom: '1px solid #EAEFF5', textAlign: 'right', verticalAlign: 'top' }}>
-                        <NJButton variant="primary" scale="sm">Edit Section</NJButton>
+                        <NJButton variant="primary" scale="sm" label="Edit Section" />
                       </td>
                     </tr>
                   );
@@ -115,10 +115,10 @@ export default function PlanningStep({ s, handlers }) {
         </div>
 
         <div className="bottom-bar">
-          <NJButton variant="secondary" emphasis="subtle" scale="sm" onClick={() => goStep('agents')}>← Agents & Validation</NJButton>
+          <NJButton variant="secondary" emphasis="subtle" scale="sm" label="← Agents & Validation" onClick={() => goStep('agents')} />
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-            <NJButton variant="secondary" emphasis="subtle" scale="sm">✎ Edit Structure</NJButton>
-            <NJButton variant="primary" onClick={freezeAndDraft}>Freeze Golden ToC & Draft the Proposal →</NJButton>
+            <NJButton variant="secondary" emphasis="subtle" scale="sm" label="✎ Edit Structure" />
+            <NJButton variant="primary" label="Freeze Golden ToC & Draft the Proposal →" onClick={freezeAndDraft} />
           </div>
         </div>
       </div>

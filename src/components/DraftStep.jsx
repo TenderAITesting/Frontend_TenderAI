@@ -1,4 +1,4 @@
-import { NJButton, NJSpinner } from '@engie-group/fluid-design-system-react';
+import { NJButton } from '@engie-group/fluid-design-system-react';
 import { NAV_SECS, DRAFT_SECS, DRAFTED_SECS } from '../data/constants';
 
 const DRAFT_BODIES = {
@@ -66,19 +66,17 @@ export default function DraftingStep({ s, handlers }) {
         </div>
 
         <div className="bottom-bar">
-          <NJButton variant="secondary" emphasis="subtle" scale="sm" onClick={() => goStep('planning')}>← Proposal Planning</NJButton>
+          <NJButton variant="secondary" emphasis="subtle" scale="sm" label="← Proposal Planning" onClick={() => goStep('planning')} />
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-            <NJButton variant="secondary" emphasis="subtle" scale="sm">✎ Edit Section</NJButton>
-            <NJButton variant="primary" emphasis="subtle" scale="sm">👁 Preview Full Document</NJButton>
+            <NJButton variant="secondary" emphasis="subtle" scale="sm" label="✎ Edit Section" />
+            <NJButton variant="primary" emphasis="subtle" scale="sm" label="👁 Preview Full Document" />
             <NJButton
               variant="primary"
+              isLoading={exporting}
+              label={exporting ? 'Exporting…' : '↓ Export Word (.docx)'}
               onClick={exporting ? undefined : openExport}
               disabled={exporting}
-            >
-              {exporting
-                ? <><NJSpinner scale="xs" variant="inverse" /> Exporting…</>
-                : '↓ Export Word (.docx)'}
-            </NJButton>
+            />
           </div>
         </div>
       </div>
