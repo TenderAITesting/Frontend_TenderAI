@@ -67,16 +67,16 @@ export const DEFAULT_DOC_AGENTS = {
 };
 
 export const INITIAL_TENDERS = [
-  { name: 'CEA UP1 - simplification MA', client: 'CEA',        responsible: 'Romain DEL FABRO', modified: '23/03/2026', maxStepIdx: 1, lastStep: 'agents' },
-  { name: 'Navigator',                   client: 'Navigator',  responsible: 'Romain DEL FABRO', modified: '23/03/2026', maxStepIdx: 1, lastStep: 'agents' },
-  { name: 'test',                        client: 'sellafield', responsible: 'Romain DEL FABRO', modified: '11/03/2026', maxStepIdx: 1, lastStep: 'agents' },
-  { name: 'CISF waste building',         client: 'NRWDI',      responsible: 'Romain DEL FABRO', modified: '11/02/2026', maxStepIdx: 1, lastStep: 'agents' },
-  { name: 'ANDRA MS4',                   client: 'ANDRA',      responsible: 'Romain DEL FABRO', modified: '06/02/2026', maxStepIdx: 1, lastStep: 'agents' },
-  { name: 'test',                        client: 'Iter',       responsible: 'Romain DEL FABRO', modified: '04/02/2026', maxStepIdx: 1, lastStep: 'agents' },
-  { name: 'sdfsdf',                      client: 'Sener',      responsible: 'Romain DEL FABRO', modified: '28/01/2026', maxStepIdx: 1, lastStep: 'agents' },
-  { name: 'TAQA Test 2',                 client: 'TAQA',       responsible: 'Romain DEL FABRO', modified: '15/12/2025', maxStepIdx: 1, lastStep: 'agents' },
-  { name: 'FluxysZ4',                    client: 'Fluxys',     responsible: 'Romain DEL FABRO', modified: '04/12/2025', maxStepIdx: 1, lastStep: 'agents' },
-  { name: 'Test',                        client: 'EDF',        responsible: 'Romain DEL FABRO', modified: '04/12/2025', maxStepIdx: 1, lastStep: 'agents' },
+  { name: 'CEA UP1 - simplification MA', client: 'CEA',        projectId: 'TRB-2026-041', modified: '23/03/2026', maxStepIdx: 1, lastStep: 'agents', status: 'analysis_validated'   },
+  { name: 'Navigator',                   client: 'Navigator',  projectId: 'TRB-2026-038', modified: '23/03/2026', maxStepIdx: 1, lastStep: 'agents', status: 'analysis_in_progress' },
+  { name: 'test',                        client: 'Sellafield', projectId: 'TRB-2026-031', modified: '11/03/2026', maxStepIdx: 1, lastStep: 'agents', status: 'uploaded'             },
+  { name: 'CISF waste building',         client: 'NRWDI',      projectId: 'TRB-2026-022', modified: '11/02/2026', maxStepIdx: 2, lastStep: 'planning', status: 'planning_in_progress'},
+  { name: 'ANDRA MS4',                   client: 'ANDRA',      projectId: 'TRB-2026-019', modified: '06/02/2026', maxStepIdx: 3, lastStep: 'drafting', status: 'proposal_ready'      },
+  { name: 'test',                        client: 'Iter',       projectId: 'TRB-2026-017', modified: '04/02/2026', maxStepIdx: 1, lastStep: 'agents', status: 'analysis_validated'   },
+  { name: 'sdfsdf',                      client: 'Sener',      projectId: 'TRB-2026-014', modified: '28/01/2026', maxStepIdx: 3, lastStep: 'drafting', status: 'drafting_in_progress'},
+  { name: 'TAQA Test 2',                 client: 'TAQA',       projectId: 'TRB-2025-098', modified: '15/12/2025', maxStepIdx: 1, lastStep: 'agents', status: 'analysis_validated'   },
+  { name: 'FluxysZ4',                    client: 'Fluxys',     projectId: 'TRB-2025-091', modified: '04/12/2025', maxStepIdx: 0, lastStep: 'upload',  status: 'uploaded'             },
+  { name: 'Test',                        client: 'EDF',        projectId: 'TRB-2025-089', modified: '04/12/2025', maxStepIdx: 1, lastStep: 'agents', status: 'analysis_in_progress' },
 ];
 
 export const DOC_PAGES = [

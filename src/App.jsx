@@ -42,9 +42,10 @@ const INITIAL = {
   docsUpdated: false,
   activeSection: '1.0',
   templateType: 'standard',
-  enrichedOpts: { context: false, offers: false, refs: false },
+  enrichedOpts: { context: true, offers: true, refs: true, methodology: false },
   ...freshDocs(),
   newForm: { name: '', client: '', projectId: '', lastName: USER.last, firstName: USER.first },
+  editingTender: null,
   contactOpen: true,
   tenders: INITIAL_TENDERS,
 };
@@ -101,9 +102,20 @@ export default function App() {
 
     goNew: () => set(prev => {
       const tenders = saveTenderProgress(prev);
-      const patch = { view: 'new_project', newForm: { name: '', client: '', projectId: '', lastName: USER.last, firstName: USER.first } };
+      const patch = { view: 'new_project', editingTender: null, newForm: { name: '', client: '', projectId: '', lastName: USER.last, firstName: USER.first } };
       if (tenders) patch.tenders = tenders;
       return patch;
+    }),
+
+    openEditTender: (idx) => set(prev => {
+      const tenders = saveTenderProgress(prev);
+      const t = (tenders || prev.tenders)[idx];
+      return {
+        ...(tenders ? { tenders } : {}),
+        view: 'new_project',
+        editingTender: idx,
+        newForm: { name: t.name, client: t.client || '', projectId: t.projectId || '', lastName: USER.last, firstName: USER.first },
+      };
     }),
 
     openTender: (idx) => {
@@ -120,18 +132,34 @@ export default function App() {
     },
 
     submitNew: () => {
+      if (s.editingTender !== null) {
+        set(prev => {
+          const tenders = [...prev.tenders];
+          tenders[prev.editingTender] = {
+            ...tenders[prev.editingTender],
+            name: prev.newForm.name || tenders[prev.editingTender].name,
+            client: prev.newForm.client || tenders[prev.editingTender].client,
+            projectId: prev.newForm.projectId || tenders[prev.editingTender].projectId,
+          };
+          return { tenders, view: 'dashboard', editingTender: null };
+        });
+        return;
+      }
+      const year = new Date().getFullYear();
+      const seq = String(Math.floor(Math.random() * 900) + 100);
       const t = {
         name: s.newForm.name || 'New Tender',
         client: s.newForm.client || '—',
-        responsible: `${USER.first} ${USER.last}`,
+        projectId: s.newForm.projectId.trim() || `TRB-${year}-${seq}`,
         modified: new Date().toLocaleDateString('fr-FR'),
-        maxStepIdx: 0, lastStep: 'upload',
+        maxStepIdx: 0, lastStep: 'upload', status: 'uploaded',
       };
       set(prev => ({
         tenders: [t, ...prev.tenders],
         view: 'tender', currentTender: 0, isNew: true,
         tenderStep: 'upload', currentMaxStepIdx: 0,
         processing: false, elapsed: 0, docsUpdated: false,
+        editingTender: null,
         ...freshDocs(),
       }));
     },
@@ -236,6 +264,7 @@ export default function App() {
           tenders={s.tenders}
           onNew={handlers.goNew}
           onOpen={handlers.openTender}
+          onEdit={handlers.openEditTender}
         />
       )}
 
@@ -244,6 +273,8 @@ export default function App() {
           newForm={s.newForm}
           onUpdateForm={handlers.updateForm}
           onSubmit={handlers.submitNew}
+          onCancel={() => set({ view: 'dashboard', editingTender: null })}
+          editMode={s.editingTender !== null}
         />
       )}
 

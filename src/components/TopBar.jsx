@@ -1,11 +1,13 @@
 import { NJButton, NJAvatarRoot } from '@engie-group/fluid-design-system-react';
+import tractebelLogo from '../assets/logo.png';
 
 export default function TopBar({ view, user, onGoView }) {
   return (
     <div className="topbar">
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <span className="tractebel-badge">TRACTEBEL</span>
-        <span className="logo">Tender AI</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <img src={tractebelLogo} alt="Tractebel Engie" style={{ height: 36, width: 'auto' }} />
+        <div style={{ width: 1, height: 24, background: 'var(--nj-semantic-color-border-neutral-minimal-default)' }} />
+        <span className="logo">TENDER AI</span>
         {view !== 'dashboard' && (
           <NJButton
             variant="secondary"

@@ -101,7 +101,7 @@ export default function UploadTab({ s, handlers }) {
       <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 10 }}>
           <div>
-            <div className="inp-label" style={{ marginBottom: 7, textAlign: 'right' }}>PROPOSAL REVIEW LANGUAGE</div>
+            <div className="inp-label" style={{ marginBottom: 7, textAlign: 'right' }}>TENDER ANALYSIS LANGUAGE</div>
             <NJSelectRoot
               value={lang}
               onChange={e => setLang(e.target.value)}
@@ -109,6 +109,10 @@ export default function UploadTab({ s, handlers }) {
             >
               <NJSelectItem value="EN">English</NJSelectItem>
               <NJSelectItem value="FR">French</NJSelectItem>
+              <NJSelectItem value="EN">Dutch</NJSelectItem>
+              <NJSelectItem value="FR">German</NJSelectItem>
+              <NJSelectItem value="EN">Spanish</NJSelectItem>
+              <NJSelectItem value="FR">Portuguese</NJSelectItem>
             </NJSelectRoot>
           </div>
 

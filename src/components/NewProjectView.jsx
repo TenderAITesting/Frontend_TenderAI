@@ -1,14 +1,14 @@
 import { NJButton, NJFormItem, NJHeading, NJText } from '@engie-group/fluid-design-system-react';
 
-export default function NewProjectView({ newForm, onUpdateForm, onSubmit }) {
+export default function NewProjectView({ newForm, onUpdateForm, onSubmit, onCancel, editMode }) {
   const canSubmit = newForm.name.trim().length > 0;
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', padding: '52px 24px', minHeight: 'calc(100vh - 52px)' }}>
       <div className="card fadein" style={{ width: '100%', maxWidth: 540, padding: '38px 42px' }}>
-        <NJHeading tag="h2" style={{ marginBottom: 6 }}>Project Information</NJHeading>
+        <NJHeading tag="h2" style={{ marginBottom: 6 }}>{editMode ? 'Edit Project' : 'Project Information'}</NJHeading>
         <NJText style={{ color: 'var(--nj-core-color-reference-neutral-500)', marginBottom: 28, display: 'block' }}>
-          Fill in the project details before uploading your tender documents.
+          {editMode ? 'Update the project details below.' : 'Fill in the project details before uploading your tender documents.'}
         </NJText>
 
         <div style={{ marginBottom: 16 }}>
@@ -58,11 +58,14 @@ export default function NewProjectView({ newForm, onUpdateForm, onSubmit }) {
           />
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+          {editMode && (
+            <NJButton variant="secondary" emphasis="subtle" label="Cancel" onClick={onCancel} />
+          )}
           <NJButton
             variant="primary"
-            icon="arrow_forward"
-            label="Next — Upload Documents"
+            icon={editMode ? 'save' : 'arrow_forward'}
+            label={editMode ? 'Save Changes' : 'Next — Upload Documents'}
             onClick={onSubmit}
             disabled={!canSubmit}
           />

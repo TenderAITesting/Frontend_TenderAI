@@ -12,19 +12,19 @@ export default function AgentsTab({ s, handlers, fmtTime }) {
 
   const agData = [
     {
-      id: 'a1', icon: 'person', title: 'Key Info & Activities Agent',
+      id: 'a1', icon: 'person', title: 'Tender Key Information',
       desc: 'Extracts key dates, mandatory criteria, submission requirements, and pre-award activities.',
       status: !sel.a1 ? 'not_selected' : (processing || !isNew) ? 'completed' : 'pending',
       time: '09:14', hasView: true,
     },
     {
-      id: 'a2', icon: 'grid_view', title: 'Technical Extraction Agent',
+      id: 'a2', icon: 'grid_view', title: 'Technical Requirements',
       desc: 'Maps technical architecture requirements to company capabilities.',
       status: !sel.a2 ? 'not_selected' : (processing || !isNew) ? 'completed' : 'pending',
       time: '09:31', hasView: true,
     },
     {
-      id: 'a3', icon: 'warning', title: 'Risk Analysis Agent',
+      id: 'a3', icon: 'warning', title: 'Project Risks',
       desc: 'Identifies legal liabilities, operational constraints, and compliance risks.',
       status: !sel.a3 ? 'not_selected' : (processing || !isNew) ? (!isNew ? 'completed' : 'running') : 'pending',
       time: '09:47', hasView: !isNew,
@@ -122,6 +122,20 @@ export default function AgentsTab({ s, handlers, fmtTime }) {
                   />
                 ))}
               </NJRadioGroup>
+              
+              {!isEnriched && (
+                <div style={{ marginTop: 11, display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <NJCheckbox
+                    checked={enrichedOpts.methodology}
+                    onChange={() => togEnriched('methodology')}
+                  />
+                  <span
+                    style={{ fontSize: 12, cursor: 'pointer', color: enrichedOpts.methodology ? 'var(--nj-core-color-reference-brand-500)' : 'inherit', fontWeight: enrichedOpts.methodology ? 600 : 400 }}
+                    onClick={() => togEnriched('methodology')}
+                  >Include Methodology documents</span>
+                </div>
+              )}
+
               {isEnriched && (
                 <div style={{ marginTop: 11, padding: 12, background: 'var(--nj-semantic-color-background-neutral-secondary-default)', borderRadius: 8, border: '1.5px solid var(--nj-semantic-color-border-neutral-minimal-default)' }}>
                   <div className="inp-label" style={{ marginBottom: 9 }}>INCLUDE IN ENRICHED TOC</div>
