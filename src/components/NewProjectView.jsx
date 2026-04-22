@@ -1,4 +1,4 @@
-import { NJButton, NJFormItem } from '@engie-group/fluid-design-system-react';
+import { NJButton, NJFormItem, NJHeading, NJText } from '@engie-group/fluid-design-system-react';
 
 export default function NewProjectView({ newForm, onUpdateForm, onSubmit }) {
   const canSubmit = newForm.name.trim().length > 0;
@@ -6,10 +6,10 @@ export default function NewProjectView({ newForm, onUpdateForm, onSubmit }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', padding: '52px 24px', minHeight: 'calc(100vh - 52px)' }}>
       <div className="card fadein" style={{ width: '100%', maxWidth: 540, padding: '38px 42px' }}>
-        <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 6 }}>Project Information</h2>
-        <p style={{ fontSize: 13, color: '#7E95A8', marginBottom: 28 }}>
+        <NJHeading tag="h2" style={{ marginBottom: 6 }}>Project Information</NJHeading>
+        <NJText style={{ color: 'var(--nj-core-color-reference-neutral-500)', marginBottom: 28, display: 'block' }}>
           Fill in the project details before uploading your tender documents.
-        </p>
+        </NJText>
 
         <div style={{ marginBottom: 16 }}>
           <NJFormItem
@@ -61,7 +61,8 @@ export default function NewProjectView({ newForm, onUpdateForm, onSubmit }) {
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <NJButton
             variant="primary"
-            label="Next — Upload Documents →"
+            icon="arrow_forward"
+            label="Next — Upload Documents"
             onClick={onSubmit}
             disabled={!canSubmit}
           />

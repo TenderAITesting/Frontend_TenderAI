@@ -1,4 +1,4 @@
-import { NJButton, NJTabs, NJTab } from '@engie-group/fluid-design-system-react';
+import { NJButton, NJTabs, NJTab, NJIconButton, NJLink } from '@engie-group/fluid-design-system-react';
 
 const KEY_INFO_ROWS = [
   ['Issuing Organization', "COMMISSARIAT À L'ÉNERGIE ATOMIQUE ET AUX ÉNERGIES ALTERNATIVES (CEA)", 'p.2'],
@@ -33,18 +33,20 @@ const AGENT_TITLES = {
 
 function InfoRow({ label, value, src, onOpenSrc }) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: 14, padding: '9px 0', borderBottom: '1px solid #EAEFF5', alignItems: 'start' }}>
-      <div style={{ fontSize: 13, color: '#4A6070' }}>{label}</div>
+    <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: 14, padding: '9px 0', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)', alignItems: 'start' }}>
+      <div style={{ fontSize: 13, color: 'var(--nj-semantic-color-text-neutral-contrast-default)' }}>{label}</div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
         <div>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#7E95A8', marginBottom: 4 }}>VALUE</div>
+          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--nj-core-color-reference-neutral-500)', marginBottom: 4 }}>VALUE</div>
           <div style={{ fontSize: 13, fontWeight: 600 }}>{value}</div>
         </div>
         <div>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#7E95A8', marginBottom: 4 }}>SOURCE</div>
+          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--nj-core-color-reference-neutral-500)', marginBottom: 4 }}>SOURCE</div>
           {src
-            ? <a onClick={e => { e.preventDefault(); onOpenSrc(src); }} href="#" style={{ color: '#13B5CB', fontSize: 12, cursor: 'pointer' }}>📄 RFP Section A – {src} ↗</a>
-            : <div style={{ fontSize: 12, color: '#9EB0C0', fontStyle: 'italic' }}>Not specified</div>
+            ? <NJLink href="#" onClick={e => { e.preventDefault(); onOpenSrc(src); }}>
+                RFP Section A – {src} ↗
+              </NJLink>
+            : <div style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-400)', fontStyle: 'italic' }}>Not specified</div>
           }
         </div>
       </div>
@@ -60,39 +62,47 @@ export default function ResultsModal({ s, handlers }) {
 
   const keyInfoContent = (
     <>
-      <div style={{ fontSize: 12, color: '#9EB0C0', marginBottom: 16 }}>Showing {KEY_INFO_ROWS.length + 1} rows</div>
+      <div style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-400)', marginBottom: 16 }}>Showing {KEY_INFO_ROWS.length + 1} rows</div>
       {KEY_INFO_ROWS.map(([q, v, src]) => (
         <InfoRow key={q} label={q} value={v} src={src} onOpenSrc={openSrc} />
       ))}
       <div style={{ marginTop: 16 }}>
-        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.08em', color: '#7E95A8', marginBottom: 10, paddingBottom: 6, borderBottom: '2px solid #E2EBF3' }}>CONTACT PERSONS</div>
+        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.08em', color: 'var(--nj-core-color-reference-neutral-500)', marginBottom: 10, paddingBottom: 6, borderBottom: '2px solid var(--nj-semantic-color-border-neutral-minimal-default)' }}>CONTACT PERSONS</div>
         <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: 14, padding: '9px 0', alignItems: 'flex-start' }}>
-          <div style={{ fontSize: 13, color: '#4A6070' }}>Contact Persons</div>
+          <div style={{ fontSize: 13, color: 'var(--nj-semantic-color-text-neutral-contrast-default)' }}>Contact Persons</div>
           <div>
             <NJButton
               variant="primary"
               scale="sm"
-              label={`${contactOpen ? '∨' : '›'} View Details (2 items)`}
+              icon={contactOpen ? 'expand_less' : 'chevron_right'}
+              label="View Details (2 items)"
               onClick={togContact}
               style={{ marginBottom: 10 }}
             />
             {contactOpen && (
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
                 <thead>
-                  <tr style={{ background: '#F8FAFC' }}>
+                  <tr style={{ background: 'var(--nj-semantic-color-background-neutral-secondary-default)' }}>
                     {['NAME', 'EMAIL', 'PHONE', 'SOURCE'].map(h => (
-                      <th key={h} style={{ textAlign: 'left', padding: '7px 10px', borderBottom: '1px solid #E2EBF3', fontWeight: 700, fontSize: 11, color: '#7E95A8', letterSpacing: '.05em' }}>{h}</th>
+                      <th key={h} style={{ textAlign: 'left', padding: '7px 10px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)', fontWeight: 700, fontSize: 11, color: 'var(--nj-core-color-reference-neutral-500)', letterSpacing: '.05em' }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {CONTACTS.map(([n, e, p, src]) => (
-                    <tr key={n} onMouseOver={ev => ev.currentTarget.style.background = '#F4F9FC'} onMouseOut={ev => ev.currentTarget.style.background = ''}>
-                      <td style={{ padding: '7px 10px', borderBottom: '1px solid #EAEFF5', fontWeight: 500 }}>{n}</td>
-                      <td style={{ padding: '7px 10px', borderBottom: '1px solid #EAEFF5' }}><a href={`mailto:${e}`} style={{ color: '#13B5CB' }}>{e}</a></td>
-                      <td style={{ padding: '7px 10px', borderBottom: '1px solid #EAEFF5', fontFamily: "'DM Mono', monospace", fontSize: 11 }}>{p}</td>
-                      <td style={{ padding: '7px 10px', borderBottom: '1px solid #EAEFF5' }}>
-                        <a onClick={ev => { ev.preventDefault(); openSrc(src); }} href="#" style={{ color: '#13B5CB', fontSize: 12 }}>📄 RFP – {src} ↗</a>
+                    <tr key={n}
+                      onMouseOver={ev => ev.currentTarget.style.background = 'var(--nj-semantic-color-background-neutral-secondary-default)'}
+                      onMouseOut={ev => ev.currentTarget.style.background = ''}
+                    >
+                      <td style={{ padding: '7px 10px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)', fontWeight: 500 }}>{n}</td>
+                      <td style={{ padding: '7px 10px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)' }}>
+                        <NJLink href={`mailto:${e}`}>{e}</NJLink>
+                      </td>
+                      <td style={{ padding: '7px 10px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)', fontFamily: "'DM Mono', monospace", fontSize: 11 }}>{p}</td>
+                      <td style={{ padding: '7px 10px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)' }}>
+                        <NJLink href="#" onClick={ev => { ev.preventDefault(); openSrc(src); }}>
+                          RFP – {src} ↗
+                        </NJLink>
                       </td>
                     </tr>
                   ))}
@@ -107,13 +117,14 @@ export default function ResultsModal({ s, handlers }) {
 
   const preAwardContent = (
     <>
-      <div style={{ fontSize: 12, color: '#9EB0C0', marginBottom: 16 }}>
+      <div style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-400)', marginBottom: 16 }}>
         Showing {PRE_AWARD_SECTIONS.reduce((a, s) => a + s.rows.length, 0)} rows across {PRE_AWARD_SECTIONS.length} documents
       </div>
       {PRE_AWARD_SECTIONS.map(doc => (
         <div key={doc.label} style={{ marginBottom: 22 }}>
-          <div style={{ background: '#F0FBFD', border: '1px solid #B0E8F2', borderRadius: 7, padding: '8px 14px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, fontWeight: 700, color: '#0D9DB5' }}>
-            <span style={{ fontSize: 15 }}>≡</span>{doc.label}
+          <div style={{ background: 'var(--nj-core-color-reference-brand-100)', border: '1px solid var(--nj-core-color-reference-brand-200)', borderRadius: 7, padding: '8px 14px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, fontWeight: 700, color: 'var(--nj-core-color-reference-brand-700)' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>description</span>
+            {doc.label}
           </div>
           {doc.rows.map(([q, v, src]) => (
             <InfoRow key={q} label={q} value={v} src={src} onOpenSrc={openSrc} />
@@ -124,11 +135,11 @@ export default function ResultsModal({ s, handlers }) {
   );
 
   const agentPlaceholder = (
-    <div style={{ padding: 32, textAlign: 'center', color: '#7E95A8' }}>
-      <div style={{ fontSize: 40, marginBottom: 16 }}>📊</div>
-      <div style={{ fontSize: 15, fontWeight: 600, color: '#1B2B3C', marginBottom: 8 }}>Agent's results</div>
+    <div style={{ padding: 32, textAlign: 'center', color: 'var(--nj-core-color-reference-neutral-500)' }}>
+      <span className="material-symbols-outlined" style={{ fontSize: 48, color: 'var(--nj-semantic-color-border-neutral-subtle-default)', display: 'block', marginBottom: 16 }}>bar_chart</span>
+      <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--nj-semantic-color-text-neutral-primary-default)', marginBottom: 8 }}>Agent's results</div>
       <div style={{ fontSize: 13, lineHeight: 1.7, maxWidth: 360, margin: '0 auto' }}>
-        The extracted results for this agent are available in the downloaded Excel file. Use the <strong>↓ Download Excel</strong> button below to access the full output.
+        The extracted results for this agent are available in the downloaded Excel file. Use the <strong>Download Excel</strong> button below to access the full output.
       </div>
     </div>
   );
@@ -137,19 +148,19 @@ export default function ResultsModal({ s, handlers }) {
     <div className="overlay" onClick={closeRes}>
       <div className="modal-box" onClick={e => e.stopPropagation()}>
         {/* Header */}
-        <div style={{ padding: '14px 20px', borderBottom: '1px solid #E2EBF3', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <div style={{ fontSize: 13, fontWeight: 700 }}>{AGENT_TITLES[resultsAgent] || 'Agent Results'}</div>
-            <div style={{ fontSize: 11, color: '#7E95A8', marginTop: 2 }}>
+            <div style={{ fontSize: 11, color: 'var(--nj-core-color-reference-neutral-500)', marginTop: 2 }}>
               agent{(resultsAgent || 'a1').slice(1)}_2026_03_23_152534.xlsx — Read-only
             </div>
           </div>
-          <button onClick={closeRes} style={{ background: 'none', border: 'none', fontSize: 18, color: '#7E95A8', cursor: 'pointer', lineHeight: 1 }}>✕</button>
+          <NJIconButton icon="close" label="Close" scale="sm" variant="secondary" emphasis="subtle" onClick={closeRes} />
         </div>
 
         {/* Tabs + body */}
         {isA1 ? (
-          <div style={{ padding: '0 20px', borderBottom: '1px solid #E2EBF3' }}>
+          <div style={{ padding: '0 20px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)' }}>
             <NJTabs
               label="Agent results tabs"
               activeTab={resultsTab}
@@ -173,12 +184,12 @@ export default function ResultsModal({ s, handlers }) {
         )}
 
         {/* Footer */}
-        <div style={{ padding: '12px 20px', borderTop: '1px solid #E2EBF3', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ padding: '12px 20px', borderTop: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', gap: 10 }}>
-            <NJButton variant="secondary" emphasis="subtle" scale="sm" label="↺ Re-run Agent" onClick={rerun} />
-            <NJButton variant="primary" emphasis="subtle" scale="sm" label="⬆ Update Documents" onClick={updateDocs} />
+            <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="refresh" label="Re-run Agent" onClick={rerun} />
+            <NJButton variant="primary" emphasis="subtle" scale="sm" icon="upload_file" label="Update Documents" onClick={updateDocs} />
           </div>
-          <NJButton variant="primary" scale="sm" label="↓ Download Excel" />
+          <NJButton variant="primary" scale="sm" icon="download" label="Download Excel" />
         </div>
       </div>
     </div>

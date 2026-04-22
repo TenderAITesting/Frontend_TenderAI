@@ -11,10 +11,14 @@ export default function TenderView({ s, handlers, fmtTime }) {
   return (
     <div>
       {tender && (
-        <div style={{ background: '#F8FAFC', borderBottom: '1px solid #E2EBF3', padding: '8px 24px', display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ fontSize: 13, fontWeight: 700, color: '#1B2B3C' }}>{tender.name}</span>
+        <div style={{
+          background: 'var(--nj-semantic-color-background-neutral-secondary-default)',
+          borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
+          padding: '8px 24px', display: 'flex', alignItems: 'center', gap: 12,
+        }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--nj-semantic-color-text-neutral-primary-default)' }}>{tender.name}</span>
           {tender.client && tender.client !== '—' && (
-            <span style={{ fontSize: 12, color: '#7E95A8' }}>· {tender.client}</span>
+            <span style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-500)' }}>· {tender.client}</span>
           )}
         </div>
       )}

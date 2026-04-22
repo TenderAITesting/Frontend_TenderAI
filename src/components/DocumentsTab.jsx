@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { NJButton, NJCheckbox } from '@engie-group/fluid-design-system-react';
+import { NJButton, NJCheckbox, NJIconButton, NJSelectRoot, NJSelectItem } from '@engie-group/fluid-design-system-react';
 import { AGENTS } from '../data/constants';
 
 export default function UploadTab({ s, handlers }) {
@@ -15,9 +15,10 @@ export default function UploadTab({ s, handlers }) {
       {/* Drop zone */}
       <div
         style={{
-          border: `2px dashed ${dragOver ? '#13B5CB' : '#D1DBE6'}`,
+          border: `2px dashed ${dragOver ? 'var(--nj-core-color-reference-brand-500)' : 'var(--nj-semantic-color-border-neutral-subtle-default)'}`,
           borderRadius: 10, padding: '22px 16px', textAlign: 'center',
-          background: '#fff', marginBottom: 20, transition: 'border-color .2s',
+          background: 'var(--nj-semantic-color-background-neutral-primary-default)',
+          marginBottom: 20, transition: 'border-color .2s',
         }}
         onMouseOver={() => setDragOver(true)}
         onMouseLeave={() => setDragOver(false)}
@@ -26,17 +27,16 @@ export default function UploadTab({ s, handlers }) {
         onDrop={e => { e.preventDefault(); setDragOver(false); }}
       >
         <input ref={fileInputRef} type="file" accept=".pdf,.docx" multiple style={{ display: 'none' }} />
-        <div style={{ fontSize: 24, color: '#13B5CB', marginBottom: 7 }}>⬆</div>
         <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Drag and drop tender documents</div>
-        <div style={{ fontSize: 12, color: '#7E95A8', marginBottom: 14 }}>PDF and DOCX supported</div>
-        <NJButton variant="secondary" emphasis="subtle" scale="sm" label="Browse Files" onClick={() => openDisc('tenderupload')} />
+        <div style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-500)', marginBottom: 14 }}>PDF and DOCX supported</div>
+        <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="folder_open" label="Browse Files" onClick={() => openDisc('tenderupload')} />
       </div>
 
       {/* List header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
         <div>
           <span style={{ fontSize: 13, fontWeight: 700 }}>Project Documents</span>
-          <span style={{ fontSize: 12, color: '#7E95A8', marginLeft: 6 }}>({docs.length} uploaded)</span>
+          <span style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-500)', marginLeft: 6 }}>({docs.length} uploaded)</span>
         </div>
       </div>
 
@@ -49,8 +49,8 @@ export default function UploadTab({ s, handlers }) {
               {AGENTS.map(a => (
                 <th key={a.id}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
-                    <span style={{ width: 16, height: 16, borderRadius: 3, background: '#13B5CB', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: '#fff', fontWeight: 700, flexShrink: 0 }}>✓</span>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: '#1B2B3C' }}>{a.title}</span>
+                    <span style={{ width: 16, height: 16, borderRadius: 3, background: 'var(--nj-core-color-reference-brand-500)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: 'var(--nj-semantic-color-background-neutral-primary-default)', fontWeight: 700, flexShrink: 0 }}>✓</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--nj-semantic-color-text-neutral-primary-default)' }}>{a.title}</span>
                   </div>
                 </th>
               ))}
@@ -62,10 +62,9 @@ export default function UploadTab({ s, handlers }) {
               <tr key={doc.key}>
                 <td>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div style={{ width: 32, height: 32, background: '#F0F4F8', borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 15 }}>≡</div>
                     <div>
                       <div style={{ fontSize: 13, fontWeight: 500 }}>{doc.name}</div>
-                      <div style={{ fontSize: 11, color: '#7E95A8' }}>{doc.size} · Uploaded {doc.ago}</div>
+                      <div style={{ fontSize: 11, color: 'var(--nj-core-color-reference-neutral-500)' }}>{doc.size} · Uploaded {doc.ago}</div>
                     </div>
                   </div>
                 </td>
@@ -83,13 +82,14 @@ export default function UploadTab({ s, handlers }) {
                   );
                 })}
                 <td style={{ textAlign: 'right', paddingRight: 12 }}>
-                  <button
+                  <NJIconButton
+                    icon="delete"
+                    label="Remove document"
+                    scale="xs"
+                    variant="secondary"
+                    emphasis="subtle"
                     onClick={() => deleteDoc(doc.key)}
-                    title="Remove document"
-                    style={{ background: 'none', border: '1.5px solid #E2EBF3', borderRadius: 6, width: 28, height: 28, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#9EB0C0', fontSize: 14, transition: 'all .15s' }}
-                    onMouseOver={e => { e.currentTarget.style.borderColor = '#e53e3e'; e.currentTarget.style.color = '#e53e3e'; e.currentTarget.style.background = '#FEF2F2'; }}
-                    onMouseOut={e => { e.currentTarget.style.borderColor = '#E2EBF3'; e.currentTarget.style.color = '#9EB0C0'; e.currentTarget.style.background = 'none'; }}
-                  >✕</button>
+                  />
                 </td>
               </tr>
             ))}
@@ -102,43 +102,34 @@ export default function UploadTab({ s, handlers }) {
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 10 }}>
           <div>
             <div className="inp-label" style={{ marginBottom: 7, textAlign: 'right' }}>PROPOSAL REVIEW LANGUAGE</div>
-            <div style={{ display: 'flex', gap: 7 }}>
-              {[['EN', 'English'], ['FR', 'French']].map(([code, label]) => (
-                <button
-                  key={code}
-                  onClick={() => setLang(code)}
-                  style={{
-                    padding: '6px 18px', borderRadius: 6, cursor: 'pointer',
-                    border: `1.5px solid ${lang === code ? '#13B5CB' : '#E2EBF3'}`,
-                    background: lang === code ? '#E8F8FC' : '#fff',
-                    color: lang === code ? '#0D9DB5' : '#7E95A8',
-                    fontSize: 12, fontWeight: lang === code ? 700 : 500, transition: 'all .15s',
-                  }}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
+            <NJSelectRoot
+              value={lang}
+              onChange={e => setLang(e.target.value)}
+              style={{ minWidth: 160 }}
+            >
+              <NJSelectItem value="EN">English</NJSelectItem>
+              <NJSelectItem value="FR">French</NJSelectItem>
+            </NJSelectRoot>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
             {(!isNew && !docsUpdated) ? (
               <>
-                <NJButton variant="secondary" emphasis="subtle" disabled label="✓ Process Documents" style={{ pointerEvents: 'none' }} />
-                <span style={{ fontSize: 10, color: '#9EB0C0', letterSpacing: '.04em' }}>
+                <NJButton variant="secondary" emphasis="subtle" disabled icon="check" label="Process Documents" style={{ pointerEvents: 'none' }} />
+                <span style={{ fontSize: 10, color: 'var(--nj-core-color-reference-neutral-400)', letterSpacing: '.04em' }}>
                   DOCUMENTS ALREADY PROCESSED — ADD NEW DOCS TO RE-PROCESS
                 </span>
               </>
             ) : (
               <>
-                <NJButton variant="primary" label="✓ Process Documents" onClick={startProc} />
-                <span style={{ fontSize: 10, color: '#9EB0C0', letterSpacing: '.04em' }}>
+                <NJButton variant="primary" icon="play_arrow" label="Process Documents" onClick={startProc} />
+                <span style={{ fontSize: 10, color: 'var(--nj-core-color-reference-neutral-400)', letterSpacing: '.04em' }}>
                   RUNS ALL CONFIGURED AGENTS FOR {docs.length} DOCUMENTS
                 </span>
               </>
             )}
             {!isNew && (
-              <NJButton variant="secondary" emphasis="subtle" scale="sm" label="Skip — already processed → ›" onClick={skipToAgents} />
+              <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="skip_next" label="Skip — already processed" onClick={skipToAgents} />
             )}
           </div>
         </div>

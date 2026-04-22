@@ -11,13 +11,14 @@ export default function TopBar({ view, user, onGoView }) {
             variant="secondary"
             emphasis="subtle"
             scale="sm"
-            label="← Dashboard"
+            icon="arrow_back"
+            label="Dashboard"
             onClick={() => onGoView('dashboard')}
           />
         )}
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <span style={{ fontSize: 12, color: '#7E95A8', fontWeight: 500 }}>
+        <span style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-500)', fontWeight: 500 }}>
           {user.first} {user.last}
         </span>
         <NJAvatarRoot scale="sm" initials={user.initials} />

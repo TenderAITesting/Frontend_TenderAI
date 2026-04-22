@@ -24,7 +24,7 @@ export default function PlanningStep({ s, handlers }) {
       className={`nav-item${sec.sub ? ' sub' : ''}${activeSection === sec.id ? ' active' : ''}`}
       onClick={() => setSection(sec.id)}
     >
-      <span style={{ fontSize: 9, color: '#CBD5E0' }}>⠿</span>
+      <span style={{ fontSize: 9, color: 'var(--nj-semantic-color-border-neutral-subtle-default)' }}>⠿</span>
       {sec.id} {sec.label}
     </div>
   ));
@@ -35,14 +35,14 @@ export default function PlanningStep({ s, handlers }) {
       <div className="prop-nav">
         <div style={{ padding: '0 14px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 12, fontWeight: 700 }}>Proposal Structure</span>
-          <span style={{ fontSize: 11, color: '#13B5CB', cursor: 'pointer', fontWeight: 600 }}>+ Add</span>
+          <span style={{ fontSize: 11, color: 'var(--nj-core-color-reference-brand-500)', cursor: 'pointer', fontWeight: 600 }}>+ Add</span>
         </div>
         {navItems}
         <div style={{ padding: '10px 14px' }}>
           <div
-            style={{ fontSize: 11, color: '#9EB0C0', textAlign: 'center', cursor: 'pointer', padding: 8, border: '1.5px dashed #E2EBF3', borderRadius: 6 }}
-            onMouseOver={e => e.currentTarget.style.borderColor = '#13B5CB'}
-            onMouseOut={e => e.currentTarget.style.borderColor = '#E2EBF3'}
+            style={{ fontSize: 11, color: 'var(--nj-core-color-reference-neutral-400)', textAlign: 'center', cursor: 'pointer', padding: 8, border: '1.5px dashed var(--nj-semantic-color-border-neutral-minimal-default)', borderRadius: 6 }}
+            onMouseOver={e => e.currentTarget.style.borderColor = 'var(--nj-core-color-reference-brand-500)'}
+            onMouseOut={e => e.currentTarget.style.borderColor = 'var(--nj-semantic-color-border-neutral-minimal-default)'}
           >
             + New Main Section
           </div>
@@ -62,11 +62,11 @@ export default function PlanningStep({ s, handlers }) {
           <div className="card" style={{ overflow: 'hidden' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ background: '#F8FAFC' }}>
-                  <th style={{ textAlign: 'left', padding: '9px 12px', borderBottom: '1.5px solid #E2EBF3', fontSize: 11, fontWeight: 700, color: '#7E95A8', letterSpacing: '.06em', width: 50 }}>#</th>
-                  <th style={{ textAlign: 'left', padding: '9px 12px', borderBottom: '1.5px solid #E2EBF3', fontSize: 11, fontWeight: 700, color: '#7E95A8', letterSpacing: '.06em' }}>SECTION TITLE</th>
-                  <th style={{ textAlign: 'right', padding: '9px 12px', borderBottom: '1.5px solid #E2EBF3', fontSize: 11, fontWeight: 700, color: '#7E95A8', letterSpacing: '.06em', width: 90 }}>EST. PAGES</th>
-                  <th style={{ textAlign: 'right', padding: '9px 12px', borderBottom: '1.5px solid #E2EBF3', fontSize: 11, fontWeight: 700, color: '#7E95A8', letterSpacing: '.06em', width: 120 }}>ACTION</th>
+                <tr style={{ background: 'var(--nj-semantic-color-background-neutral-secondary-default)' }}>
+                  <th style={{ textAlign: 'left', padding: '9px 12px', borderBottom: '1.5px solid var(--nj-semantic-color-border-neutral-minimal-default)', fontSize: 11, fontWeight: 700, color: 'var(--nj-core-color-reference-neutral-500)', letterSpacing: '.06em', width: 50 }}>#</th>
+                  <th style={{ textAlign: 'left', padding: '9px 12px', borderBottom: '1.5px solid var(--nj-semantic-color-border-neutral-minimal-default)', fontSize: 11, fontWeight: 700, color: 'var(--nj-core-color-reference-neutral-500)', letterSpacing: '.06em' }}>SECTION TITLE</th>
+                  <th style={{ textAlign: 'right', padding: '9px 12px', borderBottom: '1.5px solid var(--nj-semantic-color-border-neutral-minimal-default)', fontSize: 11, fontWeight: 700, color: 'var(--nj-core-color-reference-neutral-500)', letterSpacing: '.06em', width: 90 }}>EST. PAGES</th>
+                  <th style={{ textAlign: 'right', padding: '9px 12px', borderBottom: '1.5px solid var(--nj-semantic-color-border-neutral-minimal-default)', fontSize: 11, fontWeight: 700, color: 'var(--nj-core-color-reference-neutral-500)', letterSpacing: '.06em', width: 120 }}>ACTION</th>
                 </tr>
               </thead>
               <tbody>
@@ -75,36 +75,38 @@ export default function PlanningStep({ s, handlers }) {
                   return (
                     <tr
                       key={r.n}
-                      onMouseOver={e => e.currentTarget.style.background = '#F4F9FC'}
+                      onMouseOver={e => e.currentTarget.style.background = 'var(--nj-semantic-color-background-neutral-secondary-default)'}
                       onMouseOut={e => e.currentTarget.style.background = ''}
                     >
-                      <td style={{ padding: '10px 12px', paddingLeft: r.sub ? 28 : 12, borderBottom: '1px solid #EAEFF5', fontSize: 11, color: '#9EB0C0', fontFamily: "'DM Mono', monospace", verticalAlign: 'top' }}>{r.n}</td>
-                      <td style={{ padding: '10px 12px', paddingLeft: r.sub ? 28 : 12, borderBottom: '1px solid #EAEFF5' }}>
+                      <td style={{ padding: '10px 12px', paddingLeft: r.sub ? 28 : 12, borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)', fontSize: 11, color: 'var(--nj-core-color-reference-neutral-400)', fontFamily: "'DM Mono', monospace", verticalAlign: 'top' }}>{r.n}</td>
+                      <td style={{ padding: '10px 12px', paddingLeft: r.sub ? 28 : 12, borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)' }}>
                         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap', marginBottom: det.desc ? 4 : 0 }}>
                           <span style={{ fontSize: 13, fontWeight: r.sub ? 500 : 700 }}>{r.label}</span>
-                          {r.warn && <span style={{ fontSize: 10, background: '#FEF8ED', color: '#8A5A00', border: '1px solid #F5A623', padding: '2px 8px', borderRadius: 4, whiteSpace: 'nowrap' }}>⚠ No past offer loaded</span>}
-                          {det.desc && <span style={{ fontSize: 11, color: '#9EB0C0', fontStyle: 'italic' }}>{det.desc.length > 80 ? det.desc.slice(0, 80) + '…' : det.desc}</span>}
+                          {r.warn && (
+                            <span style={{ fontSize: 10, background: 'var(--nj-core-color-reference-status-warning-100)', color: 'var(--nj-semantic-color-text-status-warning-contrast-default)', border: '1px solid var(--nj-core-color-reference-status-warning-400)', padding: '2px 8px', borderRadius: 4, whiteSpace: 'nowrap' }}>⚠ No past offer loaded</span>
+                          )}
+                          {det.desc && <span style={{ fontSize: 11, color: 'var(--nj-core-color-reference-neutral-400)', fontStyle: 'italic' }}>{det.desc.length > 80 ? det.desc.slice(0, 80) + '…' : det.desc}</span>}
                         </div>
                         {det.guide && (
-                          <div style={{ fontSize: 11, color: '#7E95A8', marginBottom: 4 }}>
+                          <div style={{ fontSize: 11, color: 'var(--nj-core-color-reference-neutral-500)', marginBottom: 4 }}>
                             <strong>Writing Guidelines</strong>{' '}
-                            <span style={{ color: '#9EB0C0' }}>{det.guide.length > 90 ? det.guide.slice(0, 90) + '…' : det.guide}</span>
+                            <span style={{ color: 'var(--nj-core-color-reference-neutral-400)' }}>{det.guide.length > 90 ? det.guide.slice(0, 90) + '…' : det.guide}</span>
                           </div>
                         )}
                         {det.example && (
-                          <div style={{ fontSize: 11, color: '#9EB0C0', marginBottom: 4 }}>
-                            <strong style={{ color: '#7E95A8' }}>Content Example:</strong>{' '}
+                          <div style={{ fontSize: 11, color: 'var(--nj-core-color-reference-neutral-400)', marginBottom: 4 }}>
+                            <strong style={{ color: 'var(--nj-core-color-reference-neutral-500)' }}>Content Example:</strong>{' '}
                             {det.example.length > 100 ? det.example.slice(0, 100) + '…' : det.example}{' '}
-                            <span style={{ color: '#13B5CB', cursor: 'pointer' }}>Review & Edit ›</span>
+                            <span style={{ color: 'var(--nj-core-color-reference-brand-500)', cursor: 'pointer' }}>Review & Edit ›</span>
                           </div>
                         )}
                         {det.note && (
-                          <div style={{ fontSize: 10, color: '#8A5A00', background: '#FEF8ED', border: '1px solid #F5A623', borderRadius: 5, padding: '3px 8px', display: 'inline-block', marginTop: 2 }}>⚠ {det.note}</div>
+                          <div style={{ fontSize: 10, color: 'var(--nj-semantic-color-text-status-warning-contrast-default)', background: 'var(--nj-core-color-reference-status-warning-100)', border: '1px solid var(--nj-core-color-reference-status-warning-400)', borderRadius: 5, padding: '3px 8px', display: 'inline-block', marginTop: 2 }}>⚠ {det.note}</div>
                         )}
                       </td>
-                      <td style={{ padding: '10px 12px', borderBottom: '1px solid #EAEFF5', textAlign: 'right', fontSize: 12, color: '#9EB0C0', fontFamily: "'DM Mono', monospace", verticalAlign: 'top' }}>{r.pages || '—'}</td>
-                      <td style={{ padding: '10px 12px', borderBottom: '1px solid #EAEFF5', textAlign: 'right', verticalAlign: 'top' }}>
-                        <NJButton variant="primary" scale="sm" label="Edit Section" />
+                      <td style={{ padding: '10px 12px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)', textAlign: 'right', fontSize: 12, color: 'var(--nj-core-color-reference-neutral-400)', fontFamily: "'DM Mono', monospace", verticalAlign: 'top' }}>{r.pages || '—'}</td>
+                      <td style={{ padding: '10px 12px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)', textAlign: 'right', verticalAlign: 'top' }}>
+                        <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="edit" label="Edit Section" />
                       </td>
                     </tr>
                   );
@@ -115,10 +117,10 @@ export default function PlanningStep({ s, handlers }) {
         </div>
 
         <div className="bottom-bar">
-          <NJButton variant="secondary" emphasis="subtle" scale="sm" label="← Agents & Validation" onClick={() => goStep('agents')} />
+          <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="arrow_back" label="Agents & Validation" onClick={() => goStep('agents')} />
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-            <NJButton variant="secondary" emphasis="subtle" scale="sm" label="✎ Edit Structure" />
-            <NJButton variant="primary" label="Freeze Golden ToC & Draft the Proposal →" onClick={freezeAndDraft} />
+            <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="edit" label="Edit Structure" />
+            <NJButton variant="primary" icon="lock" label="Freeze Golden ToC & Draft Proposal" onClick={freezeAndDraft} />
           </div>
         </div>
       </div>
