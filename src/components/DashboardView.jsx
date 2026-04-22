@@ -38,7 +38,7 @@ export default function DashboardView({ tenders, onNew, onOpen }) {
                     {t.modified}
                   </td>
                   <td onClick={e => e.stopPropagation()}>
-                    <NJTag variant="teal" scale="sm" label="To validate" />
+                    <NJTag variant="orange" scale="sm" label="To validate" />
                   </td>
                 </tr>
               ))}

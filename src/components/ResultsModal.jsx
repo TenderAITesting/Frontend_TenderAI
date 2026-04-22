@@ -136,7 +136,6 @@ export default function ResultsModal({ s, handlers }) {
 
   const agentPlaceholder = (
     <div style={{ padding: 32, textAlign: 'center', color: 'var(--nj-core-color-reference-neutral-500)' }}>
-      <span className="material-symbols-outlined" style={{ fontSize: 48, color: 'var(--nj-semantic-color-border-neutral-subtle-default)', display: 'block', marginBottom: 16 }}>bar_chart</span>
       <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--nj-semantic-color-text-neutral-primary-default)', marginBottom: 8 }}>Agent's results</div>
       <div style={{ fontSize: 13, lineHeight: 1.7, maxWidth: 360, margin: '0 auto' }}>
         The extracted results for this agent are available in the downloaded Excel file. Use the <strong>Download Excel</strong> button below to access the full output.

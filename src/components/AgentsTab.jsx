@@ -137,9 +137,6 @@ export default function AgentsTab({ s, handlers, fmtTime }) {
                       >{lbl}</span>
                     </div>
                   ))}
-                  <NJInlineMessage variant="information" style={{ marginTop: 8 }}>
-                    You can also upload <strong>methodology documents</strong> alongside past offers — Agent 5 will use them to enrich the Table of Contents structure.
-                  </NJInlineMessage>
                 </div>
               )}
             </div>

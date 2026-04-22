@@ -1,4 +1,4 @@
-import { NJButton, NJInlineMessage } from '@engie-group/fluid-design-system-react';
+import { NJButton, NJInlineMessage, NJIcon } from '@engie-group/fluid-design-system-react';
 
 const LABELS = {
   pastoffers: 'Past Offers',
@@ -11,8 +11,26 @@ export default function DisclaimerModal({ type, onClose, onConfirm }) {
     <div className="disc-overlay" onClick={onClose}>
       <div className="disc-box fadein" onClick={e => e.stopPropagation()}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, marginBottom: 20 }}>
-          <div style={{ width: 40, height: 40, background: 'var(--nj-core-color-reference-status-warning-100)', border: '1.5px solid var(--nj-core-color-reference-status-warning-400)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'var(--nj-semantic-color-text-status-warning-contrast-default)' }}>
-            <span style={{ fontSize: 18, lineHeight: 1 }}>⚠️</span>
+          
+          {/* Conteneur de l'icône */}
+          <div style={{ 
+            width: 40, 
+            height: 40, 
+            background: 'var(--nj-core-color-reference-status-warning-100)', 
+            border: '1.5px solid var(--nj-core-color-reference-status-warning-400)', 
+            borderRadius: 10, 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            flexShrink: 0 
+          }}>
+            <NJIcon 
+              name="warning" 
+              style={{ 
+                fontSize: 20, 
+                color: 'var(--nj-core-color-reference-status-warning-600)' 
+              }} 
+            />
           </div>
           <div>
             <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4 }}>Important Notice</div>
