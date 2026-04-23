@@ -48,6 +48,7 @@ const INITIAL = {
   newForm: { name: '', client: '', projectId: '', lastName: USER.last, firstName: USER.first },
   editingTender: null,
   contactOpen: true,
+  planType: null,
   tenders: INITIAL_TENDERS,
 };
 
@@ -168,7 +169,7 @@ export default function App() {
     updateForm: (f, v) => set(prev => ({ newForm: { ...prev.newForm, [f]: v } })),
 
     goStep: (step) => {
-      const steps = ['upload', 'agents', 'planning', 'drafting'];
+      const steps = ['upload', 'agents', 'config', 'planning', 'drafting'];
       const cur = steps.indexOf(s.tenderStep);
       const target = steps.indexOf(step);
       if (s.isNew && target > cur) return;
@@ -209,6 +210,7 @@ export default function App() {
     }),
 
     setLang: (l) => set({ lang: l }),
+    setPlanType: (t) => set({ planType: t }),
 
     setSection: (id) => set({ activeSection: id }),
     setTemplate: (t) => set({ templateType: t }),
@@ -218,13 +220,23 @@ export default function App() {
     }),
 
     launchProp: () => set(prev => ({
-      tenderStep: 'planning', activeSection: '1.0',
+      tenderStep: 'config',
       currentMaxStepIdx: Math.max(prev.currentMaxStepIdx, 2),
+    })),
+
+    launchPlanning: () => set(prev => ({
+      tenderStep: 'planning',
+      currentMaxStepIdx: Math.max(prev.currentMaxStepIdx, 3),
+    })),
+
+    launchDraft: () => set(prev => ({
+      tenderStep: 'drafting',
+      currentMaxStepIdx: Math.max(prev.currentMaxStepIdx, 4),
     })),
 
     freezeAndDraft: () => set(prev => ({
       tenderStep: 'drafting',
-      currentMaxStepIdx: Math.max(prev.currentMaxStepIdx, 3),
+      currentMaxStepIdx: Math.max(prev.currentMaxStepIdx, 4),
     })),
 
     openDisc: (t) => set({ showDisclaimer: t }),

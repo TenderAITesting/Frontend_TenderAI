@@ -1,11 +1,19 @@
 import { useRef, useState } from 'react';
 import { NJButton, NJCheckbox, NJIconButton, NJSelectRoot, NJSelectItem, NJInlineMessage } from '@engie-group/fluid-design-system-react';
 import { AGENTS } from '../data/constants';
+import DisclaimerModal from './DisclaimerModal';
+
+const COL_LABELS = {
+  a1: 'Tender Key Information',
+  a2: 'Technical Requirements',
+  a3: 'Project Risks',
+};
 
 export default function UploadTab({ s, handlers }) {
   const { docs, docAgents, isNew, docsUpdated, lang } = s;
   const { setLang, togDA, deleteDoc, startProc, skipToAgents, openDisc } = handlers;
   const [dragOver, setDragOver] = useState(false);
+  const [showUploadDisc, setShowUploadDisc] = useState(false);
   const fileInputRef = useRef(null);
 
   return (
@@ -27,7 +35,7 @@ export default function UploadTab({ s, handlers }) {
         <input ref={fileInputRef} type="file" accept=".pdf,.docx" multiple style={{ display: 'none' }} />
         <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Drag and drop tender documents</div>
         <div style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-500)', marginBottom: 14 }}>PDF and DOCX supported</div>
-        <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="folder_open" label="Browse Files" onClick={() => openDisc('tenderupload')} />
+        <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="folder_open" label="Browse Files" onClick={() => setShowUploadDisc(true)} />
       </div>
 
       {/* List header */}
@@ -55,7 +63,7 @@ export default function UploadTab({ s, handlers }) {
                 <th key={a.id} title={a.desc} style={{ cursor: 'help' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
                     <span style={{ width: 16, height: 16, borderRadius: 3, background: 'var(--nj-core-color-reference-brand-500)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: 'var(--nj-semantic-color-background-neutral-primary-default)', fontWeight: 700, flexShrink: 0 }}>✓</span>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--nj-semantic-color-text-neutral-primary-default)' }}>{a.title}</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--nj-semantic-color-text-neutral-primary-default)' }}>{COL_LABELS[a.id] || a.title}</span>
                   </div>
                 </th>
               ))}
@@ -143,6 +151,16 @@ export default function UploadTab({ s, handlers }) {
           </div>
         </div>
       </div>
+      {showUploadDisc && (
+        <DisclaimerModal
+          type="tenderupload"
+          onClose={() => setShowUploadDisc(false)}
+          onConfirm={() => {
+            fileInputRef.current?.click();
+            setShowUploadDisc(false);
+          }}
+        />
+      )}
     </div>
   );
 }

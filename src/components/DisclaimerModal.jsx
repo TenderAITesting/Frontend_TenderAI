@@ -1,9 +1,10 @@
 import { NJButton, NJInlineMessage, NJIcon } from '@engie-group/fluid-design-system-react';
 
 const LABELS = {
-  pastoffers: 'Past Offers',
-  references: 'Project References',
   tenderupload: 'Tender Documents',
+  pastoffers:   'Past Offers',
+  methodology:  'Methodology Documents',
+  projectrefs:  'Project References',
 };
 
 export default function DisclaimerModal({ type, onClose, onConfirm }) {
@@ -43,6 +44,18 @@ export default function DisclaimerModal({ type, onClose, onConfirm }) {
             <>
               Only client tender documents that the client has <strong>authorized for processing using public cloud and AI services</strong> may be uploaded.<br /><br />
               If client authorization is missing or unclear, the document <strong style={{ color: 'var(--nj-semantic-color-text-status-danger-primary-default)' }}>must not be uploaded</strong>.
+            </>
+          ) : type === 'pastoffers' ? (
+            <>
+              You are about to upload past proposal documents. Make sure they do not contain <strong>confidential client data that has not been cleared for reuse</strong>.
+            </>
+          ) : type === 'methodology' ? (
+            <>
+              You are about to upload internal methodology documents. Ensure these are <strong>approved for use in this tender context</strong>.
+            </>
+          ) : type === 'projectrefs' ? (
+            <>
+              You are about to upload project reference documents. Verify that <strong>client approvals for reference usage are in place</strong>.
             </>
           ) : (
             <>

@@ -1,6 +1,7 @@
 import BannerStepper from './Stepper';
 import UploadTab from './DocumentsTab';
-import AgentsTab from './AgentsTab';
+import TenderAnalysisTab from './TenderAnalysisTab';
+import DraftConfiguratorTab from './DraftConfiguratorTab';
 import PlanningStep from './TocStep';
 import DraftingStep from './DraftStep';
 
@@ -30,10 +31,11 @@ export default function TenderView({ s, handlers, fmtTime }) {
         onGoStep={handlers.goStep}
       />
 
-      {tenderStep === 'upload'    && <UploadTab s={s} handlers={handlers} />}
-      {tenderStep === 'agents'   && <AgentsTab s={s} handlers={handlers} fmtTime={fmtTime} />}
-      {tenderStep === 'planning' && <PlanningStep s={s} handlers={handlers} />}
-      {tenderStep === 'drafting' && <DraftingStep s={s} handlers={handlers} />}
+      {tenderStep === 'upload'    && <UploadTab            s={s} handlers={handlers} />}
+      {tenderStep === 'agents'   && <TenderAnalysisTab    s={s} handlers={handlers} fmtTime={fmtTime} />}
+      {tenderStep === 'config'   && <DraftConfiguratorTab s={s} handlers={handlers} />}
+      {tenderStep === 'planning' && <PlanningStep          s={s} handlers={handlers} />}
+      {tenderStep === 'drafting' && <DraftingStep          s={s} handlers={handlers} />}
     </div>
   );
 }

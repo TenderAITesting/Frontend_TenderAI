@@ -1,5 +1,5 @@
-const STEPS = ['upload', 'agents', 'planning', 'drafting'];
-const LABELS = ['Tender Upload', 'Tender Analysis & Validation', 'Proposal Planning', 'Proposal Drafting'];
+const STEPS = ['upload', 'agents', 'config', 'planning', 'drafting'];
+const LABELS = ['Tender Upload', 'Tender Analysis', 'Draft Configurator', 'Proposal Planning', 'Proposal Drafting'];
 
 export default function BannerStepper({ tenderStep, isNew, currentMaxStepIdx, onGoStep }) {
   const cur = STEPS.indexOf(tenderStep);
@@ -23,7 +23,7 @@ export default function BannerStepper({ tenderStep, isNew, currentMaxStepIdx, on
               </div>
               <div className="bs-label">{LABELS[i]}</div>
             </div>
-            {i < 3 && <div className="banner-sep">›</div>}
+            {i < 4 && <div className="banner-sep">›</div>}
           </div>
         );
       })}

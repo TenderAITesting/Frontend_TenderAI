@@ -3,7 +3,7 @@ import { NJButton, NJInlineMessage } from '@engie-group/fluid-design-system-reac
 import { STD_TOC, TOC_DETAILS, NAV_SECS } from '../data/constants';
 
 export default function PlanningStep({ s, handlers }) {
-  const { templateType, enrichedOpts, activeSection } = s;
+  const { templateType, enrichedOpts, activeSection, planType } = s;
   const { setSection, goStep, freezeAndDraft } = handlers;
 
   const [isEditMode, setIsEditMode] = useState(false);
@@ -77,9 +77,11 @@ export default function PlanningStep({ s, handlers }) {
         <div style={{ flex: 1, overflowY: 'auto', padding: '22px 28px' }}>
           <NJInlineMessage variant="warning" style={{ marginBottom: 20 }}>
             <strong>Your validation is required.</strong> The proposal will not proceed to drafting until you confirm this Table of Contents. You can edit section titles or add new sections before freezing.
-            <div style={{ marginTop: 4, fontSize: 12 }}>
-              Template: <strong>{templateType === 'enriched' ? 'Enriched' : 'Standard'} ToC</strong>
-            </div>
+            {planType && (
+              <div style={{ marginTop: 4, fontSize: 12, color: 'var(--nj-core-color-reference-neutral-500)' }}>
+                Template: <strong>{planType === 'tailored' ? 'Tailored Plan' : 'Standard Plan'}</strong>
+              </div>
+            )}
           </NJInlineMessage>
 
           <div className="card" style={{ overflow: 'hidden' }}>
