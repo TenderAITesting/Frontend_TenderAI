@@ -133,7 +133,10 @@ export default function AgentsTab({ s, handlers, fmtTime }) {
 
             {/* Template choice */}
             <div style={{ marginBottom: 16 }}>
-              <div className="inp-label" style={{ marginBottom: 9 }}>1. CHOOSE THE TEMPLATE</div>
+              <div className="inp-label" style={{ marginBottom: 6 }}>1. CHOOSE THE TEMPLATE</div>
+              <div style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-500)', marginBottom: 9, lineHeight: 1.55 }}>
+                Define your proposal's structure: use the standard company framework or generate a context-aware Table of Contents enriched by your specific source documents.
+              </div>
               <NJRadioGroup orientation="row" style={{ gap: 10 }}>
                 {['standard', 'enriched'].map(t => (
                   <NJRadio
@@ -211,7 +214,7 @@ export default function AgentsTab({ s, handlers, fmtTime }) {
           <div style={{ borderLeft: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)', paddingLeft: 28 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--nj-core-color-reference-brand-500)', letterSpacing: '.06em', marginBottom: 8 }}>PROPOSAL GENERATION</div>
             <p style={{ fontSize: 13, color: 'var(--nj-semantic-color-text-neutral-contrast-default)', lineHeight: 1.75, marginBottom: 20 }}>
-              Agent 5 synthesizes Phase 1 analysis with your organizational templates and past performance data to generate a complete, structured technical proposal.
+              This step synthetizes Phase 1 analysis with your organizational templates and past performance data to generate a complete, structured technical proposal.
             </p>
             {!resultsValidated && allSelectedCompleted && (
               <div style={{ fontSize: 11, color: 'var(--nj-semantic-color-text-status-warning-primary-default)', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>

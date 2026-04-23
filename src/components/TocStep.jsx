@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { NJButton, NJInlineMessage } from '@engie-group/fluid-design-system-react';
 import { STD_TOC, TOC_DETAILS, NAV_SECS } from '../data/constants';
 
@@ -5,29 +6,49 @@ export default function PlanningStep({ s, handlers }) {
   const { templateType, enrichedOpts, activeSection } = s;
   const { setSection, goStep, freezeAndDraft } = handlers;
 
-  let toc = [...STD_TOC];
-  if (templateType === 'enriched') {
-    if (enrichedOpts.context) toc.splice(1, 0, { n: '0.1', label: 'Project Context & Background', sub: true, pages: '2 p.' });
-    if (enrichedOpts.offers) {
-      const i = toc.findIndex(r => r.n === '4');
-      if (i >= 0) toc.splice(i + 1, 0, { n: '4.1', label: 'Past Offer Analysis', sub: true, pages: '2 p.' });
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [hiddenNavIds, setHiddenNavIds] = useState(new Set());
+  const [tocRows, setTocRows] = useState(() => {
+    let t = [...STD_TOC];
+    if (templateType === 'enriched') {
+      if (enrichedOpts.context) t.splice(1, 0, { n: '0.1', label: 'Project Context & Background', sub: true, pages: '2 p.' });
+      if (enrichedOpts.offers) {
+        const i = t.findIndex(r => r.n === '4');
+        if (i >= 0) t.splice(i + 1, 0, { n: '4.1', label: 'Past Offer Analysis', sub: true, pages: '2 p.' });
+      }
+      if (enrichedOpts.refs) {
+        const j = t.findIndex(r => r.n === '4.1' || r.n === '4');
+        if (j >= 0) t.splice(j + 2, 0, { n: '4.2', label: 'Reference Projects', sub: true, pages: '2 p.' });
+      }
     }
-    if (enrichedOpts.refs) {
-      const j = toc.findIndex(r => r.n === '4.1' || r.n === '4');
-      if (j >= 0) toc.splice(j + 2, 0, { n: '4.2', label: 'Reference Projects', sub: true, pages: '2 p.' });
-    }
+    return t;
+  });
+
+  function deleteSection(navId, navLabel) {
+    setHiddenNavIds(ids => new Set([...ids, navId]));
+    setTocRows(rows => rows.filter(r => r.label !== navLabel));
   }
 
-  const navItems = NAV_SECS.map(sec => (
-    <div
-      key={sec.id}
-      className={`nav-item${sec.sub ? ' sub' : ''}${activeSection === sec.id ? ' active' : ''}`}
-      onClick={() => setSection(sec.id)}
-    >
-      <span style={{ fontSize: 9, color: 'var(--nj-semantic-color-border-neutral-subtle-default)' }}>⠿</span>
-      {sec.id} {sec.label}
-    </div>
-  ));
+  const navItems = NAV_SECS
+    .filter(sec => !hiddenNavIds.has(sec.id))
+    .map(sec => (
+      <div
+        key={sec.id}
+        className={`nav-item${sec.sub ? ' sub' : ''}${activeSection === sec.id ? ' active' : ''}`}
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+      >
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 4 }} onClick={() => setSection(sec.id)}>
+          <span style={{ fontSize: 9, color: 'var(--nj-semantic-color-border-neutral-subtle-default)' }}>⠿</span>
+          {sec.id} {sec.label}
+        </div>
+        {isEditMode && (
+          <span
+            style={{ cursor: 'pointer', color: 'var(--nj-core-color-reference-neutral-400)', fontSize: 15, padding: '0 6px', flexShrink: 0, lineHeight: 1 }}
+            onClick={e => { e.stopPropagation(); deleteSection(sec.id, sec.label); }}
+          >−</span>
+        )}
+      </div>
+    ));
 
   return (
     <div style={{ display: 'flex', minHeight: 'calc(100vh - 112px)' }}>
@@ -35,18 +56,20 @@ export default function PlanningStep({ s, handlers }) {
       <div className="prop-nav">
         <div style={{ padding: '0 14px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 12, fontWeight: 700 }}>Proposal Structure</span>
-          <span style={{ fontSize: 11, color: 'var(--nj-core-color-reference-brand-500)', cursor: 'pointer', fontWeight: 600 }}>+ Add</span>
         </div>
         {navItems}
-        <div style={{ padding: '10px 14px' }}>
-          <div
-            style={{ fontSize: 11, color: 'var(--nj-core-color-reference-neutral-400)', textAlign: 'center', cursor: 'pointer', padding: 8, border: '1.5px dashed var(--nj-semantic-color-border-neutral-minimal-default)', borderRadius: 6 }}
-            onMouseOver={e => e.currentTarget.style.borderColor = 'var(--nj-core-color-reference-brand-500)'}
-            onMouseOut={e => e.currentTarget.style.borderColor = 'var(--nj-semantic-color-border-neutral-minimal-default)'}
-          >
-            + New Main Section
+        {isEditMode && (
+          <div style={{ padding: '10px 14px' }}>
+            <div
+              style={{ fontSize: 11, color: 'var(--nj-core-color-reference-neutral-400)', textAlign: 'center', cursor: 'pointer', padding: 8, border: '1.5px dashed var(--nj-semantic-color-border-neutral-minimal-default)', borderRadius: 6 }}
+              onMouseOver={e => e.currentTarget.style.borderColor = 'var(--nj-core-color-reference-brand-500)'}
+              onMouseOut={e => e.currentTarget.style.borderColor = 'var(--nj-semantic-color-border-neutral-minimal-default)'}
+              onClick={() => setTocRows(rows => [...rows, { n: `${rows.length + 1}.0`, label: 'New Section', sub: false, pages: '—' }])}
+            >
+              + New Main Section
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Content */}
@@ -70,7 +93,7 @@ export default function PlanningStep({ s, handlers }) {
                 </tr>
               </thead>
               <tbody>
-                {toc.map(r => {
+                {tocRows.map(r => {
                   const det = TOC_DETAILS[r.n] || {};
                   return (
                     <tr
@@ -106,7 +129,9 @@ export default function PlanningStep({ s, handlers }) {
                       </td>
                       <td style={{ padding: '10px 12px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)', textAlign: 'right', fontSize: 12, color: 'var(--nj-core-color-reference-neutral-400)', fontFamily: "'DM Mono', monospace", verticalAlign: 'top' }}>{r.pages || '—'}</td>
                       <td style={{ padding: '10px 12px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)', textAlign: 'right', verticalAlign: 'top' }}>
-                        <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="edit" label="Edit Section" />
+                        {isEditMode && (
+                          <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="edit" label="Review and Edit" />
+                        )}
                       </td>
                     </tr>
                   );
@@ -119,7 +144,14 @@ export default function PlanningStep({ s, handlers }) {
         <div className="bottom-bar">
           <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="arrow_back" label="Tender Analysis & Validation" onClick={() => goStep('agents')} />
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-            <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="edit" label="Edit Structure" />
+            <NJButton
+              variant="secondary"
+              emphasis="subtle"
+              scale="sm"
+              icon={isEditMode ? 'check' : 'edit'}
+              label={isEditMode ? 'Done' : 'Edit Structure'}
+              onClick={() => setIsEditMode(v => !v)}
+            />
             <NJButton variant="primary" icon="lock" label="Freeze Golden ToC & Draft Proposal" onClick={freezeAndDraft} />
           </div>
         </div>
