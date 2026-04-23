@@ -117,7 +117,7 @@ export default function PlanningStep({ s, handlers }) {
         </div>
 
         <div className="bottom-bar">
-          <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="arrow_back" label="Agents & Validation" onClick={() => goStep('agents')} />
+          <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="arrow_back" label="Tender Analysis & Validation" onClick={() => goStep('agents')} />
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
             <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="edit" label="Edit Structure" />
             <NJButton variant="primary" icon="lock" label="Freeze Golden ToC & Draft Proposal" onClick={freezeAndDraft} />

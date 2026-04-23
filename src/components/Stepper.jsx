@@ -1,5 +1,5 @@
 const STEPS = ['upload', 'agents', 'planning', 'drafting'];
-const LABELS = ['Upload Tender', 'Agents & Validation', 'Proposal Planning', 'Proposal Drafting'];
+const LABELS = ['Tender Upload', 'Tender Analysis & Validation', 'Proposal Planning', 'Proposal Drafting'];
 
 export default function BannerStepper({ tenderStep, isNew, currentMaxStepIdx, onGoStep }) {
   const cur = STEPS.indexOf(tenderStep);

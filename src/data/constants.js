@@ -1,9 +1,9 @@
 export const USER = { first: 'Romain', last: 'DEL FABRO', initials: 'RD' };
 
 export const AGENTS = [
-  { id: 'a1', badge: 'A1', title: 'Key Information and Activities Agent' },
-  { id: 'a2', badge: 'A2', title: 'Technical Extraction Agent' },
-  { id: 'a3', badge: 'A3', title: 'Risk Analysis Agent' },
+  { id: 'a1', badge: 'A1', title: 'Key Information and Activities Agent', desc: 'Extracts key dates, mandatory criteria, submission requirements, and pre-award activities.' },
+  { id: 'a2', badge: 'A2', title: 'Technical Extraction Agent', desc: 'Maps technical architecture requirements to company capabilities.' },
+  { id: 'a3', badge: 'A3', title: 'Risk Analysis Agent', desc: 'Identifies legal liabilities, operational constraints, and compliance risks. Requires Agent 2 to be selected first.' },
 ];
 
 export const NAV_SECS = [

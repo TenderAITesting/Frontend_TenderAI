@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { NJButton, NJCheckbox, NJIconButton, NJSelectRoot, NJSelectItem } from '@engie-group/fluid-design-system-react';
+import { NJButton, NJCheckbox, NJIconButton, NJSelectRoot, NJSelectItem, NJInlineMessage } from '@engie-group/fluid-design-system-react';
 import { AGENTS } from '../data/constants';
 
 export default function UploadTab({ s, handlers }) {
@@ -7,8 +7,6 @@ export default function UploadTab({ s, handlers }) {
   const { setLang, togDA, deleteDoc, startProc, skipToAgents, openDisc } = handlers;
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef(null);
-
-  const hasA1orA2 = docs.some(d => docAgents[d.key]?.a1 || docAgents[d.key]?.a2);
 
   return (
     <div style={{ padding: 24 }}>
@@ -24,7 +22,7 @@ export default function UploadTab({ s, handlers }) {
         onMouseLeave={() => setDragOver(false)}
         onDragOver={e => { e.preventDefault(); setDragOver(true); }}
         onDragLeave={() => setDragOver(false)}
-        onDrop={e => { e.preventDefault(); setDragOver(false); }}
+        onDrop={e => { e.preventDefault(); setDragOver(false); openDisc('tenderupload'); }}
       >
         <input ref={fileInputRef} type="file" accept=".pdf,.docx" multiple style={{ display: 'none' }} />
         <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Drag and drop tender documents</div>
@@ -33,11 +31,18 @@ export default function UploadTab({ s, handlers }) {
       </div>
 
       {/* List header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
         <div>
           <span style={{ fontSize: 13, fontWeight: 700 }}>Project Documents</span>
           <span style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-500)', marginLeft: 6 }}>({docs.length} uploaded)</span>
         </div>
+      </div>
+
+      {/* Agent selection hint */}
+      <div style={{ marginBottom: 12 }}>
+        <NJInlineMessage variant="information">
+          Select at least one type of analysis for each document before processing. Hover over agent names for details. Agent 3 requires Agent 2 to be selected first.
+        </NJInlineMessage>
       </div>
 
       {/* Matrix table */}
@@ -47,7 +52,7 @@ export default function UploadTab({ s, handlers }) {
             <tr>
               <th style={{ width: '40%' }}>Document</th>
               {AGENTS.map(a => (
-                <th key={a.id}>
+                <th key={a.id} title={a.desc} style={{ cursor: 'help' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
                     <span style={{ width: 16, height: 16, borderRadius: 3, background: 'var(--nj-core-color-reference-brand-500)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: 'var(--nj-semantic-color-background-neutral-primary-default)', fontWeight: 700, flexShrink: 0 }}>✓</span>
                     <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--nj-semantic-color-text-neutral-primary-default)' }}>{a.title}</span>
@@ -70,9 +75,9 @@ export default function UploadTab({ s, handlers }) {
                 </td>
                 {AGENTS.map(ag => {
                   const isA3 = ag.id === 'a3';
-                  const blocked = isA3 && !hasA1orA2;
+                  const blocked = isA3 && !docAgents[doc.key]?.a2;
                   return (
-                    <td key={ag.id} style={{ opacity: blocked ? 0.3 : 1 }} title={blocked ? 'Select Agent 1 or Agent 2 first' : ''}>
+                    <td key={ag.id} style={{ opacity: blocked ? 0.3 : 1 }} title={blocked ? 'Select Agent 2 first for this document' : ''}>
                       <NJCheckbox
                         checked={!!docAgents[doc.key]?.[ag.id]}
                         disabled={blocked}
@@ -109,10 +114,10 @@ export default function UploadTab({ s, handlers }) {
             >
               <NJSelectItem value="EN">English</NJSelectItem>
               <NJSelectItem value="FR">French</NJSelectItem>
-              <NJSelectItem value="EN">Dutch</NJSelectItem>
-              <NJSelectItem value="FR">German</NJSelectItem>
-              <NJSelectItem value="EN">Spanish</NJSelectItem>
-              <NJSelectItem value="FR">Portuguese</NJSelectItem>
+              <NJSelectItem value="NL">Dutch</NJSelectItem>
+              <NJSelectItem value="DE">German</NJSelectItem>
+              <NJSelectItem value="ES">Spanish</NJSelectItem>
+              <NJSelectItem value="PT">Portuguese</NJSelectItem>
             </NJSelectRoot>
           </div>
 

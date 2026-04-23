@@ -40,6 +40,7 @@ const INITIAL = {
   exporting: false,
   showUpdateDocs: false,
   docsUpdated: false,
+  resultsValidated: false,
   activeSection: '1.0',
   templateType: 'standard',
   enrichedOpts: { context: true, offers: true, refs: true, methodology: false },
@@ -176,9 +177,11 @@ export default function App() {
     },
 
     startProc: () => set(prev => ({
-      processing: true, tenderStep: 'agents', docsUpdated: false,
+      processing: true, tenderStep: 'agents', docsUpdated: false, resultsValidated: false,
       currentMaxStepIdx: Math.max(prev.currentMaxStepIdx, 1),
     })),
+
+    validateResults: () => set({ resultsValidated: true }),
 
     skipToAgents: () => set(prev => ({
       tenderStep: 'agents',
@@ -190,13 +193,11 @@ export default function App() {
     setResTab: (t) => set({ resultsTab: t }),
 
     togDA: (d, a) => set(prev => {
-      if (a === 'a3') {
-        const hasA1orA2 = prev.docs.some(doc => prev.docAgents[doc.key]?.a1 || prev.docAgents[doc.key]?.a2);
-        if (!hasA1orA2) return prev;
-      }
+      if (a === 'a3' && !prev.docAgents[d]?.a2) return prev;
       const x = { ...prev.docAgents };
       x[d] = { ...x[d] };
       x[d][a] = !x[d][a];
+      if (a === 'a2' && !x[d].a2) x[d] = { ...x[d], a3: false };
       return { docAgents: x };
     }),
 

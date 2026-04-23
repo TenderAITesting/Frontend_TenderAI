@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { NJButton, NJTabs, NJTab, NJIconButton, NJLink } from '@engie-group/fluid-design-system-react';
 
 const KEY_INFO_ROWS = [
@@ -26,9 +27,9 @@ const CONTACTS = [
 ];
 
 const AGENT_TITLES = {
-  a1: 'Key Info & Activities Agent — Results',
-  a2: 'Technical Extraction Agent — Results',
-  a3: 'Risk Analysis Agent — Results',
+  a1: 'Tender Key Information',
+  a2: 'Technical Requirements — Results',
+  a3: 'Project Risks — Results',
 };
 
 function InfoRow({ label, value, src, onOpenSrc }) {
@@ -57,6 +58,7 @@ function InfoRow({ label, value, src, onOpenSrc }) {
 export default function ResultsModal({ s, handlers }) {
   const { resultsAgent, resultsTab, contactOpen } = s;
   const { closeRes, setResTab, togContact, openSrc, rerun, updateDocs } = handlers;
+  const [expanded, setExpanded] = useState(false);
 
   const isA1 = resultsAgent === 'a1';
 
@@ -145,7 +147,11 @@ export default function ResultsModal({ s, handlers }) {
 
   return (
     <div className="overlay" onClick={closeRes}>
-      <div className="modal-box" onClick={e => e.stopPropagation()}>
+      <div
+        className="modal-box"
+        style={expanded ? { maxWidth: 'calc(100vw - 40px)', width: 'calc(100vw - 40px)', maxHeight: 'calc(100vh - 40px)', height: 'calc(100vh - 40px)' } : {}}
+        onClick={e => e.stopPropagation()}
+      >
         {/* Header */}
         <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
@@ -154,7 +160,10 @@ export default function ResultsModal({ s, handlers }) {
               agent{(resultsAgent || 'a1').slice(1)}_2026_03_23_152534.xlsx — Read-only
             </div>
           </div>
-          <NJIconButton icon="close" label="Close" scale="sm" variant="secondary" emphasis="subtle" onClick={closeRes} />
+          <div style={{ display: 'flex', gap: 6 }}>
+            <NJIconButton icon={expanded ? 'fullscreen_exit' : 'fullscreen'} label={expanded ? 'Reduce' : 'Expand'} scale="sm" variant="secondary" emphasis="subtle" onClick={() => setExpanded(v => !v)} />
+            <NJIconButton icon="close" label="Close" scale="sm" variant="secondary" emphasis="subtle" onClick={closeRes} />
+          </div>
         </div>
 
         {/* Tabs + body */}
