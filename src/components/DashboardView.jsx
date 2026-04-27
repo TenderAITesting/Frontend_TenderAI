@@ -1,4 +1,5 @@
-﻿import { NJButton, NJInputSearch, NJTag, NJIconButton, NJInlineMessage } from '@engie-group/fluid-design-system-react';
+import { useNavigate } from 'react-router-dom';
+import { NJButton, NJInputSearch, NJTag, NJIconButton, NJInlineMessage } from '@engie-group/fluid-design-system-react';
 
 const STATUSES = {
   uploaded:             { label: 'Uploaded',               variant: 'grey',   desc: 'Tender created, documents uploaded, no meaningful agent run yet.' },
@@ -9,7 +10,9 @@ const STATUSES = {
   proposal_ready:       { label: 'Proposal ready',         variant: 'green',  desc: 'A proposal draft exists and is ready for user review.' },
 };
 
-export default function DashboardView({ tenders, onNew, onOpen, onEdit }) {
+export default function DashboardView({ tenders, onDeleteTender }) {
+  const navigate = useNavigate();
+
   return (
     <div style={{ minHeight: 'calc(100vh - 52px)', display: 'flex', flexDirection: 'column' }}>
       <div style={{ flex: 1, padding: 24 }}>
@@ -20,7 +23,7 @@ export default function DashboardView({ tenders, onNew, onOpen, onEdit }) {
               placeholder="Search projects, clients, or project IDs…"
             />
             <NJButton variant="primary" icon="search" label="Search" />
-            <NJButton variant="primary" icon="add" label="New Tender" onClick={onNew} />
+            <NJButton variant="primary" icon="add" label="New Tender" onClick={() => navigate('/tender/new')} />
           </div>
         </div>
 
@@ -37,14 +40,14 @@ export default function DashboardView({ tenders, onNew, onOpen, onEdit }) {
               </tr>
             </thead>
             <tbody>
-              {tenders.map((t, i) => {
+              {tenders.map((t) => {
                 const st = STATUSES[t.status] || STATUSES.uploaded;
                 return (
-                  <tr key={i}>
+                  <tr key={t.id}>
                     <td>
                       <span
                         style={{ color: 'var(--nj-core-color-reference-brand-500)', fontWeight: 600, cursor: 'pointer' }}
-                        onClick={() => onOpen(i)}
+                        onClick={() => navigate(`/tender/${t.id}`)}
                       >{t.name}</span>
                     </td>
                     <td>{t.client || '—'}</td>
@@ -67,7 +70,7 @@ export default function DashboardView({ tenders, onNew, onOpen, onEdit }) {
                           scale="sm"
                           variant="secondary"
                           emphasis="subtle"
-                          onClick={() => onEdit(i)}
+                          onClick={() => navigate('/tender/new', { state: { editingTenderId: t.id } })}
                         />
                         <NJIconButton
                           icon="delete"
@@ -75,6 +78,7 @@ export default function DashboardView({ tenders, onNew, onOpen, onEdit }) {
                           scale="sm"
                           variant="secondary"
                           emphasis="subtle"
+                          onClick={() => onDeleteTender(t.id)}
                         />
                       </div>
                     </td>

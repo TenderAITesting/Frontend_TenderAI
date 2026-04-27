@@ -67,16 +67,16 @@ export const DEFAULT_DOC_AGENTS = {
 };
 
 export const INITIAL_TENDERS = [
-  { name: 'CEA UP1 - simplification MA', client: 'CEA',        projectId: 'TRB-2026-041', modified: '23/03/2026', maxStepIdx: 1, lastStep: 'agents', status: 'analysis_validated'   },
-  { name: 'Navigator',                   client: 'Navigator',  projectId: 'TRB-2026-038', modified: '23/03/2026', maxStepIdx: 1, lastStep: 'agents', status: 'analysis_in_progress' },
-  { name: 'test',                        client: 'Sellafield', projectId: 'TRB-2026-031', modified: '11/03/2026', maxStepIdx: 1, lastStep: 'agents', status: 'uploaded'             },
-  { name: 'CISF waste building',         client: 'NRWDI',      projectId: 'TRB-2026-022', modified: '11/02/2026', maxStepIdx: 3, lastStep: 'planning', status: 'planning_in_progress'},
-  { name: 'ANDRA MS4',                   client: 'ANDRA',      projectId: 'TRB-2026-019', modified: '06/02/2026', maxStepIdx: 4, lastStep: 'drafting', status: 'proposal_ready'      },
-  { name: 'test',                        client: 'Iter',       projectId: 'TRB-2026-017', modified: '04/02/2026', maxStepIdx: 1, lastStep: 'agents', status: 'analysis_validated'   },
-  { name: 'sdfsdf',                      client: 'Sener',      projectId: 'TRB-2026-014', modified: '28/01/2026', maxStepIdx: 4, lastStep: 'drafting', status: 'drafting_in_progress'},
-  { name: 'TAQA Test 2',                 client: 'TAQA',       projectId: 'TRB-2025-098', modified: '15/12/2025', maxStepIdx: 1, lastStep: 'agents', status: 'analysis_validated'   },
-  { name: 'FluxysZ4',                    client: 'Fluxys',     projectId: 'TRB-2025-091', modified: '04/12/2025', maxStepIdx: 0, lastStep: 'upload',  status: 'uploaded'             },
-  { name: 'Test',                        client: 'EDF',        projectId: 'TRB-2025-089', modified: '04/12/2025', maxStepIdx: 1, lastStep: 'agents', status: 'analysis_in_progress' },
+  { id: '550e8400-e29b-41d4-a716-446655440001', name: 'CEA UP1 - simplification MA', client: 'CEA',        projectId: 'TRB-2026-041', modified: '23/03/2026', maxStepIdx: 1, lastStep: 'agents',   status: 'analysis_validated'    },
+  { id: '550e8400-e29b-41d4-a716-446655440002', name: 'Navigator',                   client: 'Navigator',  projectId: 'TRB-2026-038', modified: '23/03/2026', maxStepIdx: 1, lastStep: 'agents',   status: 'analysis_in_progress'  },
+  { id: '550e8400-e29b-41d4-a716-446655440003', name: 'test',                        client: 'Sellafield', projectId: 'TRB-2026-031', modified: '11/03/2026', maxStepIdx: 1, lastStep: 'agents',   status: 'uploaded'              },
+  { id: '550e8400-e29b-41d4-a716-446655440004', name: 'CISF waste building',         client: 'NRWDI',      projectId: 'TRB-2026-022', modified: '11/02/2026', maxStepIdx: 3, lastStep: 'planning', status: 'planning_in_progress'  },
+  { id: '550e8400-e29b-41d4-a716-446655440005', name: 'ANDRA MS4',                   client: 'ANDRA',      projectId: 'TRB-2026-019', modified: '06/02/2026', maxStepIdx: 4, lastStep: 'drafting', status: 'proposal_ready'        },
+  { id: '550e8400-e29b-41d4-a716-446655440006', name: 'test',                        client: 'Iter',       projectId: 'TRB-2026-017', modified: '04/02/2026', maxStepIdx: 1, lastStep: 'agents',   status: 'analysis_validated'    },
+  { id: '550e8400-e29b-41d4-a716-446655440007', name: 'sdfsdf',                      client: 'Sener',      projectId: 'TRB-2026-014', modified: '28/01/2026', maxStepIdx: 4, lastStep: 'drafting', status: 'drafting_in_progress'  },
+  { id: '550e8400-e29b-41d4-a716-446655440008', name: 'TAQA Test 2',                 client: 'TAQA',       projectId: 'TRB-2025-098', modified: '15/12/2025', maxStepIdx: 1, lastStep: 'agents',   status: 'analysis_validated'    },
+  { id: '550e8400-e29b-41d4-a716-446655440009', name: 'FluxysZ4',                    client: 'Fluxys',     projectId: 'TRB-2025-091', modified: '04/12/2025', maxStepIdx: 0, lastStep: 'upload',   status: 'uploaded'              },
+  { id: '550e8400-e29b-41d4-a716-446655440010', name: 'Test',                        client: 'EDF',        projectId: 'TRB-2025-089', modified: '04/12/2025', maxStepIdx: 1, lastStep: 'agents',   status: 'analysis_in_progress'  },
 ];
 
 export const DOC_PAGES = [
