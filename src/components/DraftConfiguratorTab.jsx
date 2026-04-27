@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+﻿import { useState, useRef } from 'react';
 import { NJButton, NJTag, NJCheckbox, NJInlineMessage, NJIcon } from '@engie-group/fluid-design-system-react';
 import DisclaimerModal from './DisclaimerModal';
 
@@ -133,7 +133,7 @@ export default function DraftConfiguratorTab({ s, handlers }) {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - 112px)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <div style={{ flex: 1, overflowY: 'auto', padding: '28px 32px' }}>
 
         {/* Section heading */}

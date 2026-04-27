@@ -62,8 +62,8 @@ export const DEFAULT_DOCS = [
 ];
 
 export const DEFAULT_DOC_AGENTS = {
-  doc1: { a1: true,  a2: true,  a3: false },
-  doc2: { a1: false, a2: false, a3: true  },
+  doc1: { a1: true, a2: true, a3: true },
+  doc2: { a1: true, a2: true, a3: true },
 };
 
 export const INITIAL_TENDERS = [

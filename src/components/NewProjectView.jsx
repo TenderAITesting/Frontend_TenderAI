@@ -6,6 +6,17 @@ export default function NewProjectView({ newForm, onUpdateForm, onSubmit, onCanc
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', padding: '52px 24px', minHeight: 'calc(100vh - 52px)' }}>
       <div className="card fadein" style={{ width: '100%', maxWidth: 540, padding: '38px 42px' }}>
+        <div style={{ marginBottom: 22 }}>
+          <NJButton
+            variant="secondary"
+            emphasis="subtle"
+            scale="sm"
+            icon="arrow_back"
+            label="Dashboard"
+            onClick={onCancel}
+          />
+        </div>
+
         <NJHeading tag="h2" style={{ marginBottom: 6 }}>{editMode ? 'Edit Project' : 'Project Information'}</NJHeading>
         <NJText style={{ color: 'var(--nj-core-color-reference-neutral-500)', marginBottom: 28, display: 'block' }}>
           {editMode ? 'Update the project details below.' : 'Fill in the project details before uploading your tender documents.'}
@@ -59,9 +70,6 @@ export default function NewProjectView({ newForm, onUpdateForm, onSubmit, onCanc
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-          {editMode && (
-            <NJButton variant="secondary" emphasis="subtle" label="Cancel" onClick={onCancel} />
-          )}
           <NJButton
             variant="primary"
             icon={editMode ? 'save' : 'arrow_forward'}

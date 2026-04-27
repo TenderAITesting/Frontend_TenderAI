@@ -1,4 +1,4 @@
-import { NJButton, NJHeading } from '@engie-group/fluid-design-system-react';
+﻿import { NJButton, NJHeading } from '@engie-group/fluid-design-system-react';
 import { NAV_SECS, DRAFT_SECS, DRAFTED_SECS } from '../data/constants';
 
 const DRAFT_BODIES = {
@@ -21,7 +21,7 @@ export default function DraftingStep({ s, handlers }) {
   const body = DRAFT_BODIES[activeSection] || FALLBACK_BODY;
 
   return (
-    <div style={{ display: 'flex', minHeight: 'calc(100vh - 112px)' }}>
+    <div style={{ display: 'flex', height: '100%' }}>
       {/* Sidebar */}
       <div className="prop-nav">
         <div style={{ padding: '0 14px 5px', fontSize: 12, fontWeight: 700 }}>Proposal Sections</div>

@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react';
-import { NJButton, NJCheckbox, NJIconButton, NJSelectRoot, NJSelectItem, NJInlineMessage } from '@engie-group/fluid-design-system-react';
+﻿import { useRef, useState } from 'react';
+import { NJButton, NJCheckbox, NJIconButton, NJInlineMessage, NJIcon } from '@engie-group/fluid-design-system-react';
 import { AGENTS } from '../data/constants';
 import DisclaimerModal from './DisclaimerModal';
 
@@ -13,11 +13,12 @@ export default function UploadTab({ s, handlers }) {
   const { docs, docAgents, isNew, docsUpdated, lang } = s;
   const { setLang, togDA, deleteDoc, startProc, skipToAgents, openDisc } = handlers;
   const [dragOver, setDragOver] = useState(false);
+  const [previewDoc, setPreviewDoc] = useState(null);
   const [showUploadDisc, setShowUploadDisc] = useState(false);
   const fileInputRef = useRef(null);
 
   return (
-    <div style={{ padding: 24 }}>
+    <div style={{ padding: 24, height: '100%', overflowY: 'auto', boxSizing: 'border-box' }}>
       {/* Drop zone */}
       <div
         style={{
@@ -46,13 +47,6 @@ export default function UploadTab({ s, handlers }) {
         </div>
       </div>
 
-      {/* Agent selection hint */}
-      <div style={{ marginBottom: 12 }}>
-        <NJInlineMessage variant="information">
-          Select at least one type of analysis for each document before processing. Hover over agent names for details. Agent 3 requires Agent 2 to be selected first.
-        </NJInlineMessage>
-      </div>
-
       {/* Matrix table */}
       <div className="card" style={{ overflow: 'hidden', marginBottom: 20 }}>
         <table className="mx-table">
@@ -62,7 +56,6 @@ export default function UploadTab({ s, handlers }) {
               {AGENTS.map(a => (
                 <th key={a.id} title={a.desc} style={{ cursor: 'help' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
-                    <span style={{ width: 16, height: 16, borderRadius: 3, background: 'var(--nj-core-color-reference-brand-500)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: 'var(--nj-semantic-color-background-neutral-primary-default)', fontWeight: 700, flexShrink: 0 }}>✓</span>
                     <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--nj-semantic-color-text-neutral-primary-default)' }}>{COL_LABELS[a.id] || a.title}</span>
                   </div>
                 </th>
@@ -95,14 +88,24 @@ export default function UploadTab({ s, handlers }) {
                   );
                 })}
                 <td style={{ textAlign: 'right', paddingRight: 12 }}>
-                  <NJIconButton
-                    icon="delete"
-                    label="Remove document"
-                    scale="xs"
-                    variant="secondary"
-                    emphasis="subtle"
-                    onClick={() => deleteDoc(doc.key)}
-                  />
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4 }}>
+                    <NJIconButton
+                      icon="visibility"
+                      label="Preview document"
+                      scale="xs"
+                      variant="secondary"
+                      emphasis="subtle"
+                      onClick={() => setPreviewDoc(doc)}
+                    />
+                    <NJIconButton
+                      icon="delete"
+                      label="Remove document"
+                      scale="xs"
+                      variant="secondary"
+                      emphasis="subtle"
+                      onClick={() => deleteDoc(doc.key)}
+                    />
+                  </div>
                 </td>
               </tr>
             ))}
@@ -115,18 +118,19 @@ export default function UploadTab({ s, handlers }) {
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 10 }}>
           <div>
             <div className="inp-label" style={{ marginBottom: 7, textAlign: 'right' }}>TENDER ANALYSIS LANGUAGE</div>
-            <NJSelectRoot
+            <select
               value={lang}
               onChange={e => setLang(e.target.value)}
-              style={{ minWidth: 160 }}
+              className="inp"
+              style={{ minWidth: 160, cursor: 'pointer' }}
             >
-              <NJSelectItem value="EN">English</NJSelectItem>
-              <NJSelectItem value="FR">French</NJSelectItem>
-              <NJSelectItem value="NL">Dutch</NJSelectItem>
-              <NJSelectItem value="DE">German</NJSelectItem>
-              <NJSelectItem value="ES">Spanish</NJSelectItem>
-              <NJSelectItem value="PT">Portuguese</NJSelectItem>
-            </NJSelectRoot>
+              <option value="EN">English</option>
+              <option value="FR">French</option>
+              <option value="NL">Dutch</option>
+              <option value="DE">German</option>
+              <option value="ES">Spanish</option>
+              <option value="PT">Portuguese</option>
+            </select>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
@@ -151,6 +155,33 @@ export default function UploadTab({ s, handlers }) {
           </div>
         </div>
       </div>
+      {previewDoc && (
+        <div className="overlay" onClick={() => setPreviewDoc(null)} style={{ zIndex: 500 }}>
+          <div
+            className="modal-box"
+            style={{ maxWidth: 720, width: '90vw', maxHeight: 'calc(100vh - 60px)', display: 'flex', flexDirection: 'column' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 700 }}>{previewDoc.name}</div>
+                <div style={{ fontSize: 11, color: 'var(--nj-core-color-reference-neutral-500)', marginTop: 2 }}>{previewDoc.size} · Uploaded {previewDoc.ago}</div>
+              </div>
+              <NJIconButton icon="close" label="Close" scale="sm" variant="secondary" emphasis="subtle" onClick={() => setPreviewDoc(null)} />
+            </div>
+            <div style={{ flex: 1, overflowY: 'auto', padding: 24, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 380, background: 'var(--nj-semantic-color-background-neutral-secondary-default)' }}>
+              <div style={{ width: '100%', maxWidth: 520, background: 'var(--nj-semantic-color-background-neutral-primary-default)', borderRadius: 8, boxShadow: '0 2px 12px rgba(0,0,0,.08)', padding: '32px 28px', textAlign: 'center' }}>
+                <NJIcon name="description" style={{ fontSize: 56, color: 'var(--nj-core-color-reference-brand-500)', marginBottom: 14 }} />
+                <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 6 }}>{previewDoc.name}</div>
+                <div style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-500)', marginBottom: 20 }}>{previewDoc.size}</div>
+                <div style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-400)', lineHeight: 1.7, maxWidth: 320, margin: '0 auto' }}>
+                  Document preview is not available in this environment.<br />Use the download option to open the file locally.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {showUploadDisc && (
         <DisclaimerModal
           type="tenderupload"

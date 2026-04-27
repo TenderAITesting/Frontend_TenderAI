@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
 
 :root {
   --nj-core-font-family-sans-serif: 'DM Sans', system-ui, sans-serif;
@@ -56,10 +56,9 @@ p { line-height: 1.5; }
 .step-banner {
   background: var(--nj-semantic-color-background-neutral-primary-default);
   border-bottom: 2px solid var(--nj-semantic-color-border-neutral-minimal-default);
-  height: 60px;
+  height: 60px; flex-shrink: 0;
   padding: 0 24px;
   display: flex; align-items: center; gap: 0;
-  position: sticky; top: 52px; z-index: 400;
   justify-content: space-between;
 }
 .banner-step {

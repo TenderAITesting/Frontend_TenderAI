@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { NJButton, NJTabs, NJTab, NJIconButton, NJLink } from '@engie-group/fluid-design-system-react';
 
 const KEY_INFO_ROWS = [
@@ -56,8 +56,8 @@ function InfoRow({ label, value, src, onOpenSrc }) {
 }
 
 export default function ResultsModal({ s, handlers }) {
-  const { resultsAgent, resultsTab, contactOpen } = s;
-  const { closeRes, setResTab, togContact, openSrc, rerun, updateDocs } = handlers;
+  const { resultsAgent, resultsTab, contactOpen, resultsValidated } = s;
+  const { closeRes, setResTab, togContact, openSrc, rerun, updateDocs, validateAgent } = handlers;
   const [expanded, setExpanded] = useState(false);
 
   const isA1 = resultsAgent === 'a1';
@@ -196,8 +196,20 @@ export default function ResultsModal({ s, handlers }) {
           <div style={{ display: 'flex', gap: 10 }}>
             <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="refresh" label="Re-run Agent" onClick={rerun} />
             <NJButton variant="primary" emphasis="subtle" scale="sm" icon="upload_file" label="Update Documents" onClick={updateDocs} />
+            <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="download" label="Download Excel" />
           </div>
-          <NJButton variant="primary" scale="sm" icon="download" label="Download Excel" />
+          {resultsValidated?.[resultsAgent] ? (
+            <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="check_circle" label="Validated" disabled />
+          ) : (
+            <NJButton
+              variant="primary"
+              scale="sm"
+              icon="check_circle"
+              label="Validate Results"
+              style={{ background: 'var(--nj-core-color-reference-status-success-500)', borderColor: 'var(--nj-core-color-reference-status-success-500)' }}
+              onClick={() => { validateAgent(resultsAgent); closeRes(); }}
+            />
+          )}
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { NJButton, NJInlineMessage } from '@engie-group/fluid-design-system-react';
 import { STD_TOC, TOC_DETAILS, NAV_SECS } from '../data/constants';
 
@@ -51,7 +51,7 @@ export default function PlanningStep({ s, handlers }) {
     ));
 
   return (
-    <div style={{ display: 'flex', minHeight: 'calc(100vh - 112px)' }}>
+    <div style={{ display: 'flex', height: '100%' }}>
       {/* Sidebar */}
       <div className="prop-nav">
         <div style={{ padding: '0 14px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

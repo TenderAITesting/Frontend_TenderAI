@@ -1,4 +1,4 @@
-import { NJButton, NJInputSearch, NJTag, NJIconButton, NJInlineMessage } from '@engie-group/fluid-design-system-react';
+﻿import { NJButton, NJInputSearch, NJTag, NJIconButton, NJInlineMessage } from '@engie-group/fluid-design-system-react';
 
 const STATUSES = {
   uploaded:             { label: 'Uploaded',               variant: 'grey',   desc: 'Tender created, documents uploaded, no meaningful agent run yet.' },
@@ -47,9 +47,9 @@ export default function DashboardView({ tenders, onNew, onOpen, onEdit }) {
                         onClick={() => onOpen(i)}
                       >{t.name}</span>
                     </td>
-                    <td>{t.client}</td>
+                    <td>{t.client || '—'}</td>
                     <td style={{ fontFamily: "'DM Mono', monospace", fontSize: 12, color: 'var(--nj-core-color-reference-neutral-500)' }}>
-                      {t.projectId}
+                      {t.projectId || '—'}
                     </td>
                     <td style={{ color: 'var(--nj-core-color-reference-neutral-500)', fontFamily: "'DM Mono', monospace", fontSize: 12 }}>
                       {t.modified}

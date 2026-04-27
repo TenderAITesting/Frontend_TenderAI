@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+﻿import { useState, useEffect, useRef, useCallback } from 'react';
 import './App.css';
 import { USER, DEFAULT_DOCS, DEFAULT_DOC_AGENTS, INITIAL_TENDERS } from './data/constants';
 import TopBar from './components/TopBar';
@@ -40,7 +40,7 @@ const INITIAL = {
   exporting: false,
   showUpdateDocs: false,
   docsUpdated: false,
-  resultsValidated: false,
+  resultsValidated: { a1: false, a2: false, a3: false },
   activeSection: '1.0',
   templateType: 'standard',
   enrichedOpts: { context: true, offers: true, refs: true, methodology: false },
@@ -147,12 +147,10 @@ export default function App() {
         });
         return;
       }
-      const year = new Date().getFullYear();
-      const seq = String(Math.floor(Math.random() * 900) + 100);
       const t = {
         name: s.newForm.name || 'New Tender',
-        client: s.newForm.client || '—',
-        projectId: s.newForm.projectId.trim() || `TRB-${year}-${seq}`,
+        client: s.newForm.client,
+        projectId: s.newForm.projectId.trim(),
         modified: new Date().toLocaleDateString('fr-FR'),
         maxStepIdx: 0, lastStep: 'upload', status: 'uploaded',
       };
@@ -178,11 +176,11 @@ export default function App() {
     },
 
     startProc: () => set(prev => ({
-      processing: true, tenderStep: 'agents', docsUpdated: false, resultsValidated: false,
+      processing: true, tenderStep: 'agents', docsUpdated: false, resultsValidated: { a1: false, a2: false, a3: false },
       currentMaxStepIdx: Math.max(prev.currentMaxStepIdx, 1),
     })),
 
-    validateResults: () => set({ resultsValidated: true }),
+    validateAgent: (agId) => set(prev => ({ resultsValidated: { ...prev.resultsValidated, [agId]: true } })),
 
     skipToAgents: () => set(prev => ({
       tenderStep: 'agents',
@@ -270,7 +268,7 @@ export default function App() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <TopBar view={s.view} user={USER} onGoView={handlers.goView} />
+      <TopBar user={USER} />
 
       {s.view === 'dashboard' && (
         <DashboardView
