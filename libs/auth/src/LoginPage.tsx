@@ -1,15 +1,13 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const BYPASS_AUTH = true; // TODO: BACKEND — passer à false en production
+// TODO: BACKEND — décommenter quand le tenant ENGIE Okta est disponible
+// import { useOktaAuth } from '@okta/okta-react';
+// import { Security } from '@okta/okta-react';
+// import { oktaAuth } from '../model/useAuth';
 
-/**
- * Page de login.
- * En mode dev (BYPASS_AUTH = true), redirige immédiatement vers /homepage.
- * TODO: BACKEND — intégrer Okta Auth JS v7 :
- *   import { useOktaAuth } from '@okta/okta-react';
- *   oktaAuth.signInWithRedirect() si non authentifié
- */
+const BYPASS_AUTH = true; // TODO: BACKEND — passer à false (enableOktaAuth: true)
+
 export default function LoginPage() {
   const navigate = useNavigate();
 
@@ -19,6 +17,7 @@ export default function LoginPage() {
       return;
     }
     // TODO: BACKEND — déclencher le flow Okta PKCE
+    // const { oktaAuth } = useOktaAuth();
     // oktaAuth.signInWithRedirect({ originalUri: '/homepage' });
   }, [navigate]);
 

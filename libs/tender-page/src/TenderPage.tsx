@@ -13,6 +13,8 @@ import ExportModal from './ExportModal';
 import UpdateDocsModal from './UpdateDocsModal';
 import SrcModal from './SrcModal';
 import { DEFAULT_DOCS, DEFAULT_DOC_AGENTS } from '../../../src/data/constants';
+import { useTender } from '../model/useTender';
+import { useTenders } from '../../homepage/model/useTenders';
 
 function freshDocs() {
   return {
@@ -24,13 +26,12 @@ function freshDocs() {
   };
 }
 
-export default function TenderView({ tenders, onUpdateTender }) {
+export default function TenderView() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-
-  // TODO: remplacer par appel API GET /tenders/:id
-  const tender = tenders.find(t => t.id === id) ?? null;
+  const { data: tender = null } = useTender(id);
+  const { updateTender } = useTenders();
 
   // isNew = true quand on arrive juste après la création (état de navigation)
   const isNewOnMount = location.state?.isNew ?? false;
@@ -94,7 +95,7 @@ export default function TenderView({ tenders, onUpdateTender }) {
   // TODO: remplacer par appel API PATCH /tenders/:id
   useEffect(() => {
     if (id) {
-      onUpdateTender(id, { lastStep: s.tenderStep, maxStepIdx: s.currentMaxStepIdx });
+      updateTender(id, { lastStep: s.tenderStep, maxStepIdx: s.currentMaxStepIdx });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [s.tenderStep, s.currentMaxStepIdx, id]);

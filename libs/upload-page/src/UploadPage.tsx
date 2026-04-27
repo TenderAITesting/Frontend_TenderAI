@@ -3,15 +3,16 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { NJButton, NJFormItem, NJHeading, NJText } from '@engie-group/fluid-design-system-react';
 import { USER } from '../../../src/data/constants';
+import { useTenders } from '../../homepage/model/useTenders';
 
-export default function NewProjectView({ tenders, onCreateTender, onUpdateTender }) {
+export default function NewProjectView() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { data: tenders = [], addTender, updateTender } = useTenders();
 
-  // L'édition passe l'ID du tender via l'état de navigation
-  const editingTenderId = location.state?.editingTenderId ?? null;
-  const editingTender = editingTenderId ? tenders.find(t => t.id === editingTenderId) : null;
-  const editMode = editingTender !== null;
+  const editingTenderId: string | null = location.state?.editingTenderId ?? null;
+  const editingTender = editingTenderId ? tenders.find((t: any) => t.id === editingTenderId) : null;
+  const editMode = editingTender != null;
 
   const [form, setForm] = useState({
     name:        editingTender?.name       ?? '',
@@ -21,13 +22,14 @@ export default function NewProjectView({ tenders, onCreateTender, onUpdateTender
     firstName:   USER.first,
   });
 
-  const updateForm = (field, value) => setForm(prev => ({ ...prev, [field]: value }));
+  const updateForm = (field: string, value: string) =>
+    setForm(prev => ({ ...prev, [field]: value }));
   const canSubmit = form.name.trim().length > 0;
 
   const handleSubmit = () => {
     if (editMode) {
-      // TODO: remplacer par appel API PATCH /tenders/:id
-      onUpdateTender(editingTenderId, {
+      // TODO: BACKEND — PATCH /tenders/:id
+      updateTender(editingTenderId!, {
         name:      form.name      || editingTender.name,
         client:    form.client    || editingTender.client,
         projectId: form.projectId || editingTender.projectId,
@@ -36,7 +38,7 @@ export default function NewProjectView({ tenders, onCreateTender, onUpdateTender
       return;
     }
 
-    // TODO: remplacer par appel API POST /tenders — générer l'ID côté serveur
+    // TODO: BACKEND — POST /tenders — générer l'ID côté serveur
     const newId = uuidv4();
     const newTender = {
       id:          newId,
@@ -49,7 +51,7 @@ export default function NewProjectView({ tenders, onCreateTender, onUpdateTender
       status:      'uploaded',
     };
 
-    onCreateTender(newTender);
+    addTender(newTender);
     // isNew = true pour verrouiller la navigation en avant dans le stepper
     navigate(`/tender/${newId}`, { state: { isNew: true } });
   };
@@ -68,7 +70,7 @@ export default function NewProjectView({ tenders, onCreateTender, onUpdateTender
           />
         </div>
 
-        <NJHeading tag="h2" style={{ marginBottom: 6 }}>
+        <NJHeading as="h3" style={{ marginBottom: 6 }}>
           {editMode ? 'Edit Project' : 'Project Information'}
         </NJHeading>
         <NJText style={{ color: 'var(--nj-core-color-reference-neutral-500)', marginBottom: 28, display: 'block' }}>
@@ -83,7 +85,7 @@ export default function NewProjectView({ tenders, onCreateTender, onUpdateTender
             label="Project name *"
             labelKind="static"
             value={form.name}
-            onChange={e => updateForm('name', e.target.value)}
+            onChange={(e: any) => updateForm('name', e.target.value)}
             placeholder="Enter project name"
           />
         </div>
@@ -94,7 +96,7 @@ export default function NewProjectView({ tenders, onCreateTender, onUpdateTender
             label="Client"
             labelKind="static"
             value={form.client}
-            onChange={e => updateForm('client', e.target.value)}
+            onChange={(e: any) => updateForm('client', e.target.value)}
             placeholder="Client name"
           />
           <NJFormItem
@@ -102,7 +104,7 @@ export default function NewProjectView({ tenders, onCreateTender, onUpdateTender
             label="Project ID"
             labelKind="static"
             value={form.projectId}
-            onChange={e => updateForm('projectId', e.target.value)}
+            onChange={(e: any) => updateForm('projectId', e.target.value)}
             placeholder="e.g. PLW-2024-0892"
           />
         </div>
@@ -113,14 +115,14 @@ export default function NewProjectView({ tenders, onCreateTender, onUpdateTender
             label="Responsible Last name"
             labelKind="static"
             value={form.lastName}
-            onChange={e => updateForm('lastName', e.target.value)}
+            onChange={(e: any) => updateForm('lastName', e.target.value)}
           />
           <NJFormItem
             id="proj-firstname"
             label="Responsible First name"
             labelKind="static"
             value={form.firstName}
-            onChange={e => updateForm('firstName', e.target.value)}
+            onChange={(e: any) => updateForm('firstName', e.target.value)}
           />
         </div>
 

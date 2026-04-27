@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { NJButton, NJInputSearch, NJTag, NJIconButton, NJInlineMessage } from '@engie-group/fluid-design-system-react';
+import { useTenders } from '../model/useTenders';
 
-const STATUSES = {
+const STATUSES: Record<string, { label: string; variant: string; desc: string }> = {
   uploaded:             { label: 'Uploaded',               variant: 'grey',   desc: 'Tender created, documents uploaded, no meaningful agent run yet.' },
   analysis_in_progress: { label: 'Analysis in progress',   variant: 'orange', desc: 'At least one analysis agent is running, missing, stale, or still under review.' },
   analysis_validated:   { label: 'Analysis validated',     variant: 'teal',   desc: 'The tender has passed the validation gate required to start planning.' },
@@ -10,8 +11,9 @@ const STATUSES = {
   proposal_ready:       { label: 'Proposal ready',         variant: 'green',  desc: 'A proposal draft exists and is ready for user review.' },
 };
 
-export default function DashboardView({ tenders, onDeleteTender }) {
+export default function DashboardView() {
   const navigate = useNavigate();
+  const { data: tenders = [], deleteTender } = useTenders();
 
   return (
     <div style={{ minHeight: 'calc(100vh - 52px)', display: 'flex', flexDirection: 'column' }}>
@@ -59,26 +61,24 @@ export default function DashboardView({ tenders, onDeleteTender }) {
                     </td>
                     <td onClick={e => e.stopPropagation()}>
                       <span title={st.desc} style={{ cursor: 'help', display: 'inline-flex' }}>
-                        <NJTag variant={st.variant} scale="sm" label={st.label} />
+                        <NJTag variant={st.variant as any} scale="sm" label={st.label} />
                       </span>
                     </td>
                     <td style={{ textAlign: 'right' }} onClick={e => e.stopPropagation()}>
                       <div style={{ display: 'inline-flex', gap: 4 }}>
                         <NJIconButton
                           icon="edit"
-                          label="Edit tender"
+                          aria-label="Edit tender"
                           scale="sm"
                           variant="secondary"
-                          emphasis="subtle"
                           onClick={() => navigate('/upload', { state: { editingTenderId: t.id } })}
                         />
                         <NJIconButton
                           icon="delete"
-                          label="Delete tender"
+                          aria-label="Delete tender"
                           scale="sm"
                           variant="secondary"
-                          emphasis="subtle"
-                          onClick={() => onDeleteTender(t.id)}
+                          onClick={() => deleteTender(t.id)}
                         />
                       </div>
                     </td>
