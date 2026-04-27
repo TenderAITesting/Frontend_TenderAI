@@ -1,8 +1,10 @@
-﻿import { NJButton, NJTag, NJSpinner, NJIcon } from '@engie-group/fluid-design-system-react';
+﻿import { useState } from 'react';
+import { NJButton, NJTag, NJSpinner, NJIcon } from '@engie-group/fluid-design-system-react';
 
 export default function TenderAnalysisTab({ s, handlers, fmtTime }) {
   const { docs, docAgents, processing, isNew, elapsed, resultsValidated } = s;
   const { openRes, validateAgent, goStep, launchProp } = handlers;
+  const [showValidationPopup, setShowValidationPopup] = useState(false);
 
   const sel = {
     a1: docs.some(d => docAgents[d.key]?.a1),
@@ -103,22 +105,49 @@ export default function TenderAnalysisTab({ s, handlers, fmtTime }) {
       </div>
 
       <div className="bottom-bar" style={{ flexDirection: 'column', gap: 0, padding: 0 }}>
-        {anySelected && !allSelectedValidated && (
-          <div style={{ width: '100%', padding: '6px 24px', background: 'var(--nj-semantic-color-background-status-warning-subtle-default)', borderTop: '1px solid var(--nj-core-color-reference-status-warning-300)', fontSize: 11, color: 'var(--nj-semantic-color-text-status-warning-primary-default)', fontWeight: 600, textAlign: 'center', letterSpacing: '.03em' }}>
-            All selected agents must be validated before proceeding : open each agent's results and click Validate Results.
-          </div>
-        )}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '10px 24px' }}>
           <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="arrow_back" label="Tender Upload" onClick={() => goStep('upload')} />
           <NJButton
             variant="primary"
             icon="arrow_forward"
             label="Continue to Draft Configurator"
-            disabled={!allSelectedValidated}
-            onClick={allSelectedValidated ? launchProp : undefined}
+            onClick={() => {
+              if (allSelectedValidated) {
+                launchProp();
+              } else {
+                setShowValidationPopup(true);
+              }
+            }}
           />
         </div>
       </div>
+
+      {showValidationPopup && (
+        <div
+          className="overlay"
+          onClick={() => setShowValidationPopup(false)}
+          style={{ zIndex: 500 }}
+        >
+          <div
+            className="modal-box"
+            style={{ maxWidth: 440, width: '90vw' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ padding: '18px 22px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)', display: 'flex', alignItems: 'center', gap: 10 }}>
+              <NJIcon name="warning" style={{ fontSize: 22, color: 'var(--nj-semantic-color-text-status-warning-primary-default)' }} />
+              <span style={{ fontSize: 14, fontWeight: 700 }}>Validation required</span>
+            </div>
+            <div style={{ padding: '20px 22px' }}>
+              <p style={{ fontSize: 13, color: 'var(--nj-semantic-color-text-neutral-contrast-default)', lineHeight: 1.65, margin: 0 }}>
+                All selected agents must be validated before proceeding. Open each agent's results and click <strong>Validate Results</strong>.
+              </p>
+              <div style={{ marginTop: 18, display: 'flex', justifyContent: 'flex-end' }}>
+                <NJButton variant="primary" label="OK, got it" onClick={() => setShowValidationPopup(false)} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

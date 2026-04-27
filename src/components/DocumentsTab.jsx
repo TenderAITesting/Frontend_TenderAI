@@ -1,5 +1,5 @@
-﻿import { useRef, useState } from 'react';
-import { NJButton, NJCheckbox, NJIconButton, NJInlineMessage, NJIcon } from '@engie-group/fluid-design-system-react';
+import { useRef, useState } from 'react';
+import { NJButton, NJCheckbox, NJIconButton, NJIcon, NJSelectItem, NJSelectRoot } from '@engie-group/fluid-design-system-react';
 import { AGENTS } from '../data/constants';
 import DisclaimerModal from './DisclaimerModal';
 
@@ -8,6 +8,15 @@ const COL_LABELS = {
   a2: 'Technical Requirements',
   a3: 'Project Risks',
 };
+
+const LANG_OPTIONS = [
+  { value: 'EN', label: 'English' },
+  { value: 'FR', label: 'French' },
+  { value: 'NL', label: 'Dutch' },
+  { value: 'DE', label: 'German' },
+  { value: 'ES', label: 'Spanish' },
+  { value: 'PT', label: 'Portuguese' },
+];
 
 export default function UploadTab({ s, handlers }) {
   const { docs, docAgents, isNew, docsUpdated, lang } = s;
@@ -118,19 +127,17 @@ export default function UploadTab({ s, handlers }) {
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 10 }}>
           <div>
             <div className="inp-label" style={{ marginBottom: 7, textAlign: 'right' }}>TENDER ANALYSIS LANGUAGE</div>
-            <select
+            <NJSelectRoot
+              listNavigationLabel="Use up and down arrows and Enter to select a language"
+              buttonDefaultValueLabel="Select a language"
               value={lang}
-              onChange={e => setLang(e.target.value)}
-              className="inp"
-              style={{ minWidth: 160, cursor: 'pointer' }}
+              onChange={setLang}
+              style={{ minWidth: 180 }}
             >
-              <option value="EN">English</option>
-              <option value="FR">French</option>
-              <option value="NL">Dutch</option>
-              <option value="DE">German</option>
-              <option value="ES">Spanish</option>
-              <option value="PT">Portuguese</option>
-            </select>
+              {LANG_OPTIONS.map(opt => (
+                <NJSelectItem key={opt.value} value={opt.value}>{opt.label}</NJSelectItem>
+              ))}
+            </NJSelectRoot>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
