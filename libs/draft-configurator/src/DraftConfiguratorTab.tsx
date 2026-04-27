@@ -1,6 +1,6 @@
 ﻿import { useState, useRef } from 'react';
 import { NJButton, NJTag, NJCheckbox, NJInlineMessage, NJIcon } from '@engie-group/fluid-design-system-react';
-import DisclaimerModal from './DisclaimerModal';
+import DisclaimerModal from '../../../src/components/DisclaimerModal';
 
 // ─── FileUploadZone ────────────────────────────────────────────────────────────
 function FileUploadZone({ cardKey, files, dragOver, setDragOver, onFiles, onRemove, inputRef, onBrowse }) {

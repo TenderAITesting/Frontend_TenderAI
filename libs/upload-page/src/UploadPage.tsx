@@ -47,7 +47,7 @@ export default function NewProjectView() {
       projectId:   form.projectId.trim(),
       modified:    new Date().toLocaleDateString('fr-FR'),
       maxStepIdx:  0,
-      lastStep:    'upload',
+      lastStep:    'documents',
       status:      'uploaded',
     };
 

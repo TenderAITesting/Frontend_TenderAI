@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider, Outlet, Navigate } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Outlet, Navigate, useParams } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './App.css';
 import { USER } from './data/constants';
@@ -6,13 +6,19 @@ import { TopBar } from '../libs/layout';
 import { LoginPage } from '../libs/auth';
 import { HomePage, tendersLoader } from '../libs/homepage';
 import { UploadPage } from '../libs/upload-page';
-import { TenderPage, tenderLoader } from '../libs/tender-page';
+import TenderPage from './TenderPage';
+import { tenderLoader } from './loaders/tenderLoader';
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: { retry: false },
   },
 });
+
+function TenderDefaultRedirect() {
+  const { id } = useParams();
+  return <Navigate to={`/tender/${id}/documents`} replace />;
+}
 
 function AppLayout() {
   return (
@@ -34,8 +40,9 @@ const router = createBrowserRouter([
         loader: tendersLoader(queryClient),
       },
       { path: '/upload', element: <UploadPage /> },
+      { path: '/tender/:id', element: <TenderDefaultRedirect /> },
       {
-        path: '/tender/:id',
+        path: '/tender/:id/:step',
         element: <TenderPage />,
         loader: tenderLoader(queryClient),
       },

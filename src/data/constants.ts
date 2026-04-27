@@ -75,7 +75,7 @@ export const INITIAL_TENDERS = [
   { id: '550e8400-e29b-41d4-a716-446655440006', name: 'test',                        client: 'Iter',       projectId: 'TRB-2026-017', modified: '04/02/2026', maxStepIdx: 1, lastStep: 'agents',   status: 'analysis_validated'    },
   { id: '550e8400-e29b-41d4-a716-446655440007', name: 'sdfsdf',                      client: 'Sener',      projectId: 'TRB-2026-014', modified: '28/01/2026', maxStepIdx: 4, lastStep: 'drafting', status: 'drafting_in_progress'  },
   { id: '550e8400-e29b-41d4-a716-446655440008', name: 'TAQA Test 2',                 client: 'TAQA',       projectId: 'TRB-2025-098', modified: '15/12/2025', maxStepIdx: 1, lastStep: 'agents',   status: 'analysis_validated'    },
-  { id: '550e8400-e29b-41d4-a716-446655440009', name: 'FluxysZ4',                    client: 'Fluxys',     projectId: 'TRB-2025-091', modified: '04/12/2025', maxStepIdx: 0, lastStep: 'upload',   status: 'uploaded'              },
+  { id: '550e8400-e29b-41d4-a716-446655440009', name: 'FluxysZ4',                    client: 'Fluxys',     projectId: 'TRB-2025-091', modified: '04/12/2025', maxStepIdx: 0, lastStep: 'documents', status: 'uploaded'              },
   { id: '550e8400-e29b-41d4-a716-446655440010', name: 'Test',                        client: 'EDF',        projectId: 'TRB-2025-089', modified: '04/12/2025', maxStepIdx: 1, lastStep: 'agents',   status: 'analysis_in_progress'  },
 ];
 

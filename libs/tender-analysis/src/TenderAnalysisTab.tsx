@@ -112,7 +112,7 @@ export default function TenderAnalysisTab({ s, handlers, fmtTime }) {
           </div>
         )}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '10px 24px' }}>
-          <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="arrow_back" label="Tender Upload" onClick={() => goStep('upload')} />
+          <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="arrow_back" label="Tender Upload" onClick={() => goStep('documents')} />
           <NJButton
             variant="primary"
             icon="arrow_forward"

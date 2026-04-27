@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getMockTenders } from '../../../src/data/mockStore';
-import { httpClient } from '../../http-client';
+import { getMockTenders } from '../data/mockStore';
+import { httpClient } from '../../libs/http-client';
 
 const USE_MOCK = true; // TODO: BACKEND — passer à false et connecter l'API
 

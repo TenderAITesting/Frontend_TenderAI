@@ -1,7 +1,7 @@
 import type { QueryClient } from '@tanstack/react-query';
 import type { LoaderFunctionArgs } from 'react-router-dom';
-import { httpClient } from '../../http-client';
-import { getMockTenders } from '../../../src/data/mockStore';
+import { httpClient } from '../../libs/http-client';
+import { getMockTenders } from '../data/mockStore';
 
 const USE_MOCK = true; // TODO: BACKEND — passer à false
 

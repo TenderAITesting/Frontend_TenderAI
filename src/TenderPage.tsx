@@ -1,20 +1,20 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { NJButton } from '@engie-group/fluid-design-system-react';
-import BannerStepper from './Stepper';
-import UploadTab from './DocumentsTab';
-import TenderAnalysisTab from './TenderAnalysisTab';
-import DraftConfiguratorTab from './DraftConfiguratorTab';
-import PlanningStep from './TocStep';
-import DraftingStep from './DraftStep';
-import ResultsModal from './ResultsModal';
-import DisclaimerModal from './DisclaimerModal';
-import ExportModal from './ExportModal';
-import UpdateDocsModal from './UpdateDocsModal';
-import SrcModal from './SrcModal';
-import { DEFAULT_DOCS, DEFAULT_DOC_AGENTS } from '../../../src/data/constants';
-import { useTender } from '../model/useTender';
-import { useTenders } from '../../homepage/model/useTenders';
+import BannerStepper from './components/Stepper';
+import UploadTab from '../libs/tender-documents';
+import TenderAnalysisTab from '../libs/tender-analysis';
+import DraftConfiguratorTab from '../libs/draft-configurator';
+import PlanningStep from '../libs/proposal-planning';
+import DraftingStep from '../libs/proposal-drafting';
+import ResultsModal from './components/ResultsModal';
+import DisclaimerModal from './components/DisclaimerModal';
+import ExportModal from './components/ExportModal';
+import UpdateDocsModal from './components/UpdateDocsModal';
+import SrcModal from './components/SrcModal';
+import { DEFAULT_DOCS, DEFAULT_DOC_AGENTS } from './data/constants';
+import { useTender } from './model/useTender';
+import { useTenders } from '../libs/homepage/model/useTenders';
 
 function freshDocs() {
   return {
@@ -27,7 +27,8 @@ function freshDocs() {
 }
 
 export default function TenderView() {
-  const { id } = useParams();
+  const { id, step } = useParams<{ id: string; step: string }>();
+  const tenderStep = step || 'documents';
   const navigate = useNavigate();
   const location = useLocation();
   const { data: tender = null } = useTender(id);
@@ -38,7 +39,6 @@ export default function TenderView() {
 
   const [s, setS] = useState(() => ({
     lang: 'EN',
-    tenderStep: tender?.lastStep || 'upload',
     isNew: isNewOnMount,
     currentMaxStepIdx: tender?.maxStepIdx ?? 0,
     processing: false,
@@ -95,10 +95,10 @@ export default function TenderView() {
   // TODO: remplacer par appel API PATCH /tenders/:id
   useEffect(() => {
     if (id) {
-      updateTender(id, { lastStep: s.tenderStep, maxStepIdx: s.currentMaxStepIdx });
+      updateTender(id, { lastStep: tenderStep, maxStepIdx: s.currentMaxStepIdx });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [s.tenderStep, s.currentMaxStepIdx, id]);
+  }, [tenderStep, s.currentMaxStepIdx, id]);
 
   if (!tender) {
     return (
@@ -112,27 +112,30 @@ export default function TenderView() {
   const handlers = {
     goView: () => navigate('/homepage'),
 
-    goStep: (step) => {
-      const steps = ['upload', 'agents', 'config', 'planning', 'drafting'];
-      const cur = steps.indexOf(s.tenderStep);
-      const target = steps.indexOf(step);
+    goStep: (targetStep: string) => {
+      const steps = ['documents', 'agents', 'config', 'planning', 'drafting'];
+      const cur = steps.indexOf(tenderStep);
+      const target = steps.indexOf(targetStep);
       if (s.isNew && target > cur) return;
       if (!s.isNew && target > s.currentMaxStepIdx) return;
-      set({ tenderStep: step });
+      navigate(`/tender/${id}/${targetStep}`);
     },
 
-    startProc: () => set(prev => ({
-      processing: true, tenderStep: 'agents', docsUpdated: false,
-      resultsValidated: { a1: false, a2: false, a3: false },
-      currentMaxStepIdx: Math.max(prev.currentMaxStepIdx, 1),
-    })),
+    startProc: () => {
+      set(prev => ({
+        processing: true, docsUpdated: false,
+        resultsValidated: { a1: false, a2: false, a3: false },
+        currentMaxStepIdx: Math.max(prev.currentMaxStepIdx, 1),
+      }));
+      navigate(`/tender/${id}/agents`);
+    },
 
     validateAgent: (agId) => set(prev => ({ resultsValidated: { ...prev.resultsValidated, [agId]: true } })),
 
-    skipToAgents: () => set(prev => ({
-      tenderStep: 'agents',
-      currentMaxStepIdx: Math.max(prev.currentMaxStepIdx, 1),
-    })),
+    skipToAgents: () => {
+      set(prev => ({ currentMaxStepIdx: Math.max(prev.currentMaxStepIdx, 1) }));
+      navigate(`/tender/${id}/agents`);
+    },
 
     openRes:   (agId) => set({ showResults: true, resultsAgent: agId || 'a1', resultsTab: 'keyinfo' }),
     closeRes:  ()     => set({ showResults: false }),
@@ -164,25 +167,25 @@ export default function TenderView() {
       return { enrichedOpts: o };
     }),
 
-    launchProp: () => set(prev => ({
-      tenderStep: 'config',
-      currentMaxStepIdx: Math.max(prev.currentMaxStepIdx, 2),
-    })),
+    launchProp: () => {
+      set(prev => ({ currentMaxStepIdx: Math.max(prev.currentMaxStepIdx, 2) }));
+      navigate(`/tender/${id}/config`);
+    },
 
-    launchPlanning: () => set(prev => ({
-      tenderStep: 'planning',
-      currentMaxStepIdx: Math.max(prev.currentMaxStepIdx, 3),
-    })),
+    launchPlanning: () => {
+      set(prev => ({ currentMaxStepIdx: Math.max(prev.currentMaxStepIdx, 3) }));
+      navigate(`/tender/${id}/planning`);
+    },
 
-    launchDraft: () => set(prev => ({
-      tenderStep: 'drafting',
-      currentMaxStepIdx: Math.max(prev.currentMaxStepIdx, 4),
-    })),
+    launchDraft: () => {
+      set(prev => ({ currentMaxStepIdx: Math.max(prev.currentMaxStepIdx, 4) }));
+      navigate(`/tender/${id}/drafting`);
+    },
 
-    freezeAndDraft: () => set(prev => ({
-      tenderStep: 'drafting',
-      currentMaxStepIdx: Math.max(prev.currentMaxStepIdx, 4),
-    })),
+    freezeAndDraft: () => {
+      set(prev => ({ currentMaxStepIdx: Math.max(prev.currentMaxStepIdx, 4) }));
+      navigate(`/tender/${id}/drafting`);
+    },
 
     openDisc:    (t) => set({ showDisclaimer: t }),
     closeDisc:   ()  => set({ showDisclaimer: null }),
@@ -202,13 +205,19 @@ export default function TenderView() {
       setTimeout(() => set({ exporting: false }), 1500);
     },
 
-    rerun:          () => set(prev => ({
-      showResults: false, processing: true, tenderStep: 'agents', elapsed: 0,
-      currentMaxStepIdx: Math.max(prev.currentMaxStepIdx, 1),
-    })),
+    rerun: () => {
+      set(prev => ({
+        showResults: false, processing: true, elapsed: 0,
+        currentMaxStepIdx: Math.max(prev.currentMaxStepIdx, 1),
+      }));
+      navigate(`/tender/${id}/agents`);
+    },
     updateDocs:     () => set({ showResults: false, showUpdateDocs: true }),
     closeUpdateDocs: () => set({ showUpdateDocs: false }),
-    confirmUpdateDocs: () => set({ showUpdateDocs: false, tenderStep: 'upload', docsUpdated: true }),
+    confirmUpdateDocs: () => {
+      set({ showUpdateDocs: false, docsUpdated: true });
+      navigate(`/tender/${id}/upload`);
+    },
 
     togContact: () => set(prev => ({ contactOpen: !prev.contactOpen })),
   };
@@ -219,7 +228,7 @@ export default function TenderView() {
       .join(':');
 
   // s enrichi avec les données du tender pour compatibilité avec les composants enfants
-  const sc = { ...s, currentTender: id, tenders: [tender] };
+  const sc = { ...s, tenderStep, currentTender: id, tenders: [tender] };
 
   return (
     <div style={{ height: 'calc(100vh - 52px)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
@@ -249,18 +258,18 @@ export default function TenderView() {
       </div>
 
       <BannerStepper
-        tenderStep={s.tenderStep}
+        tenderStep={tenderStep}
         isNew={s.isNew}
         currentMaxStepIdx={s.currentMaxStepIdx}
         onGoStep={handlers.goStep}
       />
 
       <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-        {s.tenderStep === 'upload'    && <UploadTab            s={sc} handlers={handlers} />}
-        {s.tenderStep === 'agents'   && <TenderAnalysisTab    s={sc} handlers={handlers} fmtTime={fmtTime} />}
-        {s.tenderStep === 'config'   && <DraftConfiguratorTab s={sc} handlers={handlers} />}
-        {s.tenderStep === 'planning' && <PlanningStep          s={sc} handlers={handlers} />}
-        {s.tenderStep === 'drafting' && <DraftingStep          s={sc} handlers={handlers} />}
+        {tenderStep === 'documents' && <UploadTab            s={sc} handlers={handlers} />}
+        {tenderStep === 'agents'    && <TenderAnalysisTab    s={sc} handlers={handlers} fmtTime={fmtTime} />}
+        {tenderStep === 'config'    && <DraftConfiguratorTab s={sc} handlers={handlers} />}
+        {tenderStep === 'planning'  && <PlanningStep          s={sc} handlers={handlers} />}
+        {tenderStep === 'drafting'  && <DraftingStep          s={sc} handlers={handlers} />}
       </div>
 
       {s.showResults    && <ResultsModal     s={sc} handlers={handlers} />}

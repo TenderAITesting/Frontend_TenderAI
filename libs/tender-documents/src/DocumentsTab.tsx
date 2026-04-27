@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { NJButton, NJCheckbox, NJIconButton, NJIcon, NJSelectItem, NJSelectRoot } from '@engie-group/fluid-design-system-react';
 import { AGENTS } from '../../../src/data/constants';
-import DisclaimerModal from './DisclaimerModal';
+import DisclaimerModal from '../../../src/components/DisclaimerModal';
 
 const COL_LABELS = {
   a1: 'Tender Key Information',

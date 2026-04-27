@@ -1,4 +1,4 @@
-const STEPS = ['upload', 'agents', 'config', 'planning', 'drafting'];
+const STEPS = ['documents', 'agents', 'config', 'planning', 'drafting'];
 const LABELS = ['Tender Upload', 'Tender Analysis', 'Draft Configurator', 'Proposal Planning', 'Proposal Drafting'];
 
 export default function BannerStepper({ tenderStep, isNew, currentMaxStepIdx, onGoStep }) {
