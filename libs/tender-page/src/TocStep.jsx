@@ -1,6 +1,6 @@
 ﻿import { useState } from 'react';
 import { NJButton, NJInlineMessage } from '@engie-group/fluid-design-system-react';
-import { STD_TOC, TOC_DETAILS, NAV_SECS } from '../data/constants';
+import { STD_TOC, TOC_DETAILS, NAV_SECS } from '../../../src/data/constants';
 
 export default function PlanningStep({ s, handlers }) {
   const { templateType, enrichedOpts, activeSection, planType } = s;

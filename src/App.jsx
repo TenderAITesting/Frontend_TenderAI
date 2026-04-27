@@ -1,65 +1,61 @@
-import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
-import { USER, INITIAL_TENDERS } from './data/constants';
-import TopBar from './components/TopBar';
-import DashboardView from './components/DashboardView';
-import NewProjectView from './components/NewProjectView';
-import TenderView from './components/ProposalView';
+import { USER } from './data/constants';
+import { TopBar } from '../libs/layout';
+import { LoginPage } from '../libs/auth';
+import { HomePage, useTenders } from '../libs/homepage';
+import { UploadPage } from '../libs/upload-page';
+import { TenderPage } from '../libs/tender-page';
+
+function AppRoutes() {
+  // useTenders gère l'état des tenders et expose les mutations
+  // TODO: BACKEND — remplacer par React Query + appels API réels
+  const { data: tenders, addTender, updateTender, deleteTender } = useTenders();
+
+  return (
+    <Routes>
+      <Route path="/" element={<LoginPage />} />
+      <Route
+        path="/homepage"
+        element={
+          <HomePage
+            tenders={tenders}
+            onDeleteTender={deleteTender}
+          />
+        }
+      />
+      <Route
+        path="/upload"
+        element={
+          <UploadPage
+            tenders={tenders}
+            onCreateTender={addTender}
+            onUpdateTender={updateTender}
+          />
+        }
+      />
+      <Route
+        path="/tender/:id"
+        element={
+          <TenderPage
+            tenders={tenders}
+            onUpdateTender={updateTender}
+          />
+        }
+      />
+      {/* Redirections de compatibilité pour les anciens liens */}
+      <Route path="/dashboard" element={<Navigate to="/homepage" replace />} />
+      <Route path="/tender/new" element={<Navigate to="/upload" replace />} />
+    </Routes>
+  );
+}
 
 export default function App() {
-  // TODO: remplacer par un fetch API GET /tenders au montage
-  const [tenders, setTenders] = useState(INITIAL_TENDERS);
-
-  const addTender = (tender) => {
-    setTenders(prev => [tender, ...prev]);
-  };
-
-  const updateTender = (id, patch) => {
-    // TODO: remplacer par appel API PATCH /tenders/:id
-    setTenders(prev => prev.map(t => t.id === id ? { ...t, ...patch } : t));
-  };
-
-  const deleteTender = (id) => {
-    // TODO: remplacer par appel API DELETE /tenders/:id
-    setTenders(prev => prev.filter(t => t.id !== id));
-  };
-
   return (
     <BrowserRouter>
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <TopBar user={USER} />
-        <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route
-            path="/dashboard"
-            element={
-              <DashboardView
-                tenders={tenders}
-                onDeleteTender={deleteTender}
-              />
-            }
-          />
-          <Route
-            path="/tender/new"
-            element={
-              <NewProjectView
-                tenders={tenders}
-                onCreateTender={addTender}
-                onUpdateTender={updateTender}
-              />
-            }
-          />
-          <Route
-            path="/tender/:id"
-            element={
-              <TenderView
-                tenders={tenders}
-                onUpdateTender={updateTender}
-              />
-            }
-          />
-        </Routes>
+        <AppRoutes />
       </div>
     </BrowserRouter>
   );

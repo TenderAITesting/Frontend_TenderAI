@@ -12,7 +12,7 @@ import DisclaimerModal from './DisclaimerModal';
 import ExportModal from './ExportModal';
 import UpdateDocsModal from './UpdateDocsModal';
 import SrcModal from './SrcModal';
-import { DEFAULT_DOCS, DEFAULT_DOC_AGENTS } from '../data/constants';
+import { DEFAULT_DOCS, DEFAULT_DOC_AGENTS } from '../../../src/data/constants';
 
 function freshDocs() {
   return {
@@ -103,13 +103,13 @@ export default function TenderView({ tenders, onUpdateTender }) {
     return (
       <div style={{ padding: 40, textAlign: 'center' }}>
         <p>Tender not found.</p>
-        <NJButton variant="primary" label="Back to Dashboard" onClick={() => navigate('/')} />
+        <NJButton variant="primary" label="Back to Dashboard" onClick={() => navigate('/homepage')} />
       </div>
     );
   }
 
   const handlers = {
-    goView: () => navigate('/'),
+    goView: () => navigate('/homepage'),
 
     goStep: (step) => {
       const steps = ['upload', 'agents', 'config', 'planning', 'drafting'];
@@ -234,7 +234,7 @@ export default function TenderView({ tenders, onUpdateTender }) {
           scale="sm"
           icon="arrow_back"
           label="Dashboard"
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/homepage')}
         />
         <div style={{ width: 1, height: 20, background: 'var(--nj-semantic-color-border-neutral-minimal-default)' }} />
         <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--nj-semantic-color-text-neutral-primary-default)' }}>

@@ -23,7 +23,7 @@ export default function DashboardView({ tenders, onDeleteTender }) {
               placeholder="Search projects, clients, or project IDs…"
             />
             <NJButton variant="primary" icon="search" label="Search" />
-            <NJButton variant="primary" icon="add" label="New Tender" onClick={() => navigate('/tender/new')} />
+            <NJButton variant="primary" icon="add" label="New Tender" onClick={() => navigate('/upload')} />
           </div>
         </div>
 
@@ -70,7 +70,7 @@ export default function DashboardView({ tenders, onDeleteTender }) {
                           scale="sm"
                           variant="secondary"
                           emphasis="subtle"
-                          onClick={() => navigate('/tender/new', { state: { editingTenderId: t.id } })}
+                          onClick={() => navigate('/upload', { state: { editingTenderId: t.id } })}
                         />
                         <NJIconButton
                           icon="delete"

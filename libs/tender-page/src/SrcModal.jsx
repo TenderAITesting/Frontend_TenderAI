@@ -1,5 +1,5 @@
 import { NJIconButton } from '@engie-group/fluid-design-system-react';
-import { DOC_PAGES } from '../data/constants';
+import { DOC_PAGES } from '../../../src/data/constants';
 
 export default function SrcModal({ page, onClose }) {
   const pg = parseInt((page || 'p.1').replace('p.', ''));

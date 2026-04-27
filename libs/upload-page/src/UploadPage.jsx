@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { NJButton, NJFormItem, NJHeading, NJText } from '@engie-group/fluid-design-system-react';
-import { USER } from '../data/constants';
+import { USER } from '../../../src/data/constants';
 
 export default function NewProjectView({ tenders, onCreateTender, onUpdateTender }) {
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ export default function NewProjectView({ tenders, onCreateTender, onUpdateTender
         client:    form.client    || editingTender.client,
         projectId: form.projectId || editingTender.projectId,
       });
-      navigate('/');
+      navigate('/homepage');
       return;
     }
 
@@ -64,7 +64,7 @@ export default function NewProjectView({ tenders, onCreateTender, onUpdateTender
             scale="sm"
             icon="arrow_back"
             label="Dashboard"
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/homepage')}
           />
         </div>
 

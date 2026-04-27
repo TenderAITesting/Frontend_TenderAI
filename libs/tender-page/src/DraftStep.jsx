@@ -1,5 +1,5 @@
 ﻿import { NJButton, NJHeading } from '@engie-group/fluid-design-system-react';
-import { NAV_SECS, DRAFT_SECS, DRAFTED_SECS } from '../data/constants';
+import { NAV_SECS, DRAFT_SECS, DRAFTED_SECS } from '../../../src/data/constants';
 
 const DRAFT_BODIES = {
   '1.0': `<p style="font-size:14px;line-height:1.9;margin-bottom:16px">This proposal is submitted by <strong>Tractebel Engineering</strong> in response to the Request for Proposal issued by Tractebel Global for the Offshore Wind Farm — North Sea Phase IV project (Ref. PLW-2024-0892-NW).</p>

@@ -1,5 +1,5 @@
 ﻿import { NJAvatarRoot } from '@engie-group/fluid-design-system-react';
-import tractebelLogo from '../assets/logo.png';
+import tractebelLogo from '../../../src/assets/logo.png';
 
 export default function TopBar({ user }) {
   return (
