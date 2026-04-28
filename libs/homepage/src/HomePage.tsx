@@ -1,3 +1,4 @@
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { NJButton, NJInputSearch, NJTag, NJIconButton, NJInlineMessage } from '@engie-group/fluid-design-system-react';
 import { useTenders } from '../model/useTenders';
@@ -14,6 +15,17 @@ const STATUSES: Record<string, { label: string; variant: string; desc: string }>
 export default function DashboardView() {
   const navigate = useNavigate();
   const { data: tenders = [], deleteTender } = useTenders();
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredTenders = useMemo(() => {
+    const term = (searchTerm ?? '').trim().toLowerCase();
+    if (!term) return tenders;
+    return tenders.filter(t =>
+      t.name.toLowerCase().includes(term) ||
+      t.client.toLowerCase().includes(term) ||
+      (t.projectId ?? '').toLowerCase().includes(term)
+    );
+  }, [tenders, searchTerm]);
 
   return (
     <div style={{ minHeight: 'calc(100vh - 52px)', display: 'flex', flexDirection: 'column' }}>
@@ -23,8 +35,11 @@ export default function DashboardView() {
             <NJInputSearch
               style={{ width: 320 }}
               placeholder="Search projects, clients, or project IDs…"
+              value={searchTerm}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value ?? '')}
+              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => { if (e.key === 'Escape') setSearchTerm(''); }}
             />
-            <NJButton variant="primary" icon="search" label="Search" />
+            <NJButton variant="primary" icon="search" label="Search" onClick={() => setSearchTerm(searchTerm.trim())} />
             <NJButton variant="primary" icon="add" label="New Tender" onClick={() => navigate('/upload')} />
           </div>
         </div>
@@ -42,7 +57,7 @@ export default function DashboardView() {
               </tr>
             </thead>
             <tbody>
-              {tenders.map((t) => {
+              {filteredTenders.map((t) => {
                 const st = STATUSES[t.status] || STATUSES.uploaded;
                 return (
                   <tr key={t.id}>
