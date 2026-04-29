@@ -12,59 +12,132 @@ const AGENT_TITLES: Record<string, string> = {
   a3: 'Project Risks — Results',
 };
 
-// ─── Python-dict parser ───────────────────────────────────────────────────────
+// ─── Structured-data parser (ported from TenderExcelPreviewModal) ─────────────
 
-function pyDictToJson(str: string): string {
-  let result = '';
-  let inString = false;
-  let delimiter = '';
+function _smartQuotes(str: string): string {
+  let r = '', inStr = false, delim = '';
   for (let i = 0; i < str.length; i++) {
     const c = str[i];
-    const prev = i > 0 ? str[i - 1] : '';
-    if (prev === '\\') { result += c; continue; }
-    if ((c === "'" || c === '"') && !inString) {
-      inString = true; delimiter = c; result += '"';
-    } else if (c === delimiter && inString) {
-      inString = false; delimiter = ''; result += '"';
-    } else if (c === '"' && inString) {
-      result += '\\"';
-    } else {
-      result += c;
-    }
+    if (i > 0 && str[i - 1] === '\\') { r += c; continue; }
+    if (c === "'" || c === '"') {
+      if (!inStr) { inStr = true; delim = c; r += '"'; }
+      else if (c === delim) { inStr = false; delim = ''; r += '"'; }
+      else { r += c === '"' ? '\\"' : c; }
+    } else { r += c; }
   }
-  return result;
+  return r;
 }
 
-function parsePyList(raw: string): any[] | null {
-  if (!raw || typeof raw !== 'string') return null;
-  const s = raw.trim();
+function _colonIdx(str: string): number {
+  let inStr = false, sc = '';
+  for (let i = 0; i < str.length; i++) {
+    const c = str[i];
+    if (i > 0 && str[i - 1] === '\\') continue;
+    if ((c === '"' || c === "'") && !inStr) { inStr = true; sc = c; }
+    else if (c === sc && inStr) { inStr = false; sc = ''; }
+    if (c === ':' && !inStr) return i;
+  }
+  return -1;
+}
+
+function _splitKV(content: string): string[] {
+  const pairs: string[] = [];
+  let cur = '', inStr = false, sc = '';
+  for (let i = 0; i < content.length; i++) {
+    const c = content[i];
+    if (i > 0 && content[i - 1] === '\\') { cur += c; continue; }
+    if ((c === '"' || c === "'") && !inStr) { inStr = true; sc = c; }
+    else if (c === sc && inStr) { inStr = false; sc = ''; }
+    if (c === ',' && !inStr) { pairs.push(cur.trim()); cur = ''; } else { cur += c; }
+  }
+  if (cur.trim()) pairs.push(cur.trim());
+  return pairs;
+}
+
+function _parseObj(s: string): any | null {
+  if (!s.startsWith('{') || !s.endsWith('}')) return null;
+  const obj: any = {};
+  for (const pair of _splitKV(s.slice(1, -1).trim())) {
+    const ci = _colonIdx(pair);
+    if (ci === -1) continue;
+    const k = pair.slice(0, ci).trim().replace(/^['"]|['"]$/g, '');
+    const v = pair.slice(ci + 1).trim().replace(/^['"]|['"]$/g, '');
+    obj[k] = v;
+  }
+  return Object.keys(obj).length > 0 ? obj : null;
+}
+
+function _splitObjs(content: string): string[] {
+  const objs: string[] = [];
+  let cur = '', depth = 0, inStr = false, sc = '';
+  for (let i = 0; i < content.length; i++) {
+    const c = content[i];
+    if (i > 0 && content[i - 1] === '\\') { cur += c; continue; }
+    if ((c === '"' || c === "'") && !inStr) { inStr = true; sc = c; }
+    else if (c === sc && inStr) { inStr = false; sc = ''; }
+    if (!inStr) { if (c === '{') depth++; else if (c === '}') depth--; }
+    cur += c;
+    if (depth === 0 && c === '}' && !inStr) {
+      objs.push(cur.trim()); cur = '';
+      while (i + 1 < content.length && (content[i + 1] === ',' || /\s/.test(content[i + 1]))) i++;
+    }
+  }
+  return objs;
+}
+
+function parseStructuredData(cellValue: any): any[] | null {
+  if (!cellValue || typeof cellValue !== 'string') return null;
+  const s = cellValue.trim();
   if (!s.startsWith('[')) return null;
-  try { const p = JSON.parse(s); if (Array.isArray(p)) return p; } catch {}
+  try { const p = JSON.parse(s); if (Array.isArray(p) && p.length > 0) return p; } catch {}
   try {
-    const clean = s.replace(/\r?\n/g, ' ').replace(/\s+/g, ' ');
-    const p = JSON.parse(pyDictToJson(clean));
-    if (Array.isArray(p)) return p;
+    const m = s.match(/\[\s*\{[\s\S]*\}\s*\]/);
+    if (m) {
+      const p = JSON.parse(_smartQuotes(m[0].replace(/\n/g, ' ').replace(/\s+/g, ' ')));
+      if (Array.isArray(p) && p.length > 0) return p;
+    }
+  } catch {}
+  try {
+    const m = s.match(/\[\s*\{[\s\S]*\}\s*\]/);
+    if (m) {
+      const objs = _splitObjs(m[0].slice(1, -1).trim()).map(o => _parseObj(o)).filter(Boolean);
+      if (objs.length > 0) return objs;
+    }
   } catch {}
   return null;
 }
 
-// ─── Source utilities ─────────────────────────────────────────────────────────
 
-function extractPageRefs(source: string): string[] {
-  if (!source) return [];
-  const m = source.match(/p\.\s*\d+/g);
-  return m ? [...new Set(m.map(r => r.replace(/\s+/, '')))] : [];
+// ─── Page-ref link helper ─────────────────────────────────────────────────────
+
+function renderWithPageRefs(text: string, onOpenSrc: (p: string) => void): React.ReactNode {
+  const parts = text.split(/(p\.\s*\d+)/g);
+  if (parts.length === 1) return <span style={{ wordBreak: 'break-word' }}>{text}</span>;
+  return (
+    <span style={{ wordBreak: 'break-word' }}>
+      {parts.map((part, i) =>
+        /^p\.\s*\d+$/.test(part)
+          ? <NJLink key={i} href="#" onClick={e => { e.preventDefault(); onOpenSrc(part.replace(/\s+/, '')); }}>{part.replace(/\s+/, '')} ↗</NJLink>
+          : <span key={i}>{part}</span>
+      )}
+    </span>
+  );
 }
 
-function isNotSpecified(s: string) {
-  return !s || s.toLowerCase().includes('not specified');
-}
+// ─── Agent 1 — generic multi-column table (ported from TenderExcelPreviewModal) ─
 
-// ─── Nested table (Agent 1 right column) ──────────────────────────────────────
-
-function NestedTable({ items, onOpenSrc }: { items: any[]; onOpenSrc: (p: string) => void }) {
-  const allKeys = [...new Set(items.flatMap(it => Object.keys(it)))];
-
+function A1NestedTable({ items, onOpenSrc }: { items: any[]; onOpenSrc: (p: string) => void }) {
+  const isPrimitive = items.length === 0 || typeof items[0] !== 'object' || items[0] === null;
+  if (isPrimitive) {
+    return (
+      <ul style={{ margin: 0, paddingLeft: 16 }}>
+        {items.map((item, i) => (
+          <li key={i} style={{ fontSize: 12, padding: '2px 0', lineHeight: 1.5 }}>{String(item)}</li>
+        ))}
+      </ul>
+    );
+  }
+  const keys = [...new Set(items.flatMap(it => Object.keys(it)))];
   const thSt: React.CSSProperties = {
     textAlign: 'left', padding: '4px 8px',
     background: 'var(--nj-semantic-color-background-neutral-secondary-default)',
@@ -76,48 +149,17 @@ function NestedTable({ items, onOpenSrc }: { items: any[]; onOpenSrc: (p: string
     padding: '5px 8px', verticalAlign: 'top', fontSize: 12, wordBreak: 'break-word',
     borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
   };
-
   return (
     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-      <thead>
-        <tr>
-          {allKeys.map(k => (
-            <th key={k} style={thSt}>{k.charAt(0).toUpperCase() + k.slice(1)}</th>
-          ))}
-        </tr>
-      </thead>
+      <thead><tr>{keys.map(k => <th key={k} style={thSt}>{k.charAt(0).toUpperCase() + k.slice(1)}</th>)}</tr></thead>
       <tbody>
-        {items.map((item, idx) => (
-          <tr key={idx}
-            onMouseOver={e => (e.currentTarget.style.background = 'var(--nj-semantic-color-background-neutral-secondary-default)')}
-            onMouseOut={e => (e.currentTarget.style.background = '')}
-          >
-            {allKeys.map(k => {
-              const val = String(item[k] ?? '');
-              if (k === 'source') {
-                const refs = extractPageRefs(val);
-                return (
-                  <td key={k} style={tdSt}>
-                    {refs.length > 0
-                      ? <span style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                          {refs.map(ref => (
-                            <NJLink key={ref} href="#" onClick={e => { e.preventDefault(); onOpenSrc(ref); }}>
-                              {ref} ↗
-                            </NJLink>
-                          ))}
-                        </span>
-                      : <span style={{ fontStyle: 'italic', color: 'var(--nj-core-color-reference-neutral-300)' }}>
-                          {isNotSpecified(val) ? '—' : val}
-                        </span>
-                    }
-                  </td>
-                );
-              }
+        {items.map((item, i) => (
+          <tr key={i}>
+            {keys.map(k => {
+              const v = Array.isArray(item[k]) ? item[k].join(', ') : String(item[k] ?? '');
               return (
                 <td key={k} style={tdSt}>
-                  {isNotSpecified(val)
-                    ? <span style={{ fontStyle: 'italic', color: 'var(--nj-core-color-reference-neutral-300)' }}>—</span>
-                    : val}
+                  {/p\.\s*\d+/.test(v) ? renderWithPageRefs(v, onOpenSrc) : (v || '—')}
                 </td>
               );
             })}
@@ -128,17 +170,61 @@ function NestedTable({ items, onOpenSrc }: { items: any[]; onOpenSrc: (p: string
   );
 }
 
-// ─── Agent 1 view ─────────────────────────────────────────────────────────────
+function A1Cell({ cell, cellKey, expanded, toggle, onOpenSrc }: {
+  cell: any; cellKey: string; expanded: Set<string>;
+  toggle: (k: string) => void; onOpenSrc: (p: string) => void;
+}) {
+  const val = cell !== null && cell !== undefined ? String(cell) : '';
+  if (!val) return <span style={{ color: 'var(--nj-core-color-reference-neutral-300)', fontStyle: 'italic' }}>—</span>;
+
+  const structured = parseStructuredData(val);
+  if (structured) {
+    const isExp = expanded.has(cellKey);
+    return (
+      <div>
+        {structured.length > 1 && (
+          <button onClick={() => toggle(cellKey)} style={{
+            background: 'var(--nj-core-color-reference-brand-500)', border: 'none', cursor: 'pointer',
+            padding: '3px 10px', borderRadius: 4, fontSize: 11, color: '#fff', fontWeight: 600,
+            marginBottom: 6, display: 'inline-block',
+          }}>
+            {isExp ? '▼' : '▶'} View Details ({structured.length})
+          </button>
+        )}
+        {(isExp || structured.length <= 1) && <A1NestedTable items={structured} onOpenSrc={onOpenSrc} />}
+      </div>
+    );
+  }
+
+  if (val.length > 120) {
+    const isExp = expanded.has(cellKey);
+    const displayVal = isExp ? val : val.substring(0, 120) + '…';
+    return (
+      <div>
+        {renderWithPageRefs(displayVal, onOpenSrc)}
+        {' '}
+        <button onClick={() => toggle(cellKey)} style={{
+          background: 'none', border: 'none', padding: 0,
+          fontSize: 11, color: 'var(--nj-core-color-reference-brand-500)',
+          cursor: 'pointer', textDecoration: 'underline', whiteSpace: 'nowrap',
+        }}>
+          {isExp ? 'Show less' : 'Show more'}
+        </button>
+      </div>
+    );
+  }
+
+  return renderWithPageRefs(val, onOpenSrc);
+}
 
 function Agent1View({ rows, onOpenSrc }: { rows: any[][]; onOpenSrc: (p: string) => void }) {
-  const [headerRow, ...dataRows] = rows;
-  const col0Label = String(headerRow?.[0] ?? 'Key Information');
-
-  // Auto-expand all structured-data rows on mount
   const [expanded, setExpanded] = useState<Set<string>>(() => {
     const s = new Set<string>();
-    dataRows.forEach((row, ri) => {
-      if (parsePyList(String(row[1] ?? ''))) s.add(String(ri));
+    rows.forEach((row, ri) => {
+      if (ri === 0) return;
+      row.forEach((cell, ci) => {
+        if (parseStructuredData(String(cell ?? ''))) s.add(`${ri}-${ci}`);
+      });
     });
     return s;
   });
@@ -146,99 +232,61 @@ function Agent1View({ rows, onOpenSrc }: { rows: any[][]; onOpenSrc: (p: string)
     const n = new Set(p); n.has(key) ? n.delete(key) : n.add(key); return n;
   });
 
+  if (!rows || rows.length < 2) return (
+    <div style={{ padding: 32, textAlign: 'center', color: 'var(--nj-core-color-reference-neutral-400)' }}>No data.</div>
+  );
+
+  const [headerRow, ...dataRows] = rows;
+  const pageColIdx = headerRow.findIndex((h: any) => String(h).toLowerCase().trim() === 'page');
+
+  const thSt: React.CSSProperties = {
+    textAlign: 'left', padding: '7px 10px',
+    background: 'var(--nj-semantic-color-background-neutral-secondary-default)',
+    borderBottom: '2px solid var(--nj-semantic-color-border-neutral-minimal-default)',
+    fontSize: 10, fontWeight: 700, color: 'var(--nj-core-color-reference-neutral-500)',
+    letterSpacing: '.07em', whiteSpace: 'nowrap',
+    position: 'sticky', top: 0, zIndex: 1,
+  };
+
   return (
     <div>
-      <div style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-400)', marginBottom: 12 }}>
+      <div style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-400)', marginBottom: 8 }}>
         Showing {dataRows.length} rows
       </div>
-
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <colgroup>
-          <col style={{ width: '38%' }} />
-          <col />
-        </colgroup>
         <thead>
           <tr>
-            <th style={{
-              textAlign: 'left', padding: '7px 12px',
-              background: 'var(--nj-semantic-color-background-neutral-secondary-default)',
-              borderBottom: '2px solid var(--nj-semantic-color-border-neutral-minimal-default)',
-              fontSize: 10, fontWeight: 700, color: 'var(--nj-core-color-reference-neutral-500)',
-              letterSpacing: '.08em',
-            }}>
-              {col0Label.toUpperCase()}
-            </th>
-            <th style={{
-              padding: '7px 12px',
-              background: 'var(--nj-semantic-color-background-neutral-secondary-default)',
-              borderBottom: '2px solid var(--nj-semantic-color-border-neutral-minimal-default)',
-            }} />
+            {headerRow.map((h: any, i: number) => (
+              <th key={i} style={thSt}>{String(h ?? '').toUpperCase()}</th>
+            ))}
           </tr>
         </thead>
         <tbody>
-          {dataRows.map((row, ri) => {
-            const label = String(row[0] ?? '');
-            const rawVal = String(row[1] ?? '').trim();
-            const items = parsePyList(rawVal);
-            const cellKey = String(ri);
-            const isExp = expanded.has(cellKey);
-
-            // Section header: no list value, col[1] empty or not a list
-            if (!items) {
-              if (rawVal && !isNotSpecified(rawVal)) {
+          {dataRows.map((row: any[], ri: number) => (
+            <tr key={ri}
+              onMouseOver={e => (e.currentTarget.style.background = 'var(--nj-semantic-color-background-neutral-secondary-default)')}
+              onMouseOut={e => (e.currentTarget.style.background = '')}
+            >
+              {row.map((cell: any, ci: number) => {
+                const cellKey = `${ri + 1}-${ci}`;
+                const val = cell !== null && cell !== undefined ? String(cell).trim() : '';
+                const isPageCol = pageColIdx !== -1 && ci === pageColIdx;
                 return (
-                  <tr key={ri}>
-                    <td style={{ padding: '10px 12px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)', fontSize: 13, fontWeight: 500, verticalAlign: 'top' }}>
-                      {label}
-                    </td>
-                    <td style={{ padding: '10px 12px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)', fontSize: 13 }}>
-                      {rawVal}
-                    </td>
-                  </tr>
-                );
-              }
-              return (
-                <tr key={ri}>
-                  <td colSpan={2} style={{
-                    padding: '7px 12px',
-                    background: 'var(--nj-semantic-color-background-neutral-secondary-default)',
-                    borderTop: '2px solid var(--nj-semantic-color-border-neutral-minimal-default)',
+                  <td key={ci} style={{
+                    padding: '8px 10px', verticalAlign: 'top', fontSize: 13,
                     borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
-                    fontSize: 11, fontWeight: 700, letterSpacing: '.06em',
-                    color: 'var(--nj-semantic-color-text-neutral-primary-default)',
                   }}>
-                    {label}
+                    {isPageCol
+                      ? val
+                        ? <NJLink href="#" onClick={e => { e.preventDefault(); onOpenSrc(`p.${val}`); }}>p.{val} ↗</NJLink>
+                        : <span style={{ color: 'var(--nj-core-color-reference-neutral-300)', fontStyle: 'italic' }}>—</span>
+                      : <A1Cell cell={cell} cellKey={cellKey} expanded={expanded} toggle={toggle} onOpenSrc={onOpenSrc} />
+                    }
                   </td>
-                </tr>
-              );
-            }
-
-            // Row with structured data
-            return (
-              <tr key={ri} style={{ verticalAlign: 'top' }}>
-                <td style={{ padding: '10px 12px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)', fontSize: 13, fontWeight: 500 }}>
-                  {label}
-                </td>
-                <td style={{ padding: '6px 12px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)' }}>
-                  {items.length > 1 && (
-                    <button
-                      onClick={() => toggle(cellKey)}
-                      style={{
-                        background: 'var(--nj-core-color-reference-brand-500)',
-                        border: 'none', cursor: 'pointer',
-                        padding: '4px 12px', borderRadius: 4,
-                        fontSize: 12, color: '#fff', fontWeight: 600,
-                        marginBottom: 8, display: 'inline-block',
-                      }}
-                    >
-                      {isExp ? '▼' : '▶'} View Details ({items.length} items)
-                    </button>
-                  )}
-                  {(isExp || items.length <= 1) && <NestedTable items={items} onOpenSrc={onOpenSrc} />}
-                </td>
-              </tr>
-            );
-          })}
+                );
+              })}
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
@@ -285,12 +333,12 @@ function Agent2View({ rows, onOpenSrc }: { rows: any[][]; onOpenSrc: (p: string)
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
       <div style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-400)', marginBottom: 8, flexShrink: 0 }}>
         Showing {dataRows.length} rows
       </div>
       {/* Table container with both scrollbars — horizontal always accessible at bottom */}
-      <div style={{ overflowX: 'auto', overflowY: 'auto', flex: 1 }}>
+      <div style={{ overflowX: 'auto', overflowY: 'auto', flex: 1, minHeight: 0 }}>
         <table style={{ borderCollapse: 'collapse', tableLayout: 'fixed', minWidth: A2_COLS.reduce((s, c) => s + c.width, 0) }}>
           <colgroup>
             {A2_COLS.map(c => <col key={c.key} style={{ width: c.width }} />)}
@@ -332,14 +380,15 @@ function Agent2View({ rows, onOpenSrc }: { rows: any[][]; onOpenSrc: (p: string)
                       const display = val.length > 32 ? val.substring(0, 32) + '…' : val;
                       return (
                         <td key={col.key} style={{ ...cellBase }}>
-                          {val && pageRef
-                            ? <NJLink href="#" title={val} onClick={e => { e.preventDefault(); onOpenSrc(pageRef); }}>
-                                {display} ↗
+                          <span style={{ wordBreak: 'break-word' }} title={val}>{display || '—'}</span>
+                          {val && pageRef && (
+                            <>
+                              {' '}
+                              <NJLink href="#" onClick={e => { e.preventDefault(); onOpenSrc(pageRef); }}>
+                                {pageRef} ↗
                               </NJLink>
-                            : <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
-                                {display || '—'}
-                              </span>
-                          }
+                            </>
+                          )}
                         </td>
                       );
                     }
@@ -357,9 +406,7 @@ function Agent2View({ rows, onOpenSrc }: { rows: any[][]; onOpenSrc: (p: string)
 
                     if (col.expandable && col.truncate && val.length > col.truncate) return (
                       <td key={col.key} style={{ ...cellBase }}>
-                        <span style={{ wordBreak: 'break-word' }}>
-                          {isExp ? val : val.substring(0, col.truncate) + '…'}
-                        </span>
+                        {renderWithPageRefs(isExp ? val : val.substring(0, col.truncate) + '…', onOpenSrc)}
                         {' '}
                         <button onClick={() => toggleCell(cellKey)} style={{
                           background: 'none', border: 'none', padding: 0,
@@ -373,7 +420,9 @@ function Agent2View({ rows, onOpenSrc }: { rows: any[][]; onOpenSrc: (p: string)
 
                     return (
                       <td key={col.key} style={{ ...cellBase, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {val || <span style={{ color: 'var(--nj-core-color-reference-neutral-300)', fontStyle: 'italic' }}>—</span>}
+                        {val
+                          ? /p\.\s*\d+/.test(val) ? renderWithPageRefs(val, onOpenSrc) : val
+                          : <span style={{ color: 'var(--nj-core-color-reference-neutral-300)', fontStyle: 'italic' }}>—</span>}
                       </td>
                     );
                   })}
@@ -396,7 +445,10 @@ export default function ResultsModal({ s, handlers }) {
 
   const hasExcel = resultsAgent === 'a1' || resultsAgent === 'a2';
   const sheets = hasExcel ? AGENT_DATA[resultsAgent] ?? {} : {};
-  const sheetNames = Object.keys(sheets);
+  const allSheetNames = Object.keys(sheets);
+  const sheetNames = resultsAgent === 'a1'
+    ? allSheetNames.filter(n => !n.toLowerCase().includes('post'))
+    : allSheetNames;
   const [activeSheet, setActiveSheet] = useState('');
   const currentSheet = activeSheet || sheetNames[0] || '';
   const rows: any[][] = sheets[currentSheet] ?? [];
@@ -455,9 +507,10 @@ export default function ResultsModal({ s, handlers }) {
           </div>
         )}
 
-        {/* Content — Agent 2 uses flex+overflow:hidden so inner div handles both scrollbars */}
+        {/* Content */}
         <div style={{
           flex: 1,
+          minHeight: 0,
           overflowY: isA2 ? 'hidden' : 'auto',
           padding: '16px 20px',
           display: isA2 ? 'flex' : undefined,

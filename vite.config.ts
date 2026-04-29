@@ -8,6 +8,7 @@ import ExcelJS from 'exceljs'
 function xlsxJsonPlugin() {
   return {
     name: 'vite-plugin-xlsx-json',
+    enforce: 'pre' as const,
     resolveId(id: string, importer?: string) {
       if (!id.match(/\.xlsx?$/i)) return null;
       if (importer && !path.isAbsolute(id)) {
