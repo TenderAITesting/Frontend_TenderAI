@@ -6,7 +6,7 @@ export default function UpdateDocsModal({ onClose, onConfirm }) {
       <div className="disc-box fadein" style={{ maxWidth: 480 }} onClick={e => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
           <div style={{ fontSize: 15, fontWeight: 700 }}>Update Documents</div>
-          <NJIconButton icon="close" label="Close" scale="sm" variant="secondary" emphasis="subtle" onClick={onClose} />
+          <NJIconButton icon="close" aria-label="Close" scale="sm" variant="secondary" onClick={onClose} />
         </div>
 
         <NJInlineMessage variant="warning" style={{ marginBottom: 18 }}>

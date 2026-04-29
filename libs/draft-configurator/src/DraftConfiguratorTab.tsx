@@ -116,7 +116,7 @@ export default function DraftConfiguratorTab({ s, handlers }) {
   const refsRef   = useRef(null);
   const inputRefs = { offers: offerRef, methodology: methodRef, refs: refsRef };
 
-  function handleFiles(key, rawFiles) {
+  function handleFiles(key: string, rawFiles: FileList | null) {
     if (!rawFiles) return;
     setFiles(prev => ({
       ...prev,

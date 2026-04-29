@@ -100,19 +100,17 @@ export default function UploadTab({ s, handlers }) {
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4 }}>
                     <NJIconButton
                       icon="visibility"
-                      label="Preview document"
+                      aria-label="Preview document"
                       scale="xs"
                       variant="secondary"
-                      emphasis="subtle"
-                      onClick={() => setPreviewDoc(doc)}
+                                            onClick={() => setPreviewDoc(doc)}
                     />
                     <NJIconButton
                       icon="delete"
-                      label="Remove document"
+                      aria-label="Remove document"
                       scale="xs"
                       variant="secondary"
-                      emphasis="subtle"
-                      onClick={() => deleteDoc(doc.key)}
+                                            onClick={() => deleteDoc(doc.key)}
                     />
                   </div>
                 </td>
@@ -128,6 +126,7 @@ export default function UploadTab({ s, handlers }) {
           <div>
             <div className="inp-label" style={{ marginBottom: 7, textAlign: 'right' }}>TENDER ANALYSIS LANGUAGE</div>
             <NJSelectRoot
+              label="Language"
               listNavigationLabel="Use up and down arrows and Enter to select a language"
               buttonDefaultValueLabel="Select a language"
               value={lang}
@@ -174,7 +173,7 @@ export default function UploadTab({ s, handlers }) {
                 <div style={{ fontSize: 13, fontWeight: 700 }}>{previewDoc.name}</div>
                 <div style={{ fontSize: 11, color: 'var(--nj-core-color-reference-neutral-500)', marginTop: 2 }}>{previewDoc.size} · Uploaded {previewDoc.ago}</div>
               </div>
-              <NJIconButton icon="close" label="Close" scale="sm" variant="secondary" emphasis="subtle" onClick={() => setPreviewDoc(null)} />
+              <NJIconButton icon="close" aria-label="Close" scale="sm" variant="secondary" onClick={() => setPreviewDoc(null)} />
             </div>
             <div style={{ flex: 1, overflowY: 'auto', padding: 24, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 380, background: 'var(--nj-semantic-color-background-neutral-secondary-default)' }}>
               <div style={{ width: '100%', maxWidth: 520, background: 'var(--nj-semantic-color-background-neutral-primary-default)', borderRadius: 8, boxShadow: '0 2px 12px rgba(0,0,0,.08)', padding: '32px 28px', textAlign: 'center' }}>

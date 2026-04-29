@@ -57,7 +57,7 @@ export default function TenderView() {
     activeSection: '1.0',
     templateType: 'standard',
     enrichedOpts: { context: true, offers: true, refs: true, methodology: false },
-    planType: null,
+    planType: 'standard',
     contactOpen: true,
     ...freshDocs(),
   }));
