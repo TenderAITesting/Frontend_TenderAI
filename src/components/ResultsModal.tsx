@@ -295,37 +295,27 @@ function Agent1View({ rows, onOpenSrc }: { rows: any[][]; onOpenSrc: (p: string)
 
 // ─── Agent 2 view ─────────────────────────────────────────────────────────────
 
-type A2ColDef = {
-  key: string; label: string; width: number;
-  expandable?: boolean; truncate?: number;
-  isDoc?: boolean; isSafety?: boolean;
-};
-
-const A2_COLS: A2ColDef[] = [
-  { key: 'short_title',               label: 'short_title',               width: 140 },
-  { key: 'unique_identifier',          label: 'unique_identifier',          width: 72 },
-  { key: 'type_of_requirement',        label: 'type_of_requirement',        width: 100 },
-  { key: 'main_concerned_discipline',  label: 'main_concerned_discipline',  width: 95 },
-  { key: 'client_requirement_text',    label: 'client_requirement_text',    width: 210, expandable: true, truncate: 80 },
-  { key: 're_formulated_requirement',  label: 're_formulated_requirement',  width: 210, expandable: true, truncate: 80 },
-  { key: 'attributes',                 label: 'attributes',                 width: 160, expandable: true, truncate: 55 },
-  { key: 'safety_impact',              label: 'safety_impact',              width: 52,  isSafety: true },
-  { key: 'section',                    label: 'section',                    width: 130 },
-  { key: 'document_name',              label: 'document_name',              width: 170, isDoc: true },
-];
-
 function Agent2View({ rows, onOpenSrc }: { rows: any[][]; onOpenSrc: (p: string) => void }) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
-  const toggleCell = (key: string) => setExpanded(p => { const n = new Set(p); n.has(key) ? n.delete(key) : n.add(key); return n; });
+  const toggle = (key: string) => setExpanded(p => { const n = new Set(p); n.has(key) ? n.delete(key) : n.add(key); return n; });
 
   if (!rows || rows.length < 2) return (
     <div style={{ padding: 32, textAlign: 'center', color: 'var(--nj-core-color-reference-neutral-400)' }}>No data.</div>
   );
 
-  const [header, ...dataRows] = rows;
-  const colIdx: Record<string, number> = {};
-  header.forEach((h: any, i: number) => { colIdx[String(h)] = i; });
+  const [headerRow, ...dataRows] = rows;
+  const headers = headerRow.map((h: any) => String(h ?? '').trim());
+  const pageColIdx = headers.findIndex(h => h.toLowerCase() === 'page');
+  const docColIdx  = headers.findIndex(h => h.toLowerCase() === 'document_name');
 
+  const thSt: React.CSSProperties = {
+    textAlign: 'left', padding: '7px 8px',
+    background: 'var(--nj-semantic-color-background-neutral-secondary-default)',
+    borderBottom: '2px solid var(--nj-semantic-color-border-neutral-minimal-default)',
+    fontWeight: 700, fontSize: 10, color: 'var(--nj-core-color-reference-neutral-500)',
+    letterSpacing: '.05em', whiteSpace: 'nowrap',
+    position: 'sticky', top: 0, zIndex: 1,
+  };
   const cellBase: React.CSSProperties = {
     padding: '5px 8px',
     borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
@@ -337,92 +327,62 @@ function Agent2View({ rows, onOpenSrc }: { rows: any[][]; onOpenSrc: (p: string)
       <div style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-400)', marginBottom: 8, flexShrink: 0 }}>
         Showing {dataRows.length} rows
       </div>
-      {/* Table container with both scrollbars — horizontal always accessible at bottom */}
       <div style={{ overflowX: 'auto', overflowY: 'auto', flex: 1, minHeight: 0 }}>
-        <table style={{ borderCollapse: 'collapse', tableLayout: 'fixed', minWidth: A2_COLS.reduce((s, c) => s + c.width, 0) }}>
-          <colgroup>
-            {A2_COLS.map(c => <col key={c.key} style={{ width: c.width }} />)}
-          </colgroup>
+        <table style={{ borderCollapse: 'collapse', tableLayout: 'auto' }}>
           <thead>
             <tr>
-              {A2_COLS.map(col => (
-                <th key={col.key} style={{
-                  textAlign: 'left', padding: '7px 8px',
-                  background: 'var(--nj-semantic-color-background-neutral-secondary-default)',
-                  borderBottom: '2px solid var(--nj-semantic-color-border-neutral-minimal-default)',
-                  fontWeight: 700, fontSize: 10,
-                  color: 'var(--nj-core-color-reference-neutral-500)',
-                  letterSpacing: '.05em', whiteSpace: 'nowrap',
-                  position: 'sticky', top: 0, zIndex: 1,
-                }}>
-                  {col.label}
-                </th>
+              {headers.map((h, i) => (
+                <th key={i} style={thSt}>{h.toUpperCase()}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {dataRows.map((row: any[], ri: number) => {
-              const pageVal = String(row[colIdx['page']] ?? '').trim();
-              const pageRef = pageVal ? `p.${pageVal}` : '';
 
               return (
                 <tr key={ri}
                   onMouseOver={e => (e.currentTarget.style.background = 'var(--nj-semantic-color-background-neutral-secondary-default)')}
                   onMouseOut={e => (e.currentTarget.style.background = '')}
                 >
-                  {A2_COLS.map(col => {
-                    const raw = row[colIdx[col.key]];
-                    const val = raw !== null && raw !== undefined ? String(raw).trim() : '';
-                    const cellKey = `${ri}-${col.key}`;
-                    const isExp = expanded.has(cellKey);
+                  {row.map((cell: any, ci: number) => {
+                    const val = cell !== null && cell !== undefined ? String(cell).trim() : '';
+                    const cellKey = `${ri}-${ci}`;
+                    const colName = headers[ci]?.toLowerCase() ?? '';
 
-                    if (col.isDoc) {
+                    // Colonne page → lien cliquable
+                    if (ci === pageColIdx) return (
+                      <td key={ci} style={{ ...cellBase }}>
+                        {val
+                          ? <NJLink href="#" onClick={e => { e.preventDefault(); onOpenSrc(`p.${val}`); }}>p.{val} ↗</NJLink>
+                          : <span style={{ color: 'var(--nj-core-color-reference-neutral-300)', fontStyle: 'italic' }}>—</span>}
+                      </td>
+                    );
+
+                    // Colonne document_name → texte seul
+                    if (ci === docColIdx) {
                       const display = val.length > 32 ? val.substring(0, 32) + '…' : val;
                       return (
-                        <td key={col.key} style={{ ...cellBase }}>
+                        <td key={ci} style={{ ...cellBase }}>
                           <span style={{ wordBreak: 'break-word' }} title={val}>{display || '—'}</span>
-                          {val && pageRef && (
-                            <>
-                              {' '}
-                              <NJLink href="#" onClick={e => { e.preventDefault(); onOpenSrc(pageRef); }}>
-                                {pageRef} ↗
-                              </NJLink>
-                            </>
-                          )}
                         </td>
                       );
                     }
 
-                    if (col.isSafety) return (
-                      <td key={col.key} style={{ ...cellBase, textAlign: 'center', fontWeight: 700, fontSize: 10 }}>
+                    // Colonne safety_impact → YES/NO coloré
+                    if (colName === 'safety_impact') return (
+                      <td key={ci} style={{ ...cellBase, textAlign: 'center', fontWeight: 700, fontSize: 10 }}>
                         {val === 'YES'
                           ? <span style={{ color: 'var(--nj-core-color-reference-status-danger-500)' }}>YES</span>
                           : val === 'NO'
                           ? <span style={{ color: 'var(--nj-core-color-reference-neutral-400)' }}>NO</span>
-                          : <span style={{ color: 'var(--nj-core-color-reference-neutral-300)', fontStyle: 'italic' }}>—</span>
-                        }
-                      </td>
-                    );
-
-                    if (col.expandable && col.truncate && val.length > col.truncate) return (
-                      <td key={col.key} style={{ ...cellBase }}>
-                        {renderWithPageRefs(isExp ? val : val.substring(0, col.truncate) + '…', onOpenSrc)}
-                        {' '}
-                        <button onClick={() => toggleCell(cellKey)} style={{
-                          background: 'none', border: 'none', padding: 0,
-                          fontSize: 10, color: 'var(--nj-core-color-reference-brand-500)',
-                          cursor: 'pointer', textDecoration: 'underline', whiteSpace: 'nowrap',
-                        }}>
-                          {isExp ? 'Show less' : 'Show more'}
-                        </button>
-                      </td>
-                    );
-
-                    return (
-                      <td key={col.key} style={{ ...cellBase, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {val
-                          ? /p\.\s*\d+/.test(val) ? renderWithPageRefs(val, onOpenSrc) : val
                           : <span style={{ color: 'var(--nj-core-color-reference-neutral-300)', fontStyle: 'italic' }}>—</span>}
+                      </td>
+                    );
+
+                    // Toutes les autres colonnes → A1Cell (texte long, données structurées, refs)
+                    return (
+                      <td key={ci} style={{ ...cellBase }}>
+                        <A1Cell cell={cell} cellKey={cellKey} expanded={expanded} toggle={toggle} onOpenSrc={onOpenSrc} />
                       </td>
                     );
                   })}
