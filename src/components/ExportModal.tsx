@@ -17,7 +17,7 @@ export default function ExportModal({ exportLang, onSetLang, onConfirm, onClose 
       <div className="disc-box fadein" style={{ maxWidth: 400 }} onClick={e => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <div style={{ fontSize: 15, fontWeight: 700 }}>Export Language</div>
-          <NJIconButton icon="close" label="Close" scale="sm" variant="secondary" emphasis="subtle" onClick={onClose} />
+          <NJIconButton icon="close" aria-label="Close" scale="sm" variant="secondary" onClick={onClose} />
         </div>
 
         <p style={{ fontSize: 13, color: 'var(--nj-core-color-reference-neutral-500)', marginBottom: 18 }}>
@@ -25,7 +25,7 @@ export default function ExportModal({ exportLang, onSetLang, onConfirm, onClose 
         </p>
 
         <div style={{ marginBottom: 24 }}>
-          <NJRadioGroup orientation="vertical" style={{ gap: 10 }}>
+          <NJRadioGroup orientation="column" style={{ gap: 10 }}>
             {LANGS.map(([code, label]) => (
               <NJRadio
                 key={code}

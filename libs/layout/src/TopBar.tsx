@@ -13,7 +13,7 @@ export default function TopBar({ user }) {
         <span style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-500)', fontWeight: 500 }}>
           {user.first} {user.last}
         </span>
-        <NJAvatarRoot scale="sm" initials={user.initials} />
+        <NJAvatarRoot scale="sm" initials={user.initials} label={`${user.first} ${user.last}`} />
       </div>
     </div>
   );

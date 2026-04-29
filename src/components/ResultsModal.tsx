@@ -161,8 +161,8 @@ export default function ResultsModal({ s, handlers }) {
             </div>
           </div>
           <div style={{ display: 'flex', gap: 6 }}>
-            <NJIconButton icon={expanded ? 'fullscreen_exit' : 'fullscreen'} label={expanded ? 'Reduce' : 'Expand'} scale="sm" variant="secondary" emphasis="subtle" onClick={() => setExpanded(v => !v)} />
-            <NJIconButton icon="close" label="Close" scale="sm" variant="secondary" emphasis="subtle" onClick={closeRes} />
+            <NJIconButton icon={expanded ? 'fullscreen_exit' : 'fullscreen'} aria-label={expanded ? 'Reduce' : 'Expand'} scale="sm" variant="secondary" onClick={() => setExpanded(v => !v)} />
+            <NJIconButton icon="close" aria-label="Close" scale="sm" variant="secondary" onClick={closeRes} />
           </div>
         </div>
 
@@ -173,7 +173,6 @@ export default function ResultsModal({ s, handlers }) {
               label="Agent results tabs"
               activeTab={resultsTab}
               onClickTabItem={(id) => setResTab(id)}
-              scale="sm"
             >
               <NJTab id="keyinfo" label="Key Information" aria-controls="panel-keyinfo">
                 <div style={{ overflowY: 'auto', maxHeight: 'calc(88vh - 170px)', padding: '16px 0' }}>

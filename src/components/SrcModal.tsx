@@ -18,7 +18,7 @@ export default function SrcModal({ page, onClose }) {
               </div>
             </div>
           </div>
-          <NJIconButton icon="close" label="Close" scale="sm" variant="secondary" emphasis="subtle" onClick={onClose} />
+          <NJIconButton icon="close" aria-label="Close" scale="sm" variant="secondary" onClick={onClose} />
         </div>
 
         {/* Pages */}
