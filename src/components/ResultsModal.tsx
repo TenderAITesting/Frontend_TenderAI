@@ -27,7 +27,7 @@ interface ResultsModalS {
 interface ResultsModalHandlers {
   onClose: () => void;
   onReRunAI?: () => void;
-  onEdit?: () => void;
+  onUpdateDocs?: () => void;
   onFeedback?: () => void;
   onValidate?: (agent: string) => void;
   openSrc: (p: string) => void;
@@ -171,12 +171,12 @@ function renderWithPageRefs(text: string, openSrc: (p: string) => void): React.R
 
 export default function ResultsModal({ s, handlers }: ResultsModalProps) {
   const { resultsAgent, resultsValidated, file, responsibleName, tenderId, agentName } = s;
-  const { onClose, onReRunAI, onEdit, onFeedback, onValidate, openSrc } = handlers;
+  const { onClose, onReRunAI, onUpdateDocs, onFeedback, onValidate, openSrc } = handlers;
 
   // ── UI state ──
   const [fullscreen, setFullscreen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
+
   const [hasChanges, setHasChanges] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -465,10 +465,14 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
     setExpandedCells(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
-  // ── Save / download functions ──
+  const handleSave = () => {
+    setOriginalSheetData(JSON.parse(JSON.stringify(sheetData)));
+    setHasChanges(false);
+  };
+
+  // ── Download functions ──
 
   const saveAsExcel = async () => {
-    setIsSaving(true);
     try {
       const workbook = XLSX.utils.book_new();
       if (file && !isCsvFile) {
@@ -484,52 +488,12 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
       } else {
         XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(sheetData), activeSheet || 'Sheet1');
       }
-
       const now = new Date();
       const timestamp = now.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, '').replace('T', '_');
       const baseName = tenderId && agentName ? `${tenderId}_${agentName}_${timestamp}` : (file?.name || displayFileName || 'results').replace(/\.[^/.]+$/, `_${timestamp}`);
       XLSX.writeFile(workbook, `${baseName}.xlsx`);
-
-      setOriginalSheetData(JSON.parse(JSON.stringify(sheetData)));
-      setHasChanges(false);
     } catch (e) {
-      console.error('Error saving Excel file:', e);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const saveAsCSV = async () => {
-    try {
-      if (isCsvFile) {
-        const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
-        const csvData = XLSX.utils.sheet_to_csv(worksheet);
-        const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.setAttribute('href', URL.createObjectURL(blob));
-        link.setAttribute('download', (file?.name || displayFileName || 'results').replace(/\.[^/.]+$/, '_edited.csv'));
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } else {
-        // Pour les fichiers Excel, exporter la feuille active en CSV
-        const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
-        const csvData = XLSX.utils.sheet_to_csv(worksheet);
-        const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.setAttribute('href', URL.createObjectURL(blob));
-        const sheetSuffix = activeSheet ? `_${activeSheet}` : '';
-        link.setAttribute('download', (file?.name || displayFileName || 'results').replace(/\.[^/.]+$/, `${sheetSuffix}_edited.csv`));
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-      setOriginalSheetData(JSON.parse(JSON.stringify(sheetData)));
-      setHasChanges(false);
-    } catch (e) {
-      console.error('Error saving CSV file:', e);
+      console.error('Error downloading Excel file:', e);
     }
   };
 
@@ -551,7 +515,6 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
 
   const handleEdit = () => {
     setIsEditing(!isEditing);
-    if (onEdit) onEdit();
   };
 
   const handleValidate = () => {
@@ -820,7 +783,17 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
           </div>
           <div style={{ display: 'flex', gap: 6 }}>
             <NJIconButton icon={fullscreen ? 'fullscreen_exit' : 'fullscreen'} aria-label={fullscreen ? 'Reduce' : 'Expand'} scale="sm" variant="secondary" onClick={() => setFullscreen(v => !v)} />
-            <NJIconButton icon="close" aria-label="Close" scale="sm" variant="secondary" onClick={onClose} />
+            <button
+              aria-label="Close"
+              onClick={onClose}
+              style={{
+                background: 'none', border: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)',
+                borderRadius: 6, width: 32, height: 32,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer', fontSize: 15, lineHeight: 1,
+                color: 'var(--nj-semantic-color-text-neutral-primary-default)',
+              }}
+            >✕</button>
           </div>
         </div>
 
@@ -914,11 +887,11 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
         </div>
 
         {/* ── Footer ── */}
-        <div style={{ padding: '12px 20px', borderTop: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
-          <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ padding: '12px 20px', borderTop: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0, flexWrap: 'wrap', rowGap: 8 }}>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {isResponsible && isEditing ? (
               <>
-                <NJButton variant="primary" emphasis="subtle" scale="sm" icon="save" label={isSaving ? 'Saving…' : 'Save'} onClick={saveAsExcel} disabled={!hasChanges || isSaving} />
+                <NJButton variant="primary" emphasis="subtle" scale="sm" icon="save" label="Save" onClick={handleSave} disabled={!hasChanges} />
                 <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="undo" label="Reset" onClick={resetChanges} disabled={!hasChanges} />
                 <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="close" label="Close Edit" onClick={handleEdit} />
               </>
@@ -926,11 +899,10 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
               <>
                 <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="edit" label="Edit" onClick={handleEdit} />
                 <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="download" label="Download Excel" onClick={saveAsExcel} />
-                <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="download" label="Download CSV" onClick={saveAsCSV} />
                 {file && <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="download" label="Download Original" onClick={handleDownload} />}
                 {onFeedback && <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="thumb_up" label="Feedback" onClick={onFeedback} />}
                 <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="refresh" label="Re-run Agent" onClick={handleReRunAI} />
-                <NJButton variant="primary" emphasis="subtle" scale="sm" icon="upload_file" label="Update Documents" onClick={onEdit} />
+                <NJButton variant="primary" emphasis="subtle" scale="sm" icon="upload_file" label="Update Documents" onClick={onUpdateDocs} />
               </>
             ) : (
               <>

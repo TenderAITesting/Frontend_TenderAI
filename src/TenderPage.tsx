@@ -216,7 +216,7 @@ export default function TenderView() {
     closeUpdateDocs: () => set({ showUpdateDocs: false }),
     confirmUpdateDocs: () => {
       set({ showUpdateDocs: false, docsUpdated: true });
-      navigate(`/tender/${id}/upload`);
+      navigate(`/tender/${id}/documents`);
     },
 
     togContact: () => set(prev => ({ contactOpen: !prev.contactOpen })),
@@ -272,7 +272,7 @@ export default function TenderView() {
         {tenderStep === 'drafting'  && <DraftingStep          s={sc} handlers={handlers} />}
       </div>
 
-      {s.showResults    && <ResultsModal     s={sc} handlers={handlers} />}
+      {s.showResults    && <ResultsModal     s={sc} handlers={{ onClose: handlers.closeRes, onValidate: handlers.validateAgent, onReRunAI: handlers.rerun, onUpdateDocs: handlers.updateDocs, openSrc: handlers.openSrc }} />}
       {s.showDisclaimer && <DisclaimerModal  type={s.showDisclaimer} onClose={handlers.closeDisc} onConfirm={handlers.confirmDisc} />}
       {s.showSrcPage    && <SrcModal         page={s.showSrcPage} onClose={handlers.closeSrc} />}
       {s.showExportModal && <ExportModal     exportLang={s.exportLang} onSetLang={handlers.setExportLang} onConfirm={handlers.confirmExport} onClose={handlers.closeExport} />}
