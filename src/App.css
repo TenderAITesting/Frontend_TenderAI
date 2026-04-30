@@ -1,8 +1,6 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
-
 :root {
-  --nj-core-font-family-sans-serif: 'DM Sans', system-ui, sans-serif;
-  --nj-core-font-family-monospace: 'DM Mono', 'Roboto Mono', monospace;
+  --nj-core-font-family-sans-serif: 'Lato', system-ui, sans-serif;
+  --nj-core-font-family-monospace: 'Roboto Mono', monospace;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -24,7 +22,7 @@ p { line-height: 1.5; }
 ::-webkit-scrollbar-track { background: var(--nj-semantic-color-background-neutral-secondary-default); }
 ::-webkit-scrollbar-thumb { background: var(--nj-semantic-color-border-neutral-subtle-default); border-radius: 4px; }
 
-/* ── Animations ── */
+/* -- Animations -- */
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes fadein { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes pulse-border {
@@ -34,7 +32,7 @@ p { line-height: 1.5; }
 .spin { animation: spin .85s linear infinite; display: inline-block; }
 .fadein { animation: fadein .22s ease; }
 
-/* ── TopBar ── */
+/* -- TopBar -- */
 .topbar {
   background: var(--nj-semantic-color-background-neutral-primary-default);
   border-bottom: 1px solid var(--nj-semantic-color-border-neutral-minimal-default);
@@ -52,7 +50,7 @@ p { line-height: 1.5; }
   letter-spacing: .06em; flex-shrink: 0;
 }
 
-/* ── Step Banner ── */
+/* -- Step Banner -- */
 .step-banner {
   background: var(--nj-semantic-color-background-neutral-primary-default);
   border-bottom: 2px solid var(--nj-semantic-color-border-neutral-minimal-default);
@@ -102,14 +100,14 @@ p { line-height: 1.5; }
 }
 .banner-sep { color: var(--nj-semantic-color-border-neutral-subtle-default); font-size: 16px; flex-shrink: 0; margin: 0 2px; flex: 0 0 auto; }
 
-/* ── Cards ── */
+/* -- Cards -- */
 .card {
   background: var(--nj-semantic-color-background-neutral-primary-default);
   border-radius: 10px;
   border: 1px solid var(--nj-semantic-color-border-neutral-minimal-default);
 }
 
-/* ── Badges ── */
+/* -- Badges -- */
 .ag-badge {
   font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px;
   background: var(--nj-core-color-reference-brand-100);
@@ -118,7 +116,7 @@ p { line-height: 1.5; }
   white-space: nowrap;
 }
 
-/* ── Tables ── */
+/* -- Tables -- */
 .data-table { width: 100%; border-collapse: collapse; }
 .data-table th {
   text-align: left; padding: 11px 16px;
@@ -133,7 +131,9 @@ p { line-height: 1.5; }
   padding: 12px 16px;
   border-bottom: 1px solid var(--nj-semantic-color-border-neutral-minimal-default);
   font-size: 13px; vertical-align: middle;
+  font-variant-numeric: tabular-nums;
 }
+.data-table td:is([data-type="number"], .num) { font-family: var(--nj-core-font-family-monospace); }
 .data-table tbody tr:hover td { background: var(--nj-semantic-color-background-neutral-secondary-default); }
 .data-table tbody tr:last-child td { border-bottom: none; }
 
@@ -161,7 +161,7 @@ p { line-height: 1.5; }
 .mx-table tbody tr:hover td { background: var(--nj-semantic-color-background-neutral-secondary-default); }
 .mx-table tbody tr:last-child td { border-bottom: none; }
 
-/* ── Inputs ── */
+/* -- Inputs -- */
 .inp {
   width: 100%;
   border: 1.5px solid var(--nj-semantic-color-border-neutral-minimal-default);
@@ -180,7 +180,7 @@ p { line-height: 1.5; }
   letter-spacing: .06em; margin-bottom: 5px;
 }
 
-/* ── Modals ── */
+/* -- Modals -- */
 .overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,.42);
   display: flex; align-items: center; justify-content: center; z-index: 700;
@@ -202,7 +202,7 @@ p { line-height: 1.5; }
   padding: 28px; box-shadow: 0 20px 60px rgba(0,0,0,.22); animation: fadein .18s ease;
 }
 
-/* ── Notice boxes ── */
+/* -- Notice boxes -- */
 .warn-box {
   background: var(--nj-core-color-reference-status-warning-100);
   border: 1px solid var(--nj-core-color-reference-status-warning-400);
@@ -216,7 +216,7 @@ p { line-height: 1.5; }
   color: var(--nj-semantic-color-text-status-information-primary-default);
 }
 
-/* ── Proposal nav ── */
+/* -- Proposal nav -- */
 .prop-nav {
   width: 216px;
   background: var(--nj-semantic-color-background-neutral-primary-default);
@@ -241,7 +241,7 @@ p { line-height: 1.5; }
   border-left-color: var(--nj-core-color-reference-brand-500);
 }
 
-/* ── Bottom bar ── */
+/* -- Bottom bar -- */
 .bottom-bar {
   background: var(--nj-semantic-color-background-neutral-primary-default);
   border-top: 1px solid var(--nj-semantic-color-border-neutral-minimal-default);
@@ -249,7 +249,7 @@ p { line-height: 1.5; }
   justify-content: space-between; align-items: center; flex-shrink: 0;
 }
 
-/* ── Agent cards ── */
+/* -- Agent cards -- */
 .agent-card {
   background: var(--nj-semantic-color-background-neutral-primary-default);
   border-radius: 10px; padding: 16px;
@@ -266,17 +266,21 @@ p { line-height: 1.5; }
   50% { box-shadow: 0 0 0 5px transparent; }
 }
 
-/* ── Elapsed inline ── */
+/* -- Numeric utility -- */
+.mono { font-family: var(--nj-core-font-family-monospace); font-variant-numeric: tabular-nums; }
+
+/* -- Elapsed inline -- */
 .elapsed-inline {
   display: inline-flex; align-items: center; gap: 6px;
   background: var(--nj-core-color-reference-status-warning-100);
   border: 1px solid var(--nj-core-color-reference-status-warning-400);
   border-radius: 6px; padding: 4px 10px; font-size: 11px;
+  font-family: var(--nj-core-font-family-monospace);
   color: var(--nj-semantic-color-text-status-warning-contrast-default);
   font-weight: 600; margin-top: 8px;
 }
 
-/* ── Skeleton ── */
+/* -- Skeleton -- */
 .skel-line {
   height: 9px;
   background: var(--nj-semantic-color-background-neutral-tertiary-default);
