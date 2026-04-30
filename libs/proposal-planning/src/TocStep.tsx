@@ -144,12 +144,12 @@ export default function PlanningStep({ s, handlers }) {
         </div>
 
         <div className="bottom-bar">
-          <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="arrow_back" label="Tender Analysis & Validation" onClick={() => goStep('agents')} />
+          <NJButton variant="secondary" emphasis="subtle" scale="md" icon="arrow_back" label="Tender Analysis & Validation" onClick={() => goStep('agents')} />
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
             <NJButton
               variant="secondary"
               emphasis="subtle"
-              scale="sm"
+              scale="md"
               icon={isEditMode ? 'check' : 'edit'}
               label={isEditMode ? 'Done' : 'Edit Structure'}
               onClick={() => setIsEditMode(v => !v)}

@@ -66,10 +66,10 @@ export default function DraftingStep({ s, handlers }) {
         </div>
 
         <div className="bottom-bar">
-          <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="arrow_back" label="Proposal Planning" onClick={() => goStep('planning')} />
+          <NJButton variant="secondary" emphasis="subtle" scale="md" icon="arrow_back" label="Proposal Planning" onClick={() => goStep('planning')} />
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-            <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="edit" label="Edit Section" />
-            <NJButton variant="primary" emphasis="subtle" scale="sm" icon="visibility" label="Preview Full Document" />
+            <NJButton variant="secondary" emphasis="subtle" scale="md" icon="edit" label="Edit Section" />
+            <NJButton variant="primary" emphasis="subtle" scale="md" icon="visibility" label="Preview Full Document" />
             <NJButton
               variant="primary"
               icon="download"

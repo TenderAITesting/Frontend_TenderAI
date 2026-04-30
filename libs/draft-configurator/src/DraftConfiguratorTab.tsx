@@ -50,7 +50,7 @@ function FileUploadZone({ cardKey, files, dragOver, setDragOver, onFiles, onRemo
           <NJButton
             variant="secondary"
             emphasis="subtle"
-            scale="sm"
+            scale="md"
             icon="upload"
             label="Browse files"
             onClick={onBrowse}
@@ -320,7 +320,7 @@ export default function DraftConfiguratorTab({ s, handlers }) {
 
       {/* Bottom bar */}
       <div className="bottom-bar">
-        <NJButton variant="secondary" emphasis="subtle" scale="sm" icon="arrow_back" label="Tender Analysis" onClick={() => goStep('agents')} />
+        <NJButton variant="secondary" emphasis="subtle" scale="md" icon="arrow_back" label="Tender Analysis" onClick={() => goStep('agents')} />
         <NJButton
           variant="primary"
           icon="rocket_launch"
