@@ -3,10 +3,11 @@ import * as XLSX from 'xlsx';
 import { NJButton, NJIconButton, NJLink } from '@engie-group/fluid-design-system-react';
 import agent1Data from '../data/Agent1.xlsx';
 import agent2Data from '../data/Agent2.xlsx';
+import { A3_STATIC_DATA } from '../data/constants';
 
 // ─── Static fallback data ─────────────────────────────────────────────────────
 
-const AGENT_DATA: Record<string, Record<string, any[][]>> = { a1: agent1Data, a2: agent2Data };
+const AGENT_DATA: Record<string, Record<string, any[][]>> = { a1: agent1Data, a2: agent2Data, a3: A3_STATIC_DATA };
 const AGENT_TITLES: Record<string, string> = {
   a1: 'Tender Key Information',
   a2: 'Technical Requirements — Results',
@@ -654,6 +655,19 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
         : <span style={{ color: 'var(--nj-core-color-reference-neutral-300)', fontStyle: 'italic' }}>—</span>;
     }
 
+    // Risk score column → colored HIGH / MEDIUM / LOW badge
+    if (header === 'risk_score') {
+      const scoreStyles: Record<string, React.CSSProperties> = {
+        HIGH:   { color: '#c62828', background: 'rgba(198,40,40,0.10)',   border: '1px solid rgba(198,40,40,0.25)' },
+        MEDIUM: { color: '#e65100', background: 'rgba(230,81,0,0.10)',    border: '1px solid rgba(230,81,0,0.25)' },
+        LOW:    { color: '#2e7d32', background: 'rgba(46,125,50,0.10)',   border: '1px solid rgba(46,125,50,0.25)' },
+      };
+      const st = scoreStyles[cellValue];
+      return st
+        ? <span style={{ fontWeight: 700, fontSize: 11, padding: '3px 10px', borderRadius: 12, whiteSpace: 'nowrap', ...st }}>{cellValue}</span>
+        : <span style={{ color: 'var(--nj-core-color-reference-neutral-300)', fontStyle: 'italic' }}>—</span>;
+    }
+
     const structuredData = parseStructuredData(cellValue);
     const cellKey = `${rowIndex}-${cellIndex}`;
 
@@ -747,7 +761,7 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
     fontSize: 13, fontWeight: 700, padding: '0 2px', lineHeight: 1,
   };
 
-  const hasExcel = resultsAgent === 'a1' || resultsAgent === 'a2' || !!file;
+  const hasExcel = resultsAgent === 'a1' || resultsAgent === 'a2' || resultsAgent === 'a3' || !!file;
   const hasData = sheetData.length > 0;
   const isResponsible = !responsibleName; // En l'absence d'auth, tout le monde peut éditer
 
