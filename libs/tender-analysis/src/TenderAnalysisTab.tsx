@@ -14,7 +14,6 @@ export default function TenderAnalysisTab({ s, handlers, fmtTime }) {
     {
       id: 'a1', icon: 'manage_search',
       title: 'Tender Key Information',
-      subtitle: 'Key dates & criteria',
       desc: 'Extracts key dates, mandatory criteria, submission requirements, and pre-award activities from the tender documents.',
       accent: 'var(--nj-core-color-reference-brand-500)',
       accentBg: 'var(--nj-core-color-reference-brand-100)',
@@ -24,7 +23,6 @@ export default function TenderAnalysisTab({ s, handlers, fmtTime }) {
     {
       id: 'a2', icon: 'checklist',
       title: 'Technical Requirements',
-      subtitle: 'Architecture & capabilities',
       desc: 'Maps all technical architecture requirements to company capabilities, identifying gaps and strengths.',
       accent: '#0066b3',
       accentBg: 'var(--nj-core-color-reference-brand-200)',
@@ -34,7 +32,6 @@ export default function TenderAnalysisTab({ s, handlers, fmtTime }) {
     {
       id: 'a3', icon: 'gpp_maybe',
       title: 'Project Risks',
-      subtitle: 'Legal & compliance risks',
       desc: 'Identifies legal liabilities, operational constraints, and compliance risks across all tender documents.',
       accent: '#1C2691',
       accentBg: 'var(--nj-core-color-reference-brand-300)',
@@ -82,7 +79,7 @@ export default function TenderAnalysisTab({ s, handlers, fmtTime }) {
                     ? '0 0 0 3px var(--nj-semantic-color-background-status-success-subtle-default)'
                     : '0 2px 12px rgba(0,0,0,.06)',
                   display: 'flex', flexDirection: 'column',
-                  minHeight: 400,
+                  minHeight: 300,
                   padding: 0, overflow: 'hidden', borderRadius: 12,
                   transition: 'box-shadow .2s, border-color .2s',
                 }}
