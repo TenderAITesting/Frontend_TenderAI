@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
-import { NJButton, NJIconButton, NJLink } from '@engie-group/fluid-design-system-react';
+import { NJButton, NJLink } from '@engie-group/fluid-design-system-react';
 import agent1Data from '../data/Agent1.xlsx';
 import agent2Data from '../data/Agent2.xlsx';
 import { A3_STATIC_DATA } from '../data/constants';
@@ -175,7 +175,7 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
   const { onClose, onReRunAI, onUpdateDocs, onFeedback, onValidate, openSrc } = handlers;
 
   // ── UI state ──
-  const [fullscreen, setFullscreen] = useState(false);
+  const [fullscreen] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
 
   const [hasChanges, setHasChanges] = useState(false);
@@ -796,7 +796,6 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
             </div>
           </div>
           <div style={{ display: 'flex', gap: 6 }}>
-            <NJIconButton icon={fullscreen ? 'fullscreen_exit' : 'fullscreen'} aria-label={fullscreen ? 'Reduce' : 'Expand'} scale="sm" variant="secondary" onClick={() => setFullscreen(v => !v)} />
             <button
               aria-label="Close"
               onClick={onClose}
