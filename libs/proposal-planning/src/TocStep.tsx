@@ -241,10 +241,8 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
   // Collapsible right panel blocks
   const [guidanceOpen, setGuidanceOpen] = useState(true);
   const [gapsOpen, setGapsOpen] = useState(true);
-  const [actionsOpen, setActionsOpen] = useState(true);
 
-  // Rearrange mode (drag & drop)
-  const [rearrangeMode, setRearrangeMode] = useState(false);
+  // Drag & drop (always active)
   const dragId = useRef<number | null>(null);
 
   // Delete mode: shows "−" on each row
@@ -399,7 +397,7 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
 
         {/* ── LEFT PANEL ─────────────────────────────────────────────────────── */}
         <div style={{
-          width: '52%', display: 'flex', flexDirection: 'column', overflow: 'hidden',
+          width: '45%', display: 'flex', flexDirection: 'column', overflow: 'hidden',
           borderRight: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
           background: 'var(--nj-semantic-color-background-neutral-primary-default)',
         }}>
@@ -414,46 +412,19 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
             <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--nj-core-color-reference-brand-500)' }}>
               Golden Table of Contents
             </span>
-            <div style={{ display: 'flex', gap: 8 }}>
-              {rearrangeMode ? (
-                <NJButton variant="primary" scale="sm" label="Done" onClick={() => setRearrangeMode(false)} />
-              ) : deleteMode ? (
-                <NJButton
-                  variant="secondary" emphasis="subtle" scale="sm" icon="close"
-                  label="Cancel"
-                  onClick={() => { setDeleteMode(false); setDeleteConfirmId(null); }}
-                />
-              ) : (
-                <>
-                  <NJButton
-                    variant="primary" scale="sm" icon="add" label="Add section"
-                    onClick={() => { setShowAddSection(true); setNewSectionTitle(''); }}
-                  />
-                  <NJButton
-                    variant="secondary" emphasis="subtle" scale="sm" icon="delete"
-                    label="Delete section"
-                    onClick={() => { setDeleteMode(true); setDeleteConfirmId(null); }}
-                  />
-                  <NJButton
-                    variant="secondary" emphasis="subtle" scale="sm"
-                    icon="swap_vert" label="Rearrange sections"
-                    onClick={() => setRearrangeMode(true)}
-                  />
-                </>
-              )}
-            </div>
+            <div />
           </div>
 
           {/* Column headers */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: rearrangeMode ? '20px 36px 1fr auto' : deleteMode ? '36px 1fr auto 28px' : '36px 1fr auto',
+            gridTemplateColumns: deleteMode ? '20px 36px 1fr auto 28px' : '20px 36px 1fr auto',
             padding: '7px 12px', flexShrink: 0,
             background: 'var(--nj-semantic-color-background-neutral-secondary-default)',
             borderBottom: '1.5px solid var(--nj-semantic-color-border-neutral-minimal-default)',
             gap: 4,
           }}>
-            {rearrangeMode && <span />}
+            <span />
             <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--nj-core-color-reference-neutral-500)', letterSpacing: '.06em' }}>#</span>
             <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--nj-core-color-reference-neutral-500)', letterSpacing: '.06em' }}>SECTION / SUBSECTION</span>
             <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--nj-core-color-reference-neutral-500)', letterSpacing: '.06em', textAlign: 'right' }}>CONFIDENCE</span>
@@ -471,21 +442,17 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
                 <div key={sec.id}>
                   {/* Parent row */}
                   <div
-                    draggable={rearrangeMode}
+                    draggable={true}
                     onDragStart={() => handleDragStart(sec.id)}
                     onDragOver={handleDragOver}
                     onDrop={() => handleDrop(sec.id)}
                     onClick={() => handleSelect(String(sec.id))}
                     style={{
                       display: 'grid',
-                      gridTemplateColumns: rearrangeMode
-                        ? '20px 36px 1fr auto'
-                        : deleteMode
-                          ? '36px 1fr auto 28px'
-                          : '36px 1fr auto',
+                      gridTemplateColumns: deleteMode ? '20px 36px 1fr auto 28px' : '20px 36px 1fr auto',
                       alignItems: 'center',
                       padding: '10px 12px',
-                      cursor: rearrangeMode ? 'grab' : 'pointer',
+                      cursor: 'grab',
                       borderLeft: isSecSelected
                         ? '3px solid var(--nj-core-color-reference-brand-500)'
                         : '3px solid transparent',
@@ -500,9 +467,7 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
                     onMouseLeave={e => { if (!isSecSelected) e.currentTarget.style.background = 'transparent'; }}
                   >
                     {/* Drag handle */}
-                    {rearrangeMode && (
-                      <span style={{ fontSize: 14, color: 'var(--nj-core-color-reference-neutral-400)', cursor: 'grab', lineHeight: 1, userSelect: 'none' }}>⠿</span>
-                    )}
+                    <span style={{ fontSize: 14, color: 'var(--nj-core-color-reference-neutral-400)', cursor: 'grab', lineHeight: 1, userSelect: 'none' }}>⠿</span>
 
                     {/* Number */}
                     <span style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-400)', fontFamily: "'DM Mono', monospace", alignSelf: 'start', paddingTop: 1 }}>
@@ -615,6 +580,34 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
                 </div>
               );
             })}
+
+            {/* Bottom toolbar: Add / Delete */}
+            <div style={{
+              flexShrink: 0,
+              padding: '8px 12px',
+              borderTop: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
+              display: 'flex', gap: 8, justifyContent: 'center',
+            }}>
+              {deleteMode ? (
+                <NJButton
+                  variant="secondary" emphasis="subtle" scale="sm" icon="close"
+                  label="Cancel"
+                  onClick={() => { setDeleteMode(false); setDeleteConfirmId(null); }}
+                />
+              ) : (
+                <>
+                  <NJButton
+                    variant="primary" scale="sm" icon="add" label="Add section"
+                    onClick={() => { setShowAddSection(true); setNewSectionTitle(''); }}
+                  />
+                  <NJButton
+                    variant="secondary" emphasis="subtle" scale="sm" icon="delete"
+                    label="Delete section"
+                    onClick={() => { setDeleteMode(true); setDeleteConfirmId(null); }}
+                  />
+                </>
+              )}
+            </div>
 
             {/* Add section inline form */}
             {showAddSection && (
@@ -741,17 +734,17 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
               )}
             </CollapsibleBlock>
 
-            {/* Actions */}
-            <CollapsibleBlock iconText="&#9889;" title="Actions" open={actionsOpen} onToggle={() => setActionsOpen(v => !v)}>
+            {/* Edit / Save / Cancel */}
+            <div style={{ padding: '12px 14px', display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
               {editMode ? (
-                <div style={{ display: 'flex', gap: 10 }}>
+                <>
                   <NJButton variant="primary" scale="md" icon="save" label="Save changes" onClick={saveEdit} />
                   <NJButton variant="secondary" emphasis="subtle" scale="md" label="Cancel" onClick={cancelEdit} />
-                </div>
+                </>
               ) : (
                 <NJButton variant="secondary" emphasis="subtle" scale="md" icon="edit" label="Edit" onClick={startEdit} />
               )}
-            </CollapsibleBlock>
+            </div>
 
           </div>
         </div>
