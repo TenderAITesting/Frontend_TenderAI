@@ -14,8 +14,8 @@ export default function TenderAnalysisTab({ s, handlers, fmtTime }) {
     {
       id: 'a1', icon: 'manage_search',
       title: 'Tender Key Information',
-      desc: 'Extracts key dates, mandatory criteria, submission requirements, and pre-award activities from the tender documents.',
-      accent: 'var(--nj-core-color-reference-brand-500)',
+      desc: 'Extracts key tender facts, submission requirements, timelines, and pre-award activities.',
+      accent: 'var(--nj-core-color-reference-brand-400)',
       accentBg: 'var(--nj-core-color-reference-brand-100)',
       status: !sel.a1 ? 'not_selected' : resultsValidated.a1 ? 'validated' : (processing || !isNew) ? 'completed' : 'pending',
       time: '09:14', hasView: true,
@@ -23,8 +23,8 @@ export default function TenderAnalysisTab({ s, handlers, fmtTime }) {
     {
       id: 'a2', icon: 'checklist',
       title: 'Technical Requirements',
-      desc: 'Maps all technical architecture requirements to company capabilities, identifying gaps and strengths.',
-      accent: '#0066b3',
+      desc: 'Extracts and structures technical requirements from the tender documents.',
+      accent: 'var(--nj-core-color-reference-brand-600)',
       accentBg: 'var(--nj-core-color-reference-brand-200)',
       status: !sel.a2 ? 'not_selected' : resultsValidated.a2 ? 'validated' : (processing || !isNew) ? 'completed' : 'pending',
       time: '09:31', hasView: true,
@@ -32,8 +32,8 @@ export default function TenderAnalysisTab({ s, handlers, fmtTime }) {
     {
       id: 'a3', icon: 'gpp_maybe',
       title: 'Project Risks',
-      desc: 'Identifies legal liabilities, operational constraints, and compliance risks across all tender documents.',
-      accent: '#1C2691',
+      desc: 'Identifies technical, commercial, contractual, and delivery risks based on tender context and requirements.',
+      accent: 'var(--nj-core-color-reference-brand-800)',
       accentBg: 'var(--nj-core-color-reference-brand-300)',
       status: !sel.a3 ? 'not_selected' : resultsValidated.a3 ? 'validated' : (processing || !isNew) ? (!isNew ? 'completed' : 'running') : 'pending',
       time: '09:47', hasView: !isNew,
@@ -77,7 +77,7 @@ export default function TenderAnalysisTab({ s, handlers, fmtTime }) {
                   border: `1.5px solid ${borderColor}`,
                   boxShadow: isValidated
                     ? '0 0 0 3px var(--nj-semantic-color-background-status-success-subtle-default)'
-                    : '0 2px 12px rgba(0,0,0,.06)',
+                    : 'var(--nj-semantic-elevation-shadow-2-dp)',
                   display: 'flex', flexDirection: 'column',
                   minHeight: 300,
                   padding: 0, overflow: 'hidden', borderRadius: 12,

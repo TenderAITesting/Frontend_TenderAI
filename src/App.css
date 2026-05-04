@@ -42,7 +42,7 @@ p { line-height: 1.5; }
   padding: 0 24px;
   display: flex; align-items: center; justify-content: space-between;
   position: sticky; top: 0; z-index: 500;
-  box-shadow: 0 1px 4px rgba(0,0,0,.04);
+  box-shadow: var(--nj-semantic-elevation-shadow-2-dp);
   flex-shrink: 0;
 }
 .logo { color: var(--nj-core-color-reference-brand-500); font-weight: 700; font-size: 15px; letter-spacing: -.3px; }
@@ -191,7 +191,7 @@ p { line-height: 1.5; }
   background: var(--nj-semantic-color-background-neutral-primary-default);
   border-radius: 12px; width: 93%; max-width: 860px;
   max-height: 88vh; overflow: hidden; display: flex; flex-direction: column;
-  box-shadow: 0 24px 60px rgba(0,0,0,.24); animation: fadein .2s ease;
+  box-shadow: var(--nj-semantic-elevation-shadow-24-dp); animation: fadein .2s ease;
 }
 
 .disc-overlay {
@@ -201,7 +201,7 @@ p { line-height: 1.5; }
 .disc-box {
   background: var(--nj-semantic-color-background-neutral-primary-default);
   border-radius: 12px; width: 92%; max-width: 460px;
-  padding: 28px; box-shadow: 0 20px 60px rgba(0,0,0,.22); animation: fadein .18s ease;
+  padding: 28px; box-shadow: var(--nj-semantic-elevation-shadow-16-dp); animation: fadein .18s ease;
 }
 
 /* -- Notice boxes -- */
@@ -211,7 +211,7 @@ p { line-height: 1.5; }
   border-radius: 8px; padding: 11px 16px; display: flex; gap: 10px; align-items: flex-start;
 }
 .info-box {
-  background: var(--nj-semantic-color-background-status-information-secondary-default, #EEF8FF);
+  background: var(--nj-semantic-color-background-status-information-secondary-default);
   border: 1px solid var(--nj-semantic-color-border-status-information-subtle-default);
   border-radius: 8px; padding: 10px 14px; display: flex; gap: 8px;
   font-size: 12px;

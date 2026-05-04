@@ -176,7 +176,7 @@ export default function UploadTab({ s, handlers }) {
               <NJIconButton icon="close" aria-label="Close" scale="sm" variant="secondary" onClick={() => setPreviewDoc(null)} />
             </div>
             <div style={{ flex: 1, overflowY: 'auto', padding: 24, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 380, background: 'var(--nj-semantic-color-background-neutral-secondary-default)' }}>
-              <div style={{ width: '100%', maxWidth: 520, background: 'var(--nj-semantic-color-background-neutral-primary-default)', borderRadius: 8, boxShadow: '0 2px 12px rgba(0,0,0,.08)', padding: '32px 28px', textAlign: 'center' }}>
+              <div style={{ width: '100%', maxWidth: 520, background: 'var(--nj-semantic-color-background-neutral-primary-default)', borderRadius: 8, boxShadow: 'var(--nj-semantic-elevation-shadow-2-dp)', padding: '32px 28px', textAlign: 'center' }}>
                 <NJIcon name="description" style={{ fontSize: 56, color: 'var(--nj-core-color-reference-brand-500)', marginBottom: 14 }} />
                 <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 6 }}>{previewDoc.name}</div>
                 <div style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-500)', marginBottom: 20 }}>{previewDoc.size}</div>

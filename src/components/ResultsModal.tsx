@@ -658,9 +658,9 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
     // Risk score column → colored HIGH / MEDIUM / LOW badge
     if (header === 'risk_score') {
       const scoreStyles: Record<string, React.CSSProperties> = {
-        HIGH:   { color: '#c62828', background: 'rgba(198,40,40,0.10)',   border: '1px solid rgba(198,40,40,0.25)' },
-        MEDIUM: { color: '#e65100', background: 'rgba(230,81,0,0.10)',    border: '1px solid rgba(230,81,0,0.25)' },
-        LOW:    { color: '#2e7d32', background: 'rgba(46,125,50,0.10)',   border: '1px solid rgba(46,125,50,0.25)' },
+        HIGH:   { color: 'var(--nj-core-color-reference-status-danger-700)',  background: 'var(--nj-core-color-reference-status-danger-100)',  border: '1px solid var(--nj-core-color-reference-status-danger-200)'  },
+        MEDIUM: { color: 'var(--nj-core-color-reference-status-warning-600)', background: 'var(--nj-core-color-reference-status-warning-100)', border: '1px solid var(--nj-core-color-reference-status-warning-300)' },
+        LOW:    { color: 'var(--nj-core-color-reference-status-success-700)', background: 'var(--nj-core-color-reference-status-success-100)', border: '1px solid var(--nj-core-color-reference-status-success-300)' },
       };
       const st = scoreStyles[cellValue];
       return st
