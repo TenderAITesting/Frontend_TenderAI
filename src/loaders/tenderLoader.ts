@@ -1,33 +1,24 @@
 import type { QueryClient } from '@tanstack/react-query';
 import type { LoaderFunctionArgs } from 'react-router-dom';
 import { httpClient } from '../../libs/http-client';
-import { getMockTenders } from '../data/mockStore';
+import { toFrontendTender } from '../../libs/http-client/tenderMapper';
 
-const USE_MOCK = true; // TODO: BACKEND — passer à false
-
-// Factory : reçoit queryClient pour précharger le tender avant le rendu.
-// En mode mock : no-op — useTender() lit depuis le mockStore.
-// En mode backend : prefetchQuery(['tender', id]) pour un rendu instantané.
+// Prefetch GET /tenders/:id so the route renders without a waterfall.
+// Errors are swallowed — useTender() will retry and surface the error if needed.
 export function tenderLoader(queryClient: QueryClient) {
   return async ({ params }: LoaderFunctionArgs): Promise<null> => {
     const { id } = params;
-    if (USE_MOCK || !id) return null;
+    if (!id) return null;
     try {
       await queryClient.prefetchQuery({
         queryKey: ['tender', id],
-        queryFn: async () => {
-          try {
-            return await httpClient.get(`/tenders/${id}`); // TODO: BACKEND — GET /tenders/:id
-          } catch {
-            // Fallback mocké si le backend est inaccessible
-            return getMockTenders().find((t: any) => t.id === id) ?? null;
-          }
-        },
+        queryFn: async () => toFrontendTender(await httpClient.get<any>(`/tenders/${id}`)),
         staleTime: 30_000,
       });
     } catch {
-      // Fallback silencieux — useTender() retournera les données mockées
+      /* useTender() will handle */
     }
     return null;
   };
 }
+

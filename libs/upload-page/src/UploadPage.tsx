@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
 import { NJButton, NJFormItem, NJHeading, NJText } from '@engie-group/fluid-design-system-react';
 import { USER } from '../../../src/data/constants';
 import { useTenders } from '../../homepage/model/useTenders';
@@ -21,39 +20,45 @@ export default function NewProjectView() {
     lastName:    USER.last,
     firstName:   USER.first,
   });
+  const [submitting, setSubmitting] = useState(false);
 
   const updateForm = (field: string, value: string) =>
     setForm(prev => ({ ...prev, [field]: value }));
-  const canSubmit = form.name.trim().length > 0;
+  const canSubmit = form.name.trim().length > 0 && !submitting;
 
-  const handleSubmit = () => {
-    if (editMode) {
-      // TODO: BACKEND — PATCH /tenders/:id
-      updateTender(editingTenderId!, {
-        name:      form.name      || editingTender.name,
-        client:    form.client    || editingTender.client,
-        projectId: form.projectId || editingTender.projectId,
+  const handleSubmit = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      if (editMode) {
+        updateTender(editingTenderId!, {
+          name:      form.name      || editingTender.name,
+          client:    form.client    || editingTender.client,
+          projectId: form.projectId || editingTender.projectId,
+        });
+        navigate('/homepage');
+        return;
+      }
+
+      // POST /tenders — backend assigns the UUID; await it before navigating.
+      const created = await addTender({
+        name:        form.name || 'New Tender',
+        client:      form.client,
+        projectId:   form.projectId.trim(),
+        user:        `${form.firstName} ${form.lastName}`.trim(),
+        maxStepIdx:  0,
+        lastStep:    'documents',
+        selected_agents: [],
       });
-      navigate('/homepage');
-      return;
+
+      // isNew = true pour verrouiller la navigation en avant dans le stepper
+      navigate(`/tender/${created.id}`, { state: { isNew: true } });
+    } catch (err) {
+      console.error('Failed to create tender', err);
+      alert('Failed to create tender. Is the backend running on http://localhost:8000?');
+    } finally {
+      setSubmitting(false);
     }
-
-    // TODO: BACKEND — POST /tenders — générer l'ID côté serveur
-    const newId = uuidv4();
-    const newTender = {
-      id:          newId,
-      name:        form.name || 'New Tender',
-      client:      form.client,
-      projectId:   form.projectId.trim(),
-      modified:    new Date().toLocaleDateString('fr-FR'),
-      maxStepIdx:  0,
-      lastStep:    'documents',
-      status:      'uploaded',
-    };
-
-    addTender(newTender);
-    // isNew = true pour verrouiller la navigation en avant dans le stepper
-    navigate(`/tender/${newId}`, { state: { isNew: true } });
   };
 
   return (

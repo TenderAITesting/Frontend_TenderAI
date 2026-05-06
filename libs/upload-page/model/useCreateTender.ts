@@ -1,38 +1,33 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { getMockTenders, setMockTenders } from '../../../src/data/mockStore';
 import { httpClient } from '../../http-client';
+import {
+  splitUpdatePatch,
+  toCreateTenderPayload,
+  toFrontendTender,
+} from '../../http-client/tenderMapper';
 
-const USE_MOCK = true; // TODO: BACKEND — passer à false et connecter l'API
-
-// Hook dédié à la création via upload de document.
-// En mode backend : POST /documents/process_document (upload + création tender)
-//   Réponse attendue : { id: string, progressId: string }
-//   Puis polling GET /tenders/progress/:progressId jusqu'à completion
-//   Puis redirect vers /tender/:id?autoStart=true
+// Optional helper for upload-driven tender creation.
+// For metadata-only creation, prefer useTenders().addTender from libs/homepage.
 export function useCreateTender() {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: USE_MOCK
-      ? async (tender: any) => {
-          setMockTenders([tender, ...getMockTenders()]);
-          return tender;
-        }
-      : async (tender: any) => {
-          try {
-            return await httpClient.post('/documents/process_document', tender); // TODO: BACKEND
-          } catch {
-            // Fallback mocké si le backend est inaccessible
-            setMockTenders([tender, ...getMockTenders()]);
-            return tender;
-          }
-        },
+    mutationFn: async (tender: any) => {
+      const created = await httpClient.post<any>('/tenders', toCreateTenderPayload(tender));
+      splitUpdatePatch(created.id, {
+        projectId: tender.projectId,
+        maxStepIdx: tender.maxStepIdx ?? 0,
+        lastStep: tender.lastStep ?? 'documents',
+      });
+      return toFrontendTender(created);
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tenders'] }),
   });
 
   return {
-    createTender: (tender: any) => mutation.mutate(tender),
+    createTender: (tender: any) => mutation.mutateAsync(tender),
     isLoading: mutation.isPending,
     error: mutation.error,
   };
 }
+

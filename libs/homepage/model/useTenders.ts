@@ -1,44 +1,47 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getMockTenders, setMockTenders } from '../../../src/data/mockStore';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { httpClient } from '../../http-client';
+import {
+  deleteSidecar,
+  splitUpdatePatch,
+  toCreateTenderPayload,
+  toFrontendTender,
+  toFrontendTenders,
+} from '../../http-client/tenderMapper';
 
-const USE_MOCK = true; // TODO: BACKEND — passer à false et connecter l'API
-
+// React Query hook wired to the local backend (DEBUG=true).
+// Returns tenders in the frontend shape (mapper handles backend <-> FE mapping).
 export function useTenders() {
   const queryClient = useQueryClient();
 
   const { data = [], isLoading, error } = useQuery({
     queryKey: ['tenders'],
-    queryFn: USE_MOCK
-      ? async () => [...getMockTenders()]
-      : async () => {
-          try {
-            return await httpClient.get('/tenders');
-          } catch {
-            // Fallback mocké si le backend est inaccessible
-            return [...getMockTenders()];
-          }
-        },
-    staleTime: USE_MOCK ? Infinity : 30_000,
+    queryFn: async () => toFrontendTenders(await httpClient.get<any[]>('/tenders')),
+    staleTime: 30_000,
   });
 
   const addMutation = useMutation({
-    mutationFn: USE_MOCK
-      ? async (tender: any) => {
-          setMockTenders([tender, ...getMockTenders()]);
-          return tender;
-        }
-      : (tender: any) => httpClient.post('/tenders', tender), // TODO: BACKEND — POST /tenders
+    mutationFn: async (tender: any) => {
+      const payload = toCreateTenderPayload(tender);
+      const created = await httpClient.post<any>('/tenders', payload);
+      // Persist FE-only fields (projectId, maxStepIdx, lastStep) in the sidecar
+      splitUpdatePatch(created.id, {
+        projectId: tender.projectId,
+        maxStepIdx: tender.maxStepIdx ?? 0,
+        lastStep: tender.lastStep ?? 'documents',
+      });
+      return toFrontendTender(created);
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tenders'] }),
   });
 
   const updateMutation = useMutation({
-    mutationFn: USE_MOCK
-      ? async ({ id, patch }: { id: string; patch: Record<string, any> }) => {
-          setMockTenders(getMockTenders().map(t => (t.id === id ? { ...t, ...patch } : t)));
-        }
-      : ({ id, patch }: { id: string; patch: Record<string, any> }) =>
-          httpClient.patch(`/tenders/${id}`, patch), // TODO: BACKEND — PATCH /tenders/:id
+    mutationFn: async ({ id, patch }: { id: string; patch: Record<string, any> }) => {
+      const { backend } = splitUpdatePatch(id, patch);
+      if (backend) {
+        await httpClient.put(`/tenders/${id}`, backend);
+      }
+      return { id };
+    },
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ['tenders'] });
       queryClient.invalidateQueries({ queryKey: ['tender', id] });
@@ -46,11 +49,10 @@ export function useTenders() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: USE_MOCK
-      ? async (id: string) => {
-          setMockTenders(getMockTenders().filter(t => t.id !== id));
-        }
-      : (id: string) => httpClient.delete(`/tenders/${id}`), // TODO: BACKEND — DELETE /tenders/:id
+    mutationFn: async (id: string) => {
+      await httpClient.delete(`/tenders/${id}`);
+      deleteSidecar(id);
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tenders'] }),
   });
 
@@ -58,8 +60,11 @@ export function useTenders() {
     data,
     isLoading,
     error,
-    addTender: (tender: any) => addMutation.mutate(tender),
-    updateTender: (id: string, patch: Record<string, any>) => updateMutation.mutate({ id, patch }),
+    // addTender returns a Promise so callers can navigate using the backend-assigned id.
+    addTender: (tender: any) => addMutation.mutateAsync(tender),
+    updateTender: (id: string, patch: Record<string, any>) =>
+      updateMutation.mutate({ id, patch }),
     deleteTender: (id: string) => deleteMutation.mutate(id),
   };
 }
+

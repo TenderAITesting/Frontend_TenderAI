@@ -1,66 +1,44 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getMockTenders } from '../data/mockStore';
 import { httpClient } from '../../libs/http-client';
+import { toFrontendTender } from '../../libs/http-client/tenderMapper';
 
-const USE_MOCK = true; // TODO: BACKEND — passer à false et connecter l'API
-
-// Lit depuis le cache ['tenders'] si disponible, sinon cherche dans le mockStore.
-// initialData en mode mock = synchrone, évite un cycle render vide qui bloquerait
-// l'initialisation du useState dans TenderPage.
+// Real-backend tender hook. Reads from the ['tenders'] cache as initialData
+// for an instant first paint, then fetches /tenders/:id in the background.
 export function useTender(id: string | undefined) {
   const queryClient = useQueryClient();
 
-  // Calcul synchrone pour initialData (pas un hook — juste une méthode queryClient)
-  const initialData = USE_MOCK
-    ? (() => {
-        const cached = queryClient.getQueryData<any[]>(['tenders']);
-        const store = cached ?? getMockTenders();
-        return store.find((t: any) => t.id === id) ?? null;
-      })()
-    : undefined;
+  const initialData = (() => {
+    const cached = queryClient.getQueryData<any[]>(['tenders']);
+    return cached?.find((t: any) => t.id === id) ?? undefined;
+  })();
 
   return useQuery({
     queryKey: ['tender', id],
-    queryFn: USE_MOCK
-      ? async () => {
-          const cached = queryClient.getQueryData<any[]>(['tenders']);
-          const store = cached ?? getMockTenders();
-          return store.find((t: any) => t.id === id) ?? null;
-        }
-      : async () => {
-          try {
-            return await httpClient.get(`/tenders/${id}`); // TODO: BACKEND — GET /tenders/:id
-          } catch {
-            // Fallback mocké si le backend est inaccessible
-            return getMockTenders().find((t: any) => t.id === id) ?? null;
-          }
-        },
+    queryFn: async () => {
+      const raw = await httpClient.get<any>(`/tenders/${id}`);
+      return toFrontendTender(raw);
+    },
     initialData,
     enabled: !!id,
-    staleTime: Infinity,
+    staleTime: 30_000,
   });
 }
 
 export function useRunAgent() {
-  if (USE_MOCK) {
-    return {
-      runAgent: (_tenderId: string, _agentId: string) =>
-        Promise.resolve({ progressId: 'mock-progress-id' }),
-      isLoading: false,
-    };
-  }
-  // TODO: BACKEND — POST /agents/agent_process/:id?agent=agent_X
-  // Puis polling GET /tenders/progressAgent/:progressId toutes les 10 secondes
-  return { runAgent: async () => ({}), isLoading: false };
+  return {
+    runAgent: async (tenderId: string, agent: string) =>
+      httpClient.post<{ tender_id: string; progress_id: string }>(
+        `/agents/agent_process/${tenderId}?agent=${agent}`,
+      ),
+    isLoading: false,
+  };
 }
 
 export function useUpdateAgentStatus() {
-  if (USE_MOCK) {
-    return {
-      updateStatus: (_tenderId: string, _agentId: string, _status: string) => Promise.resolve(),
-      isLoading: false,
-    };
-  }
-  // TODO: BACKEND — PUT /tenders/update_status/:id?agent=agent_X
-  return { updateStatus: async () => {}, isLoading: false };
+  return {
+    updateStatus: async (tenderId: string, agent: string, status: string) =>
+      httpClient.put(`/tenders/update_status/${tenderId}?agent=${agent}`, { status }),
+    isLoading: false,
+  };
 }
+
