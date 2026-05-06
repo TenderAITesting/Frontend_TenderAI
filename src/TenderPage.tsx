@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { NJButton } from '@engie-group/fluid-design-system-react';
 import BannerStepper from './components/Stepper';
 import UploadTab from '../libs/tender-documents';
@@ -13,7 +14,7 @@ import ExportModal from './components/ExportModal';
 import UpdateDocsModal from './components/UpdateDocsModal';
 import SrcModal from './components/SrcModal';
 import { DEFAULT_DOCS, DEFAULT_DOC_AGENTS } from './data/constants';
-import { useTender } from './model/useTender';
+import { useTender, useRunAgent } from './model/useTender';
 import { useTenders } from '../libs/homepage/model/useTenders';
 
 function freshDocs() {
@@ -33,6 +34,8 @@ export default function TenderView() {
   const location = useLocation();
   const { data: tender = null } = useTender(id);
   const { updateTender } = useTenders();
+  const { runAgent } = useRunAgent();
+  const queryClient = useQueryClient();
 
   // isNew = true quand on arrive juste après la création (état de navigation)
   const isNewOnMount = location.state?.isNew ?? false;
@@ -122,12 +125,34 @@ export default function TenderView() {
     },
 
     startProc: () => {
+      // Determine which backend agents to launch from selected docAgents.
+      // a1 -> agent_1, a2 -> agent_2 (no agent_3 backend yet).
+      const wanted: Array<'agent_1' | 'agent_2'> = [];
+      const hasA1 = Object.values(s.docAgents || {}).some((d: any) => d?.a1);
+      const hasA2 = Object.values(s.docAgents || {}).some((d: any) => d?.a2);
+      if (hasA1) wanted.push('agent_1');
+      if (hasA2) wanted.push('agent_2');
+      // Fallback: if no FE selection (e.g. seeded tender), trigger both.
+      if (wanted.length === 0) wanted.push('agent_1', 'agent_2');
+
       set(prev => ({
         processing: true, docsUpdated: false,
         resultsValidated: { a1: false, a2: false, a3: false },
         currentMaxStepIdx: Math.max(prev.currentMaxStepIdx, 1),
       }));
       navigate(`/tender/${id}/agents`);
+
+      if (id) {
+        // Fire-and-forget: in DEBUG the backend uses fake_run_agent which writes
+        // sample.json/.xlsx into Azurite and self-callbacks as COMPLETED.
+        Promise.allSettled(wanted.map(a => runAgent(id, a)))
+          .then(() => {
+            // Refresh tender + agent progress so the UI flips to "validated".
+            queryClient.invalidateQueries({ queryKey: ['tender', id] });
+            queryClient.invalidateQueries({ queryKey: ['tenders'] });
+          })
+          .catch(err => console.error('[startProc] agent_process failed', err));
+      }
     },
 
     validateAgent: (agId) => set(prev => ({ resultsValidated: { ...prev.resultsValidated, [agId]: true } })),
@@ -228,7 +253,7 @@ export default function TenderView() {
       .join(':');
 
   // s enrichi avec les données du tender pour compatibilité avec les composants enfants
-  const sc = { ...s, tenderStep, currentTender: id, tenders: [tender] };
+  const sc = { ...s, tenderStep, currentTender: id, tenderId: id, tenders: [tender] };
 
   return (
     <div style={{ height: 'calc(100vh - 52px)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>

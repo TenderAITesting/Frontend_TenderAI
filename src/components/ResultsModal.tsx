@@ -4,6 +4,7 @@ import { NJButton, NJLink } from '@engie-group/fluid-design-system-react';
 import agent1Data from '../data/Agent1.xlsx';
 import agent2Data from '../data/Agent2.xlsx';
 import { A3_STATIC_DATA } from '../data/constants';
+import { httpClient } from '../../libs/http-client';
 
 // ─── Static fallback data ─────────────────────────────────────────────────────
 
@@ -13,6 +14,10 @@ const AGENT_TITLES: Record<string, string> = {
   a2: 'Technical Requirements — Results',
   a3: 'Project Risks — Results',
 };
+
+// Maps the FE agent id (a1/a2) used by the modal to the backend agent name
+// expected by GET /tenders/agent_output/{tender_id}?agent=...
+const FE_AGENT_TO_BE: Record<string, string> = { a1: 'agent_1', a2: 'agent_2' };
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -204,21 +209,74 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
       const isCSV = file.type.includes('csv') || file.name.endsWith('.csv');
       setIsCsvFile(isCSV);
       loadFile(file, isCSV);
-    } else if (resultsAgent && AGENT_DATA[resultsAgent]) {
-      const allSheets = AGENT_DATA[resultsAgent];
-      let names = Object.keys(allSheets);
-      if (resultsAgent === 'a1') names = names.filter(n => !n.toLowerCase().includes('post'));
-      setIsCsvFile(false);
-      setSheetNames(names);
-      const first = names[0] || '';
-      setActiveSheet(first);
-      const data = normalizeRowLengths(allSheets[first] ?? []);
-      setSheetData(data);
-      setOriginalSheetData(JSON.parse(JSON.stringify(data)));
-      setDisplayFileName(`agent${resultsAgent.slice(1)}_results.xlsx`);
-      setTimeout(() => autoExpandStructuredCells(data), 100);
+      return;
     }
-  }, [file, resultsAgent]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Try fetching the latest agent output from the backend (DEBUG mode serves
+    // fake xlsx blobs uploaded by scripts/seed_db.py).
+    const beAgent = FE_AGENT_TO_BE[resultsAgent];
+    if (tenderId && beAgent) {
+      let cancelled = false;
+      (async () => {
+        try {
+          setLoading(true);
+          const resp = await httpClient.get<{
+            xlsx_filename: string;
+            xlsx_file: string; // base64
+          }>(`/tenders/agent_output/${tenderId}?agent=${beAgent}`);
+          if (cancelled) return;
+
+          const bin = atob(resp.xlsx_file);
+          const buf = new Uint8Array(bin.length);
+          for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+          const wb = XLSX.read(buf, { type: 'array' });
+
+          const sheets: Record<string, any[][]> = {};
+          wb.SheetNames.forEach(n => {
+            sheets[n] = XLSX.utils.sheet_to_json(wb.Sheets[n], { header: 1, defval: '' }) as any[][];
+          });
+
+          setIsCsvFile(false);
+          setSheetNames(wb.SheetNames);
+          const first = wb.SheetNames[0] || '';
+          setActiveSheet(first);
+          const data = normalizeRowLengths(sheets[first] ?? []);
+          setSheetData(data);
+          setOriginalSheetData(JSON.parse(JSON.stringify(data)));
+          setDisplayFileName(resp.xlsx_filename);
+          setLoading(false);
+          setTimeout(() => autoExpandStructuredCells(data), 100);
+          // Stash sheets for tab switching
+          (AGENT_DATA as any)[`${resultsAgent}__be`] = sheets;
+        } catch (e) {
+          if (cancelled) return;
+          console.warn('[ResultsModal] backend fetch failed, falling back to bundled data', e);
+          setLoading(false);
+          loadFromStatic();
+        }
+      })();
+      return () => { cancelled = true; };
+    }
+
+    loadFromStatic();
+
+    function loadFromStatic() {
+      if (resultsAgent && AGENT_DATA[resultsAgent]) {
+        const allSheets = AGENT_DATA[resultsAgent];
+        let names = Object.keys(allSheets);
+        if (resultsAgent === 'a1') names = names.filter(n => !n.toLowerCase().includes('post'));
+        setIsCsvFile(false);
+        setSheetNames(names);
+        const first = names[0] || '';
+        setActiveSheet(first);
+        const data = normalizeRowLengths(allSheets[first] ?? []);
+        setSheetData(data);
+        setOriginalSheetData(JSON.parse(JSON.stringify(data)));
+        setDisplayFileName(`agent${resultsAgent.slice(1)}_results.xlsx`);
+        setTimeout(() => autoExpandStructuredCells(data), 100);
+      }
+    }
+  }, [file, resultsAgent, tenderId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── File reading utilities ──
 
