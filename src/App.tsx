@@ -2,7 +2,7 @@ import { createBrowserRouter, RouterProvider, Outlet, Navigate, useParams, useLo
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './App.css';
 import { USER } from './data/constants';
-import { TopBar } from '../libs/layout';
+import { TopBar, TopBarProvider } from '../libs/layout';
 import { LoginPage } from '../libs/auth';
 import { HomePage, tendersLoader } from '../libs/homepage';
 import { UploadPage } from '../libs/upload-page';
@@ -23,10 +23,12 @@ function TenderDefaultRedirect() {
 
 function AppLayout() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <TopBar user={USER} />
-      <Outlet />
-    </div>
+    <TopBarProvider>
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        <TopBar user={USER} />
+        <Outlet />
+      </div>
+    </TopBarProvider>
   );
 }
 

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { NJButton } from '@engie-group/fluid-design-system-react';
+import { useTopBar } from '../libs/layout';
 import BannerStepper from './components/Stepper';
 import UploadTab from '../libs/tender-documents';
 import TenderAnalysisTab from '../libs/tender-analysis';
@@ -222,22 +223,12 @@ export default function TenderView() {
     togContact: () => set(prev => ({ contactOpen: !prev.contactOpen })),
   };
 
-  const fmtTime = (sec) =>
-    [Math.floor(sec / 3600), Math.floor((sec % 3600) / 60), sec % 60]
-      .map(v => String(v).padStart(2, '0'))
-      .join(':');
+  const { setSlot } = useTopBar();
 
-  // s enrichi avec les données du tender pour compatibilité avec les composants enfants
-  const sc = { ...s, tenderStep, currentTender: id, tenders: [tender] };
-
-  return (
-    <div style={{ height: 'calc(100vh - 52px)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-      <div style={{
-        background: 'var(--nj-semantic-color-background-neutral-secondary-default)',
-        borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
-        padding: '0 24px', height: 44, flexShrink: 0,
-        display: 'flex', alignItems: 'center', gap: 12,
-      }}>
+  useEffect(() => {
+    if (!tender) { setSlot(null); return; }
+    setSlot(
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <NJButton
           variant="secondary"
           emphasis="subtle"
@@ -256,7 +247,21 @@ export default function TenderView() {
           </span>
         )}
       </div>
+    );
+    return () => setSlot(null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tender, navigate]);
 
+  const fmtTime = (sec) =>
+    [Math.floor(sec / 3600), Math.floor((sec % 3600) / 60), sec % 60]
+      .map(v => String(v).padStart(2, '0'))
+      .join(':');
+
+  // s enrichi avec les données du tender pour compatibilité avec les composants enfants
+  const sc = { ...s, tenderStep, currentTender: id, tenders: [tender] };
+
+  return (
+    <div style={{ height: 'calc(100vh - 52px)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <BannerStepper
         tenderStep={tenderStep}
         isNew={s.isNew}

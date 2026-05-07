@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { NJButton } from '@engie-group/fluid-design-system-react';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -163,30 +163,26 @@ function ConfidenceBadge({ confidence, large }: { confidence: number; large?: bo
 }
 
 function CollapsibleBlock({
-  iconText, title, titleColor, open, onToggle, children, readOnlyLabel,
+  iconText, title, titleColor, children, readOnlyLabel, headerRight,
 }: {
   iconText: string;
   title: string;
   titleColor?: string;
-  open: boolean;
-  onToggle: () => void;
   children: React.ReactNode;
   readOnlyLabel?: string;
+  headerRight?: React.ReactNode;
 }) {
   return (
     <div style={{
       border: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
       borderRadius: 8, marginBottom: 10, overflow: 'hidden',
     }}>
-      <button
-        onClick={onToggle}
-        style={{
-          width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '10px 14px',
-          background: 'var(--nj-semantic-color-background-neutral-secondary-default)',
-          border: 'none', cursor: 'pointer', gap: 8, textAlign: 'left',
-        }}
-      >
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '10px 14px',
+        background: 'var(--nj-semantic-color-background-neutral-secondary-default)',
+        gap: 8,
+      }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 14, lineHeight: 1, flexShrink: 0 }}>{iconText}</span>
           <span style={{
@@ -204,20 +200,40 @@ function CollapsibleBlock({
             </span>
           )}
         </div>
-        <span style={{ fontSize: 10, color: 'var(--nj-core-color-reference-neutral-400)', flexShrink: 0 }}>
-          {open ? '▲' : '▼'}
-        </span>
-      </button>
-      {open && (
-        <div style={{
-          padding: 14,
-          background: 'var(--nj-semantic-color-background-neutral-primary-default)',
-        }}>
-          {children}
-        </div>
-      )}
+        {headerRight}
+      </div>
+      <div style={{
+        padding: 14,
+        background: 'var(--nj-semantic-color-background-neutral-primary-default)',
+      }}>
+        {children}
+      </div>
     </div>
   );
+}
+
+function EditControls({ editMode, onEdit, onSave, onCancel }: {
+  editMode: boolean; onEdit: () => void; onSave: () => void; onCancel: () => void;
+}) {
+  const btn = (primary?: boolean): React.CSSProperties => ({
+    background: primary ? 'var(--nj-core-color-reference-brand-500)' : 'transparent',
+    border: `1px solid ${primary ? 'transparent' : 'var(--nj-semantic-color-border-neutral-subtle-default, #d1d5db)'}`,
+    borderRadius: 6, cursor: 'pointer',
+    width: 28, height: 28, padding: 0,
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+    color: primary ? '#fff' : 'var(--nj-core-color-reference-neutral-500)',
+    fontSize: 15, lineHeight: 1, flexShrink: 0, transition: 'opacity .15s',
+  });
+  const icon = (name: string) => (
+    <span className="material-icons" style={{ fontSize: 16, lineHeight: 1 }}>{name}</span>
+  );
+  if (editMode) return (
+    <div style={{ display: 'flex', gap: 4 }}>
+      <button style={btn(true)} onClick={onSave} title="Enregistrer">{icon('save')}</button>
+      <button style={btn()} onClick={onCancel} title="Cancel">{icon('undo')}</button>
+    </div>
+  );
+  return <button style={btn()} onClick={onEdit} title="Modifier">{icon('edit')}</button>;
 }
 
 // ─── Main component ────────────────────────────────────────────────────────────
@@ -233,19 +249,20 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
 
   const [expandedSections, setExpandedSections] = useState<Set<number>>(new Set([2, 7]));
 
-  // Edit mode (right panel)
-  const [editMode, setEditMode] = useState(false);
+  // Edit modes (independent for title and guidance)
+  const [editTitle, setEditTitle] = useState(false);
+  const [editGuidance, setEditGuidance] = useState(false);
   const [editedTitle, setEditedTitle] = useState('');
   const [editedGuidance, setEditedGuidance] = useState('');
 
-  // Collapsible right panel blocks
-  const [guidanceOpen, setGuidanceOpen] = useState(true);
-  const [gapsOpen, setGapsOpen] = useState(true);
+  // Three-dots menu
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   // Drag & drop (always active)
   const dragId = useRef<number | null>(null);
 
-  // Delete mode: shows "−" on each row
+  // Delete mode: shows trash icons on each row
   const [deleteMode, setDeleteMode] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
 
@@ -278,8 +295,16 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
 
   // ─── Handlers ────────────────────────────────────────────────────────────
 
+  useEffect(() => {
+    function onClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
+    }
+    document.addEventListener('mousedown', onClickOutside);
+    return () => document.removeEventListener('mousedown', onClickOutside);
+  }, []);
+
   function handleSelect(key: string) {
-    if (editMode) return;
+    if (editTitle || editGuidance) return;
     setSelectedKey(key);
   }
 
@@ -292,32 +317,30 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
     });
   }
 
-  function startEdit() {
-    setEditedTitle(selTitle);
-    setEditedGuidance(selGuidance);
-    setEditMode(true);
-  }
-
-  function cancelEdit() { setEditMode(false); }
-
-  function saveEdit() {
+  function startEditTitle() { setEditedTitle(selTitle); setEditTitle(true); }
+  function cancelEditTitle() { setEditTitle(false); }
+  function saveEditTitle() {
     setSections(prev => prev.map(sec => {
-      if (selected?.kind === 'section' && sec.id === selected.section.id) {
-        return { ...sec, title: editedTitle.trim() || sec.title, guidance: editedGuidance };
-      }
-      if (selected?.kind === 'subsection' && sec.id === selected.parent.id) {
-        return {
-          ...sec,
-          subsections: sec.subsections.map(sub =>
-            sub.id === selected.sub.id
-              ? { ...sub, title: editedTitle.trim() || sub.title, guidance: editedGuidance }
-              : sub
-          ),
-        };
-      }
+      if (selected?.kind === 'section' && sec.id === selected.section.id)
+        return { ...sec, title: editedTitle.trim() || sec.title };
+      if (selected?.kind === 'subsection' && sec.id === selected.parent.id)
+        return { ...sec, subsections: sec.subsections.map(sub => sub.id === selected.sub.id ? { ...sub, title: editedTitle.trim() || sub.title } : sub) };
       return sec;
     }));
-    setEditMode(false);
+    setEditTitle(false);
+  }
+
+  function startEditGuidance() { setEditedGuidance(selGuidance); setEditGuidance(true); }
+  function cancelEditGuidance() { setEditGuidance(false); }
+  function saveEditGuidance() {
+    setSections(prev => prev.map(sec => {
+      if (selected?.kind === 'section' && sec.id === selected.section.id)
+        return { ...sec, guidance: editedGuidance };
+      if (selected?.kind === 'subsection' && sec.id === selected.parent.id)
+        return { ...sec, subsections: sec.subsections.map(sub => sub.id === selected.sub.id ? { ...sub, guidance: editedGuidance } : sub) };
+      return sec;
+    }));
+    setEditGuidance(false);
   }
 
   function handleAddSection() {
@@ -412,7 +435,54 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
             <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--nj-core-color-reference-brand-500)' }}>
               Golden Table of Contents
             </span>
-            <div />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              {deleteMode && (
+                <NJButton
+                  variant="secondary"
+                  emphasis="subtle"
+                  scale="sm"
+                  label="Cancel"
+                  onClick={() => { setDeleteMode(false); setDeleteConfirmId(null); }}
+                />
+              )}
+              <div style={{ position: 'relative' }} ref={menuRef}>
+                <button
+                  onClick={() => setMenuOpen(v => !v)}
+                  style={{ background: 'none', border: '1px solid transparent', borderRadius: 4, cursor: 'pointer', padding: '2px 4px', color: 'var(--nj-core-color-reference-neutral-500)', display: 'flex', alignItems: 'center', lineHeight: 1 }}
+                  title="Options"
+                >
+                  <span className="material-icons" style={{ fontSize: 20 }}>more_vert</span>
+                </button>
+                {menuOpen && (
+                  <div style={{
+                    position: 'absolute', right: 0, top: '100%', zIndex: 200,
+                    background: 'var(--nj-semantic-color-background-neutral-primary-default)',
+                    border: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
+                    borderRadius: 6, boxShadow: '0 4px 12px rgba(0,0,0,.12)',
+                    minWidth: 160, overflow: 'hidden', marginTop: 4,
+                  }}>
+                    <button
+                      onClick={() => { setMenuOpen(false); setShowAddSection(true); setNewSectionTitle(''); }}
+                      style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: '9px 14px', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--nj-semantic-color-text-neutral-primary-default)', textAlign: 'left' }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--nj-semantic-color-background-neutral-secondary-default)'; }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'none'; }}
+                    >
+                      <span className="material-icons" style={{ fontSize: 16, color: 'var(--nj-core-color-reference-neutral-500)' }}>add</span>
+                      Add section
+                    </button>
+                    <button
+                      onClick={() => { setMenuOpen(false); setDeleteMode(true); setDeleteConfirmId(null); }}
+                      style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: '9px 14px', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--nj-core-color-reference-status-error-600, #dc2626)', textAlign: 'left' }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--nj-semantic-color-background-neutral-secondary-default)'; }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'none'; }}
+                    >
+                      <span className="material-icons" style={{ fontSize: 16 }}>delete_outline</span>
+                      Delete section
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Column headers */}
@@ -498,20 +568,18 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
                     {/* Confidence badge */}
                     <ConfidenceBadge confidence={sec.confidence} />
 
-                    {/* Minus button in delete mode */}
+                    {/* Trash icon in delete mode */}
                     {deleteMode && (
                       <button
-                        onClick={e => { e.stopPropagation(); setDeleteConfirmId(sec.id); }}
+                        onClick={e => { e.stopPropagation(); setDeleteConfirmId(deleteConfirmId === sec.id ? null : sec.id); }}
                         style={{
-                          width: 22, height: 22, borderRadius: '50%', border: 'none',
-                          background: 'var(--nj-core-color-reference-status-error-500, #ef4444)',
-                          color: '#fff', fontSize: 16, fontWeight: 700,
-                          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          lineHeight: 1, flexShrink: 0, padding: 0,
+                          background: 'none', border: 'none', cursor: 'pointer', padding: 2,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          color: 'var(--nj-core-color-reference-status-error-500, #ef4444)', flexShrink: 0,
                         }}
                         title="Delete this section"
                       >
-                        −
+                        <span className="material-icons" style={{ fontSize: 18 }}>delete_outline</span>
                       </button>
                     )}
                   </div>
@@ -523,13 +591,22 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
                       padding: '10px 14px',
                       background: 'var(--nj-core-color-reference-status-error-100, #fef2f2)',
                       border: '1px solid var(--nj-core-color-reference-status-error-300, #fca5a5)',
-                      borderRadius: 6,
-                      display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
+                      borderRadius: 6, display: 'flex', flexDirection: 'column', gap: 10,
                     }}>
-                      <span style={{ fontSize: 12, color: 'var(--nj-core-color-reference-status-error-700, #dc2626)' }}>
-                        Delete "{sec.title}"?
-                      </span>
-                      <div style={{ display: 'flex', gap: 8 }}>
+                      <div>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--nj-core-color-reference-status-error-700, #dc2626)' }}>
+                          Delete "{sec.title}"?
+                        </span>
+                        {sec.subsections.length > 0 && (
+                          <div style={{ marginTop: 6, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
+                            <span className="material-icons" style={{ fontSize: 14, color: 'var(--nj-core-color-reference-status-error-600, #dc2626)', flexShrink: 0, marginTop: 1 }}>warning</span>
+                            <span style={{ fontSize: 11, color: 'var(--nj-core-color-reference-status-error-700, #dc2626)', lineHeight: 1.5 }}>
+                              This section has {sec.subsections.length} subsection{sec.subsections.length > 1 ? 's' : ''} ({sec.subsections.map(s => s.id).join(', ')}) that will also be deleted.
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
                         <NJButton variant="secondary" emphasis="subtle" scale="sm" label="Cancel" onClick={() => setDeleteConfirmId(null)} />
                         <NJButton variant="primary" scale="sm" label="Delete" onClick={() => handleDeleteSection(sec.id)} />
                       </div>
@@ -581,34 +658,6 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
               );
             })}
 
-            {/* Bottom toolbar: Add / Delete */}
-            <div style={{
-              flexShrink: 0,
-              padding: '8px 12px',
-              borderTop: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
-              display: 'flex', gap: 8, justifyContent: 'center',
-            }}>
-              {deleteMode ? (
-                <NJButton
-                  variant="secondary" emphasis="subtle" scale="sm" icon="close"
-                  label="Cancel"
-                  onClick={() => { setDeleteMode(false); setDeleteConfirmId(null); }}
-                />
-              ) : (
-                <>
-                  <NJButton
-                    variant="primary" scale="sm" icon="add" label="Add section"
-                    onClick={() => { setShowAddSection(true); setNewSectionTitle(''); }}
-                  />
-                  <NJButton
-                    variant="secondary" emphasis="subtle" scale="sm" icon="delete"
-                    label="Delete section"
-                    onClick={() => { setDeleteMode(true); setDeleteConfirmId(null); }}
-                  />
-                </>
-              )}
-            </div>
-
             {/* Add section inline form */}
             {showAddSection && (
               <div style={{
@@ -656,7 +705,7 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
                   <div style={{ fontSize: 11, color: 'var(--nj-core-color-reference-brand-500)', fontWeight: 600, marginBottom: 6, letterSpacing: '.04em' }}>
                     {selLabel}
                   </div>
-                  {editMode ? (
+                  {editTitle ? (
                     <>
                       <span style={{ fontSize: 11, color: 'var(--nj-core-color-reference-neutral-400)', display: 'block', marginBottom: 4 }}>Section title</span>
                       <input
@@ -672,8 +721,11 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
                     </h2>
                   )}
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
-                  <ConfidenceBadge confidence={selConfidence} large />
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, flexShrink: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <ConfidenceBadge confidence={selConfidence} large />
+                    <EditControls editMode={editTitle} onEdit={startEditTitle} onSave={saveEditTitle} onCancel={cancelEditTitle} />
+                  </div>
                   {selConfidence < 40 && (
                     <span style={{ fontSize: 11, color: selColors.text }}>Insufficient evidence</span>
                   )}
@@ -691,8 +743,12 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
             </div>
 
             {/* Drafting guidance */}
-            <CollapsibleBlock iconText="&#9998;" title="Drafting guidance" open={guidanceOpen} onToggle={() => setGuidanceOpen(v => !v)}>
-              {editMode ? (
+            <CollapsibleBlock
+              iconText="&#9998;"
+              title="Drafting guidance"
+              headerRight={<EditControls editMode={editGuidance} onEdit={startEditGuidance} onSave={saveEditGuidance} onCancel={cancelEditGuidance} />}
+            >
+              {editGuidance ? (
                 <textarea
                   className="inp"
                   value={editedGuidance}
@@ -715,8 +771,6 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
               iconText="&#9651;"
               title="Evidence gaps"
               titleColor="var(--nj-semantic-color-text-status-warning-contrast-default)"
-              open={gapsOpen}
-              onToggle={() => setGapsOpen(v => !v)}
               readOnlyLabel="AI-generated — read only"
             >
               {(selGaps ?? []).length === 0 ? (
@@ -734,17 +788,6 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
               )}
             </CollapsibleBlock>
 
-            {/* Edit / Save / Cancel */}
-            <div style={{ padding: '12px 14px', display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-              {editMode ? (
-                <>
-                  <NJButton variant="primary" scale="md" icon="save" label="Save changes" onClick={saveEdit} />
-                  <NJButton variant="secondary" emphasis="subtle" scale="md" label="Cancel" onClick={cancelEdit} />
-                </>
-              ) : (
-                <NJButton variant="secondary" emphasis="subtle" scale="md" icon="edit" label="Edit" onClick={startEdit} />
-              )}
-            </div>
 
           </div>
         </div>
