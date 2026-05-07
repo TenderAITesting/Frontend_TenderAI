@@ -229,14 +229,20 @@ export default function TenderView() {
     if (!tender) { setSlot(null); return; }
     setSlot(
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <NJButton
-          variant="secondary"
-          emphasis="subtle"
-          scale="sm"
-          icon="arrow_back"
-          label="Dashboard"
+        <button
           onClick={() => navigate('/homepage')}
-        />
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 5,
+            background: 'none', border: 'none', padding: '3px 6px',
+            fontSize: 13, fontWeight: 500, cursor: 'pointer',
+            color: 'var(--nj-core-color-reference-brand-500)',
+            borderRadius: 4,
+          }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'var(--nj-semantic-color-background-neutral-secondary-default)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+        >
+          Dashboard
+        </button>
         <div style={{ width: 1, height: 20, background: 'var(--nj-semantic-color-border-neutral-minimal-default)' }} />
         <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--nj-semantic-color-text-neutral-primary-default)' }}>
           {tender.name}

@@ -117,16 +117,16 @@ function getConfidenceColors(confidence: number) {
     label: 'Strong support',
   };
   if (confidence >= 60) return {
-    bg: 'var(--nj-core-color-reference-status-warning-100, #fefce8)',
-    border: 'var(--nj-core-color-reference-status-warning-200, #fde68a)',
-    text: 'var(--nj-core-color-reference-status-warning-700, #a16207)',
-    dot: 'var(--nj-core-color-reference-status-warning-400, #fbbf24)',
+    bg: 'var(--nj-core-color-reference-status-info-100, #eff6ff)',
+    border: 'var(--nj-core-color-reference-status-info-300, #93c5fd)',
+    text: 'var(--nj-core-color-reference-status-info-700, #1d4ed8)',
+    dot: 'var(--nj-core-color-reference-status-info-500, #3b82f6)',
     label: 'Usable support',
   };
   if (confidence >= 40) return {
     bg: 'var(--nj-core-color-reference-status-warning-100, #fff7ed)',
-    border: 'var(--nj-core-color-reference-status-warning-400, #fdba74)',
-    text: 'var(--nj-semantic-color-text-status-warning-contrast-default, #c2410c)',
+    border: 'var(--nj-core-color-reference-status-warning-400, #fb923c)',
+    text: 'var(--nj-core-color-reference-status-warning-800, #9a3412)',
     dot: 'var(--nj-core-color-reference-status-warning-500, #f97316)',
     label: 'Weak support',
   };
@@ -265,6 +265,7 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
   // Delete mode: shows trash icons on each row
   const [deleteMode, setDeleteMode] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+  const [deleteSubConfirmId, setDeleteSubConfirmId] = useState<string | null>(null);
 
   // Add section inline form
   const [showAddSection, setShowAddSection] = useState(false);
@@ -359,9 +360,23 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
     const remaining = sections.filter(sec => sec.id !== id);
     setSections(remaining);
     setDeleteConfirmId(null);
+    setDeleteSubConfirmId(null);
     setDeleteMode(false);
     if (selectedKey === String(id) || sections.find(s => s.id === id)?.subsections.some(sub => sub.id === selectedKey)) {
       setSelectedKey(remaining.length ? String(remaining[0].id) : '');
+    }
+  }
+
+  function handleDeleteSubsection(secId: number, subId: string) {
+    setSections(prev => prev.map(sec =>
+      sec.id === secId
+        ? { ...sec, subsections: sec.subsections.filter(s => s.id !== subId) }
+        : sec
+    ));
+    setDeleteSubConfirmId(null);
+    if (selectedKey === subId) {
+      const parent = sections.find(s => s.id === secId);
+      setSelectedKey(parent ? String(parent.id) : '');
     }
   }
 
@@ -442,7 +457,7 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
                   emphasis="subtle"
                   scale="sm"
                   label="Cancel"
-                  onClick={() => { setDeleteMode(false); setDeleteConfirmId(null); }}
+                  onClick={() => { setDeleteMode(false); setDeleteConfirmId(null); setDeleteSubConfirmId(null); }}
                 />
               )}
               <div style={{ position: 'relative' }} ref={menuRef}>
@@ -540,7 +555,7 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
                     <span style={{ fontSize: 14, color: 'var(--nj-core-color-reference-neutral-400)', cursor: 'grab', lineHeight: 1, userSelect: 'none' }}>⠿</span>
 
                     {/* Number */}
-                    <span style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-400)', fontFamily: "'DM Mono', monospace", alignSelf: 'start', paddingTop: 1 }}>
+                    <span style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-400)', fontFamily: "'Lato', sans-serif", alignSelf: 'start', paddingTop: 1 }}>
                       {sec.id}
                     </span>
 
@@ -617,41 +632,66 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
                   {isExpanded && hasChildren && sec.subsections.map(sub => {
                     const isSubSelected = selectedKey === sub.id;
                     return (
-                      <div
-                        key={sub.id}
-                        onClick={() => handleSelect(sub.id)}
-                        style={{
-                          display: 'grid',
-                          gridTemplateColumns: deleteMode ? '36px 1fr auto 28px' : '36px 1fr auto',
-                          alignItems: 'center', padding: '8px 12px', paddingLeft: 44,
-                          borderLeft: isSubSelected
-                            ? '3px solid var(--nj-core-color-reference-brand-500)'
-                            : '3px solid transparent',
-                          background: isSubSelected
-                            ? 'var(--nj-core-color-reference-brand-100, #eff6ff)'
-                            : 'transparent',
-                          borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
-                          cursor: 'pointer', gap: 4, transition: 'background .1s',
-                        }}
-                        onMouseEnter={e => { if (!isSubSelected) e.currentTarget.style.background = 'var(--nj-semantic-color-background-neutral-secondary-default)'; }}
-                        onMouseLeave={e => { if (!isSubSelected) e.currentTarget.style.background = 'transparent'; }}
-                      >
-                        <span style={{ fontSize: 11, color: 'var(--nj-core-color-reference-neutral-400)', fontFamily: "'DM Mono', monospace" }}>
-                          {sub.id}
-                        </span>
-                        <span style={{
-                          fontSize: 12,
-                          color: isSubSelected
-                            ? 'var(--nj-core-color-reference-brand-700, var(--nj-core-color-reference-brand-500))'
-                            : 'var(--nj-semantic-color-text-neutral-contrast-default, #555)',
-                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                          fontWeight: isSubSelected ? 600 : 400,
-                        }}>
-                          {sub.title}
-                        </span>
-                        <ConfidenceBadge confidence={sub.confidence} />
-                        {deleteMode && <span />}
-                      </div>
+                      <React.Fragment key={sub.id}>
+                        <div
+                          onClick={() => handleSelect(sub.id)}
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: deleteMode ? '36px 1fr auto 28px' : '36px 1fr auto',
+                            alignItems: 'center', padding: '8px 12px', paddingLeft: 44,
+                            borderLeft: isSubSelected
+                              ? '3px solid var(--nj-core-color-reference-brand-500)'
+                              : '3px solid transparent',
+                            background: isSubSelected
+                              ? 'var(--nj-core-color-reference-brand-100, #eff6ff)'
+                              : 'transparent',
+                            borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
+                            cursor: 'pointer', gap: 4, transition: 'background .1s',
+                          }}
+                          onMouseEnter={e => { if (!isSubSelected) e.currentTarget.style.background = 'var(--nj-semantic-color-background-neutral-secondary-default)'; }}
+                          onMouseLeave={e => { if (!isSubSelected) e.currentTarget.style.background = 'transparent'; }}
+                        >
+                          <span style={{ fontSize: 11, color: 'var(--nj-core-color-reference-neutral-400)', fontFamily: "'Lato', sans-serif" }}>
+                            {sub.id}
+                          </span>
+                          <span style={{
+                            fontSize: 12,
+                            color: isSubSelected
+                              ? 'var(--nj-core-color-reference-brand-700, var(--nj-core-color-reference-brand-500))'
+                              : 'var(--nj-semantic-color-text-neutral-contrast-default, #555)',
+                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                            fontWeight: isSubSelected ? 600 : 400,
+                          }}>
+                            {sub.title}
+                          </span>
+                          <ConfidenceBadge confidence={sub.confidence} />
+                          {deleteMode && (
+                            <button
+                              onClick={e => { e.stopPropagation(); setDeleteSubConfirmId(deleteSubConfirmId === sub.id ? null : sub.id); }}
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--nj-core-color-reference-status-error-500, #ef4444)', flexShrink: 0 }}
+                              title="Delete this subsection"
+                            >
+                              <span className="material-icons" style={{ fontSize: 18 }}>delete_outline</span>
+                            </button>
+                          )}
+                        </div>
+                        {deleteSubConfirmId === sub.id && (
+                          <div style={{
+                            margin: '0 12px 4px 44px', padding: '10px 14px',
+                            background: 'var(--nj-core-color-reference-status-error-100, #fef2f2)',
+                            border: '1px solid var(--nj-core-color-reference-status-error-300, #fca5a5)',
+                            borderRadius: 6, display: 'flex', flexDirection: 'column', gap: 10,
+                          }}>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--nj-core-color-reference-status-error-700, #dc2626)' }}>
+                              Delete "{sub.title}"?
+                            </span>
+                            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                              <NJButton variant="secondary" emphasis="subtle" scale="sm" label="Cancel" onClick={() => setDeleteSubConfirmId(null)} />
+                              <NJButton variant="primary" scale="sm" label="Delete" onClick={() => handleDeleteSubsection(sec.id, sub.id)} />
+                            </div>
+                          </div>
+                        )}
+                      </React.Fragment>
                     );
                   })}
                 </div>

@@ -19,11 +19,13 @@ export default function BannerStepper({ tenderStep, isNew, currentMaxStepIdx, on
               onClick={() => !blocked && onGoStep(step)}
             >
               <div className="bs-num">
-                {isDone && !isCur ? '✓' : i + 1}
+                {isDone && !isCur
+                  ? <span className="material-icons" aria-hidden="true" style={{ fontSize: 'inherit', lineHeight: 1 }}>check</span>
+                  : i + 1}
               </div>
               <div className="bs-label">{LABELS[i]}</div>
             </div>
-            {i < 4 && <div className="banner-sep">›</div>}
+            {i < 4 && <div className="banner-sep"><span className="material-icons" aria-hidden="true" style={{ fontSize: 'inherit', lineHeight: 1 }}>chevron_right</span></div>}
           </div>
         );
       })}

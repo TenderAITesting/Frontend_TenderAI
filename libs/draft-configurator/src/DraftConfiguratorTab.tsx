@@ -1,9 +1,24 @@
 ﻿import { useState, useRef } from 'react';
+import type { Dispatch, RefObject, SetStateAction } from 'react';
 import { NJButton, NJTag, NJCheckbox, NJInlineMessage, NJIcon } from '@engie-group/fluid-design-system-react';
 import DisclaimerModal from '../../../src/components/DisclaimerModal';
 
+type FilesState = Record<string, string[]>;
+type DragOverState = Record<string, boolean>;
+
+interface FileUploadZoneProps {
+  cardKey: string;
+  files: FilesState;
+  dragOver: DragOverState;
+  setDragOver: Dispatch<SetStateAction<DragOverState>>;
+  onFiles: (key: string, files: FileList | null) => void;
+  onRemove: (key: string, name: string) => void;
+  inputRef: RefObject<HTMLInputElement>;
+  onBrowse: () => void;
+}
+
 // ─── FileUploadZone ────────────────────────────────────────────────────────────
-function FileUploadZone({ cardKey, files, dragOver, setDragOver, onFiles, onRemove, inputRef, onBrowse }) {
+function FileUploadZone({ cardKey, files, dragOver, setDragOver, onFiles, onRemove, inputRef, onBrowse }: FileUploadZoneProps) {
   const cardFiles = files[cardKey] || [];
   const isDragging = dragOver[cardKey] || false;
 
@@ -19,9 +34,9 @@ function FileUploadZone({ cardKey, files, dragOver, setDragOver, onFiles, onRemo
       <div
         style={{
           border: `1.5px dashed ${isDragging ? 'var(--nj-core-color-reference-brand-500)' : 'var(--nj-semantic-color-border-neutral-subtle-default)'}`,
-          borderRadius: 8, padding: '10px 10px 8px',
+          borderRadius: 8, padding: '16px 10px 12px',
           background: 'var(--nj-semantic-color-background-neutral-secondary-default)',
-          transition: 'border-color .2s',
+          transition: 'border-color .2s', textAlign: 'center', cursor: 'pointer',
         }}
         onDragOver={e => { e.preventDefault(); setDragOver(p => ({ ...p, [cardKey]: true })); }}
         onDragLeave={() => setDragOver(p => ({ ...p, [cardKey]: false }))}
@@ -31,34 +46,37 @@ function FileUploadZone({ cardKey, files, dragOver, setDragOver, onFiles, onRemo
           onFiles(cardKey, e.dataTransfer.files);
         }}
       >
-        {cardFiles.map(name => (
-          <div
-            key={name}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 12, marginBottom: 5, padding: '3px 6px', background: 'var(--nj-semantic-color-background-neutral-primary-default)', borderRadius: 5, border: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)' }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
-              <NJIcon name="insert_drive_file" style={{ fontSize: 13, color: 'var(--nj-core-color-reference-neutral-400)', flexShrink: 0 }} />
-              <span style={{ color: 'var(--nj-semantic-color-text-neutral-primary-default)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</span>
-            </div>
-            <span
-              style={{ cursor: 'pointer', color: 'var(--nj-core-color-reference-neutral-400)', padding: '0 2px', flexShrink: 0, fontSize: 15, lineHeight: 1 }}
-              onClick={() => onRemove(cardKey, name)}
-            >×</span>
+        {cardFiles.length > 0 && (
+          <div style={{ marginBottom: 10 }}>
+            {cardFiles.map(name => (
+              <div
+                key={name}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 12, marginBottom: 5, padding: '3px 6px', background: 'var(--nj-semantic-color-background-neutral-primary-default)', borderRadius: 5, border: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)', textAlign: 'left' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+                  <NJIcon name="insert_drive_file" style={{ fontSize: 13, color: 'var(--nj-core-color-reference-neutral-400)', flexShrink: 0 }} />
+                  <span style={{ color: 'var(--nj-semantic-color-text-neutral-primary-default)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</span>
+                </div>
+                <span
+                  style={{ cursor: 'pointer', color: 'var(--nj-core-color-reference-neutral-400)', padding: '0 2px', flexShrink: 0, fontSize: 15, lineHeight: 1 }}
+                  onClick={e => { e.stopPropagation(); onRemove(cardKey, name); }}
+                >×</span>
+              </div>
+            ))}
           </div>
-        ))}
-        <div style={{ display: 'flex', justifyContent: 'center', paddingTop: cardFiles.length ? 4 : 0 }}>
-          <NJButton
-            variant="secondary"
-            emphasis="subtle"
-            scale="md"
-            icon="upload"
-            label="Browse files"
-            onClick={onBrowse}
-          />
-        </div>
-        {!cardFiles.length && (
-          <div style={{ fontSize: 11, color: 'var(--nj-core-color-reference-neutral-400)', textAlign: 'center', marginTop: 4 }}>Optional</div>
         )}
+        <NJIcon name="cloud_upload" style={{ fontSize: 32, color: 'var(--nj-core-color-reference-brand-500)', marginBottom: 8 }} />
+        <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 4 }}>Drag and drop your files here</div>
+        <div style={{ fontSize: 11, color: 'var(--nj-core-color-reference-neutral-500)', marginBottom: 4 }}>OR</div>
+        <div
+          style={{ fontSize: 12, fontWeight: 700, color: 'var(--nj-core-color-reference-brand-500)', marginBottom: 6, cursor: 'pointer' }}
+          onClick={e => { e.stopPropagation(); onBrowse(); }}
+        >
+          Browse files
+        </div>
+        <div style={{ fontSize: 11, color: 'var(--nj-core-color-reference-neutral-400)' }}>
+          {cardFiles.length ? 'PDF, Word' : 'Optional · PDF, Word'}
+        </div>
       </div>
     </div>
   );
@@ -106,14 +124,14 @@ export default function DraftConfiguratorTab({ s, handlers }) {
   const { goStep, launchPlanning, setPlanType } = handlers;
   const planType = s.planType ?? 'standard';
 
-  const [files,            setFiles]           = useState({ offers: [], methodology: [], refs: [] });
-  const [included,         setIncluded]        = useState({ offers: true, methodology: true, refs: true });
-  const [dragOver,         setDragOver]        = useState({ offers: false, methodology: false, refs: false });
-  const [pendingUploadKey, setPendingUploadKey] = useState(null);
+  const [files,            setFiles]           = useState<FilesState>({ offers: [], methodology: [], refs: [] });
+  const [included,         setIncluded]        = useState<Record<string, boolean>>({ offers: true, methodology: true, refs: true });
+  const [dragOver,         setDragOver]        = useState<DragOverState>({ offers: false, methodology: false, refs: false });
+  const [pendingUploadKey, setPendingUploadKey] = useState<string | null>(null);
 
-  const offerRef  = useRef(null);
-  const methodRef = useRef(null);
-  const refsRef   = useRef(null);
+  const offerRef  = useRef<HTMLInputElement>(null);
+  const methodRef = useRef<HTMLInputElement>(null);
+  const refsRef   = useRef<HTMLInputElement>(null);
   const inputRefs = { offers: offerRef, methodology: methodRef, refs: refsRef };
 
   function handleFiles(key: string, rawFiles: FileList | null) {
@@ -124,11 +142,11 @@ export default function DraftConfiguratorTab({ s, handlers }) {
     }));
   }
 
-  function removeFile(key, name) {
-    setFiles(prev => ({ ...prev, [key]: prev[key].filter(f => f !== name) }));
+  function removeFile(key: string, name: string) {
+    setFiles(prev => ({ ...prev, [key]: prev[key].filter((f: string) => f !== name) }));
   }
 
-  function toggleIncluded(key) {
+  function toggleIncluded(key: string) {
     setIncluded(prev => ({ ...prev, [key]: !prev[key] }));
   }
 
@@ -301,7 +319,7 @@ export default function DraftConfiguratorTab({ s, handlers }) {
                           style={{ fontSize: 12, cursor: 'pointer', color: 'var(--nj-semantic-color-text-neutral-primary-default)' }}
                           onClick={() => toggleIncluded(card.key)}
                         >
-                          Include in planning
+                          Include in ToC generation
                         </span>
                       </div>
                       <div style={{ fontSize: 11, color: 'var(--nj-core-color-reference-neutral-400)', marginTop: 5, display: 'flex', alignItems: 'center', gap: 4 }}>

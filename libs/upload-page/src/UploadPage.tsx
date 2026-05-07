@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import { NJButton, NJFormItem, NJHeading, NJText } from '@engie-group/fluid-design-system-react';
-import { USER } from '../../../src/data/constants';
+import { NJButton, NJFormItem, NJHeading } from '@engie-group/fluid-design-system-react';
+import { USER, PROJECT_SOURCES } from '../../../src/data/constants';
 import { useTenders } from '../../homepage/model/useTenders';
 
 export default function NewProjectView() {
@@ -15,24 +15,36 @@ export default function NewProjectView() {
   const editMode = editingTender != null;
 
   const [form, setForm] = useState({
-    name:        editingTender?.name       ?? '',
-    client:      editingTender?.client     ?? '',
-    projectId:   editingTender?.projectId  ?? '',
-    lastName:    USER.last,
-    firstName:   USER.first,
+    name:      editingTender?.name   ?? '',
+    client:    editingTender?.client ?? '',
+    projectIds: {
+      salesforce: editingTender?.projectIds?.salesforce ?? '',
+      planisware: editingTender?.projectIds?.planisware ?? '',
+      temis:      editingTender?.projectIds?.temis      ?? '',
+    },
+    lastName:  USER.last,
+    firstName: USER.first,
   });
 
   const updateForm = (field: string, value: string) =>
     setForm(prev => ({ ...prev, [field]: value }));
-  const canSubmit = form.name.trim().length > 0;
+  const updateProjectId = (source: string, value: string) =>
+    setForm(prev => ({ ...prev, projectIds: { ...prev.projectIds, [source]: value } }));
+  const canSubmit = form.name.trim().length > 0 && form.client.trim().length > 0;
 
   const handleSubmit = () => {
+    const pids = {
+      salesforce: form.projectIds.salesforce.trim() || undefined,
+      planisware: form.projectIds.planisware.trim() || undefined,
+      temis:      form.projectIds.temis.trim()      || undefined,
+    };
+
     if (editMode) {
       // TODO: BACKEND — PATCH /tenders/:id
       updateTender(editingTenderId!, {
-        name:      form.name      || editingTender.name,
-        client:    form.client    || editingTender.client,
-        projectId: form.projectId || editingTender.projectId,
+        name:       form.name   || editingTender.name,
+        client:     form.client || editingTender.client,
+        projectIds: pids,
       });
       navigate('/homepage');
       return;
@@ -40,25 +52,22 @@ export default function NewProjectView() {
 
     // TODO: BACKEND — POST /tenders — générer l'ID côté serveur
     const newId = uuidv4();
-    const newTender = {
-      id:          newId,
-      name:        form.name || 'New Tender',
-      client:      form.client,
-      projectId:   form.projectId.trim(),
-      modified:    new Date().toLocaleDateString('fr-FR'),
-      maxStepIdx:  0,
-      lastStep:    'documents',
-      status:      'uploaded',
-    };
-
-    addTender(newTender);
-    // isNew = true pour verrouiller la navigation en avant dans le stepper
+    addTender({
+      id:         newId,
+      name:       form.name || 'New Tender',
+      client:     form.client,
+      projectIds: pids,
+      modified:   new Date().toLocaleDateString('fr-FR'),
+      maxStepIdx: 0,
+      lastStep:   'documents',
+      status:     'uploaded',
+    });
     navigate(`/tender/${newId}`, { state: { isNew: true } });
   };
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', padding: '52px 24px', minHeight: 'calc(100vh - 52px)' }}>
-      <div className="card fadein" style={{ width: '100%', maxWidth: 540, padding: '38px 42px' }}>
+      <div className="card fadein" style={{ width: '100%', maxWidth: 640, padding: '38px 42px' }}>
         <div style={{ marginBottom: 22 }}>
           <NJButton
             variant="secondary"
@@ -73,11 +82,11 @@ export default function NewProjectView() {
         <NJHeading as="h3" style={{ marginBottom: 6 }}>
           {editMode ? 'Edit Project' : 'Project Information'}
         </NJHeading>
-        <NJText style={{ color: 'var(--nj-core-color-reference-neutral-500)', marginBottom: 28, display: 'block' }}>
+        <p style={{ color: 'var(--nj-core-color-reference-neutral-500)', marginBottom: 28, fontSize: 14 }}>
           {editMode
             ? 'Update the project details below.'
             : 'Fill in the project details before uploading your tender documents.'}
-        </NJText>
+        </p>
 
         <div style={{ marginBottom: 16 }}>
           <NJFormItem
@@ -90,23 +99,46 @@ export default function NewProjectView() {
           />
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+        <div style={{ marginBottom: 16 }}>
           <NJFormItem
             id="proj-client"
-            label="Client"
+            label="Client *"
             labelKind="static"
             value={form.client}
             onChange={(e: any) => updateForm('client', e.target.value)}
             placeholder="Client name"
           />
-          <NJFormItem
-            id="proj-id"
-            label="Project ID"
-            labelKind="static"
-            value={form.projectId}
-            onChange={(e: any) => updateForm('projectId', e.target.value)}
-            placeholder="e.g. PLW-2024-0892"
-          />
+        </div>
+
+        <div style={{ marginBottom: 16 }}>
+          <div style={{
+            color: 'var(--nj-semantic-color-text-neutral-secondary-default)',
+            fontSize: 'var(--nj-semantic-font-size-text-sm-desktop)',
+            lineHeight: '20px',
+            marginBottom: 8,
+          }}>
+            Project ID
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 10 }}>
+            {PROJECT_SOURCES.map(src => (
+              <div key={src.key} className="proj-id-cell" style={{ position: 'relative' }}>
+                <NJFormItem
+                  id={`proj-${src.key}`}
+                  label={src.label}
+                  labelKind="static"
+                  value={form.projectIds[src.key as keyof typeof form.projectIds]}
+                  onChange={(e: any) => updateProjectId(src.key, e.target.value)}
+                  placeholder={`${src.label} ID…`}
+                />
+                <span style={{
+                  position: 'absolute', top: 2, right: 0,
+                  background: src.bg, color: src.color, border: `1px solid ${src.border}`,
+                  fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 3, letterSpacing: '.05em',
+                  pointerEvents: 'none',
+                }}>{src.abbr}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 30 }}>

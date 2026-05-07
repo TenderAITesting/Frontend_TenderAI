@@ -1,16 +1,69 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { NJButton, NJInputSearch, NJTag, NJIconButton, NJInlineMessage } from '@engie-group/fluid-design-system-react';
+import { NJButton, NJInputSearch, NJIconButton, NJInlineMessage } from '@engie-group/fluid-design-system-react';
 import { useTenders } from '../model/useTenders';
+import { PROJECT_SOURCES } from '../../../src/data/constants';
 
-const STATUSES: Record<string, { label: string; variant: string; desc: string }> = {
-  uploaded:             { label: 'Uploaded',               variant: 'grey',   desc: 'Tender created, documents uploaded, no meaningful agent run yet.' },
-  analysis_in_progress: { label: 'Analysis in progress',   variant: 'orange', desc: 'At least one analysis agent is running, missing, stale, or still under review.' },
-  analysis_validated:   { label: 'Analysis validated',     variant: 'teal',   desc: 'The tender has passed the validation gate required to start planning.' },
-  planning_in_progress: { label: 'Planning in progress',   variant: 'blue',   desc: 'Agent 5.1 has started or the planning phase is being edited/reviewed.' },
-  drafting_in_progress: { label: 'Drafting in progress',   variant: 'purple', desc: 'Drafting workflow has started, including evidence and draft generation.' },
-  proposal_ready:       { label: 'Proposal ready',         variant: 'green',  desc: 'A proposal draft exists and is ready for user review.' },
-};
+const STEPS = [
+  'Tender uploaded',
+  'Tender Analysis',
+  'Draft Configuration',
+  'Proposal Planning',
+  'Proposal ready',
+] as const;
+
+function InlineStepper({ maxStepIdx, status }: { maxStepIdx: number; status: string }) {
+  // maxStepIdx is synced live by TenderPage on every navigation (0=documents … 4=drafting)
+  // status === 'proposal_ready' is the only manual override → show all steps done
+  const active = status === 'proposal_ready' ? 6 : (maxStepIdx ?? 0) + 1;
+
+  return (
+    <div style={{ display: 'inline-flex', alignItems: 'center', height: 28, gap: 0 }}>
+      {STEPS.map((_, i) => {
+        const step    = i + 1;
+        const done    = step < active;
+        const current = step === active;
+
+        const icon  = done ? 'check_circle' : current ? 'radio_button_checked' : 'radio_button_unchecked';
+        const color = done
+          ? 'var(--nj-semantic-color-background-brand-solid-default)'
+          : current
+          ? 'var(--nj-semantic-color-background-brand-solid-default)'
+          : 'var(--nj-semantic-color-border-neutral-subtle-default)';
+
+        return (
+          <span key={step} style={{ display: 'inline-flex', alignItems: 'center' }}>
+            {i > 0 && (
+              <span style={{
+                display: 'inline-block',
+                width: 14,
+                height: 2,
+                background: step <= active
+                  ? 'var(--nj-semantic-color-background-brand-solid-default)'
+                  : 'var(--nj-semantic-color-border-neutral-subtle-default)',
+                flexShrink: 0,
+              }} />
+            )}
+            <span
+              className="material-icons"
+              aria-hidden="true"
+              style={{ fontSize: 12, color, lineHeight: 1, flexShrink: 0 }}
+            >
+              {icon}
+            </span>
+          </span>
+        );
+      })}
+      <span style={{
+        marginLeft: 8,
+        color: 'var(--nj-semantic-color-text-neutral-secondary-default)',
+        whiteSpace: 'nowrap',
+      }}>
+        {STEPS[Math.min(active, STEPS.length) - 1]}
+      </span>
+    </div>
+  );
+}
 
 export default function DashboardView() {
   const navigate = useNavigate();
@@ -23,7 +76,7 @@ export default function DashboardView() {
     return tenders.filter(t =>
       t.name.toLowerCase().includes(term) ||
       t.client.toLowerCase().includes(term) ||
-      (t.projectId ?? '').toLowerCase().includes(term)
+      Object.values(t.projectIds ?? {}).some((v: any) => v?.toLowerCase().includes(term))
     );
   }, [tenders, searchTerm]);
 
@@ -57,49 +110,73 @@ export default function DashboardView() {
               </tr>
             </thead>
             <tbody>
-              {filteredTenders.map((t) => {
-                const st = STATUSES[t.status] || STATUSES.uploaded;
-                return (
-                  <tr key={t.id}>
-                    <td>
-                      <span
-                        style={{ color: 'var(--nj-core-color-reference-brand-500)', fontWeight: 600, cursor: 'pointer' }}
-                        onClick={() => navigate(`/tender/${t.id}`)}
-                      >{t.name}</span>
-                    </td>
-                    <td>{t.client || '—'}</td>
-                    <td style={{ fontFamily: "'DM Mono', monospace", fontSize: 12, color: 'var(--nj-core-color-reference-neutral-500)' }}>
-                      {t.projectId || '—'}
-                    </td>
-                    <td style={{ color: 'var(--nj-core-color-reference-neutral-500)', fontFamily: "'DM Mono', monospace", fontSize: 12 }}>
-                      {t.modified}
-                    </td>
-                    <td onClick={e => e.stopPropagation()}>
-                      <span title={st.desc} style={{ cursor: 'help', display: 'inline-flex' }}>
-                        <NJTag variant={st.variant as any} scale="sm" label={st.label} />
-                      </span>
-                    </td>
-                    <td style={{ textAlign: 'right' }} onClick={e => e.stopPropagation()}>
-                      <div style={{ display: 'inline-flex', gap: 4 }}>
-                        <NJIconButton
-                          icon="edit"
-                          aria-label="Edit tender"
-                          scale="sm"
-                          variant="secondary"
-                          onClick={() => navigate('/upload', { state: { editingTenderId: t.id } })}
-                        />
-                        <NJIconButton
-                          icon="delete"
-                          aria-label="Delete tender"
-                          scale="sm"
-                          variant="secondary"
-                          onClick={() => deleteTender(t.id)}
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
+              {filteredTenders.map((t) => (
+                <tr key={t.id}>
+                  <td>
+                    <span
+                      style={{ color: 'var(--nj-core-color-reference-brand-500)', fontWeight: 600, cursor: 'pointer' }}
+                      onClick={() => navigate(`/tender/${t.id}`)}
+                    >{t.name}</span>
+                  </td>
+                  <td>{t.client || '—'}</td>
+                  <td>
+                    <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', alignItems: 'center' }}>
+                      {PROJECT_SOURCES.filter(src => t.projectIds?.[src.key]).map(src => (
+                        <span key={src.key} title={src.label} style={{
+                          display: 'inline-flex', alignItems: 'center',
+                          gap: 'var(--nj-semantic-size-spacing-4)',
+                          background: src.bg, color: src.color, border: `1px solid ${src.border}`,
+                          fontSize: 'var(--nj-semantic-font-size-text-xs-desktop)',
+                          fontWeight: 'var(--nj-semantic-font-weight-bold)',
+                          padding: 'var(--nj-semantic-size-spacing-4) var(--nj-semantic-size-spacing-8)',
+                          borderRadius: 'var(--nj-semantic-size-border-radius-sm)',
+                          whiteSpace: 'nowrap',
+                        }}>
+                          <span style={{ opacity: 0.65 }}>{src.abbr}</span>
+                          {t.projectIds[src.key]}
+                        </span>
+                      ))}
+                      {!PROJECT_SOURCES.some(src => t.projectIds?.[src.key]) && (
+                        <span style={{
+                          display: 'inline-flex', alignItems: 'center',
+                          background: 'var(--nj-semantic-color-background-neutral-secondary-default)',
+                          color: 'var(--nj-semantic-color-text-neutral-contrast-default)',
+                          border: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)',
+                          fontSize: 'var(--nj-semantic-font-size-text-xs-desktop)',
+                          fontWeight: 'var(--nj-semantic-font-weight-regular)',
+                          padding: 'var(--nj-semantic-size-spacing-4) var(--nj-semantic-size-spacing-8)',
+                          borderRadius: 'var(--nj-semantic-size-border-radius-sm)',
+                          whiteSpace: 'nowrap',
+                        }}>missing</span>
+                      )}
+                    </div>
+                  </td>
+                  <td style={{ color: 'var(--nj-core-color-reference-neutral-500)', fontFamily: "'Lato', sans-serif", fontSize: 12 }}>
+                    {t.modified}
+                  </td>
+                  <td style={{ whiteSpace: 'nowrap' }}>
+                    <InlineStepper maxStepIdx={t.maxStepIdx ?? 0} status={t.status} />
+                  </td>
+                  <td style={{ textAlign: 'right' }} onClick={e => e.stopPropagation()}>
+                    <div style={{ display: 'inline-flex', gap: 4 }}>
+                      <NJIconButton
+                        icon="edit"
+                        aria-label="Edit tender"
+                        scale="sm"
+                        variant="secondary"
+                        onClick={() => navigate('/upload', { state: { editingTenderId: t.id } })}
+                      />
+                      <NJIconButton
+                        icon="delete"
+                        aria-label="Delete tender"
+                        scale="sm"
+                        variant="secondary"
+                        onClick={() => deleteTender(t.id)}
+                      />
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

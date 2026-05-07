@@ -1,6 +1,6 @@
 :root {
   --nj-core-font-family-sans-serif: 'Lato', system-ui, sans-serif;
-  --nj-core-font-family-monospace: 'Roboto Mono', monospace;
+  --nj-core-font-family-monospace: 'Lato', sans-serif;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -47,9 +47,13 @@ p { line-height: 1.5; }
 }
 .logo { color: var(--nj-core-color-reference-brand-500); font-weight: 700; font-size: 15px; letter-spacing: -.3px; }
 .tractebel-badge {
-  font-size: 10px; font-weight: 700; padding: 3px 8px;
-  border-radius: 4px; background: var(--nj-core-color-ultramarine-900); color: var(--nj-semantic-color-background-neutral-primary-default);
-  letter-spacing: .06em; flex-shrink: 0;
+  font-size: var(--nj-semantic-font-size-text-xs-desktop);
+  font-weight: var(--nj-semantic-font-weight-bold);
+  padding: var(--nj-semantic-size-spacing-4) var(--nj-semantic-size-spacing-8);
+  border-radius: var(--nj-semantic-size-border-radius-sm);
+  background: var(--nj-core-color-ultramarine-900);
+  color: var(--nj-semantic-color-background-neutral-primary-default);
+  flex-shrink: 0;
 }
 
 /* -- Step Banner -- */
@@ -57,50 +61,61 @@ p { line-height: 1.5; }
   background: var(--nj-semantic-color-background-neutral-primary-default);
   border-bottom: 2px solid var(--nj-semantic-color-border-neutral-minimal-default);
   height: 60px; flex-shrink: 0;
-  padding: 0 24px;
+  padding: 0 var(--nj-semantic-size-spacing-24);
   display: flex; align-items: center; gap: 0;
   justify-content: space-between;
 }
 .banner-step {
-  display: flex; align-items: center; gap: 10px;
-  padding: 0 16px; height: 100%; cursor: pointer;
+  display: flex; align-items: center; gap: var(--nj-semantic-size-spacing-8);
+  padding: 0 var(--nj-semantic-size-spacing-16); height: 100%; cursor: pointer;
   position: relative; flex: 1; justify-content: center;
   flex-shrink: 0; transition: background .15s;
 }
 .banner-step:hover { background: var(--nj-semantic-color-background-neutral-secondary-default); }
 .banner-step:first-child { padding-left: 0; }
 .bs-num {
-  width: 28px; height: 28px; border-radius: 50%;
+  width: 28px; height: 28px;
+  border-radius: var(--nj-semantic-size-border-radius-pill);
   display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 700; flex-shrink: 0;
+  font-size: var(--nj-semantic-font-size-text-xs-desktop);
+  font-weight: var(--nj-semantic-font-weight-bold);
+  flex-shrink: 0;
   background: var(--nj-semantic-color-background-neutral-tertiary-default);
-  color: var(--nj-core-color-reference-neutral-500);
+  color: var(--nj-semantic-color-text-neutral-contrast-default);
   border: 2px solid var(--nj-semantic-color-border-neutral-subtle-default);
   transition: all .2s;
 }
 .banner-step.s-done .bs-num {
-  background: var(--nj-core-color-reference-brand-500);
+  background: var(--nj-semantic-color-background-brand-solid-default);
   color: var(--nj-semantic-color-background-neutral-primary-default);
-  border-color: var(--nj-core-color-reference-brand-500);
+  border-color: var(--nj-semantic-color-border-brand-strong-default);
 }
 .banner-step.s-cur .bs-num {
-  background: var(--nj-core-color-reference-brand-500);
+  background: var(--nj-semantic-color-background-brand-solid-default);
   color: var(--nj-semantic-color-background-neutral-primary-default);
-  border-color: var(--nj-core-color-reference-brand-600);
-  box-shadow: 0 0 0 3px var(--nj-core-color-reference-brand-200);
+  border-color: var(--nj-semantic-color-border-brand-strong-default);
+  box-shadow: 0 0 0 3px var(--nj-semantic-color-background-brand-tertiary-default);
 }
 .bs-label {
-  font-size: 13px; font-weight: 500;
-  color: var(--nj-core-color-reference-neutral-400);
+  font-size: var(--nj-semantic-font-size-text-xs-desktop);
+  font-weight: var(--nj-semantic-font-weight-regular);
+  color: var(--nj-semantic-color-text-neutral-tertiary-default);
   white-space: nowrap; transition: color .2s;
 }
-.banner-step.s-cur .bs-label { color: var(--nj-core-color-reference-brand-500); font-weight: 700; }
-.banner-step.s-done .bs-label { color: var(--nj-core-color-reference-brand-700); }
+.banner-step.s-cur .bs-label {
+  color: var(--nj-semantic-color-text-brand-primary-default);
+  font-weight: var(--nj-semantic-font-weight-bold);
+}
+.banner-step.s-done .bs-label { color: var(--nj-semantic-color-text-brand-contrast-default); }
 .banner-step.s-cur::after {
   content: ''; position: absolute; bottom: -2px; left: 0; right: 0;
-  height: 2px; background: var(--nj-core-color-reference-brand-500);
+  height: 2px; background: var(--nj-semantic-color-background-brand-solid-default);
 }
-.banner-sep { color: var(--nj-semantic-color-border-neutral-subtle-default); font-size: 16px; flex-shrink: 0; margin: 0 2px; flex: 0 0 auto; }
+.banner-sep {
+  color: var(--nj-semantic-color-border-neutral-subtle-default);
+  font-size: var(--nj-semantic-font-size-text-sm-desktop);
+  flex-shrink: 0; margin: 0 var(--nj-semantic-size-spacing-2); flex: 0 0 auto;
+}
 
 /* -- Cards -- */
 .card {
@@ -162,6 +177,10 @@ p { line-height: 1.5; }
 .mx-table td:first-child { text-align: left; }
 .mx-table tbody tr:hover td { background: var(--nj-semantic-color-background-neutral-secondary-default); }
 .mx-table tbody tr:last-child td { border-bottom: none; }
+
+
+/* -- Project-ID: smaller source labels (Salesforce / Planisware / Témis) inside compact columns -- */
+.proj-id-cell .nj-form-item__label { font-size: 11px !important; }
 
 /* -- Inputs -- */
 .inp {

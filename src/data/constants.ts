@@ -1,5 +1,11 @@
 export const USER = { first: 'Romain', last: 'DEL FABRO', initials: 'RD' };
 
+export const PROJECT_SOURCES = [
+  { key: 'salesforce', label: 'Salesforce', abbr: 'SF',  color: 'var(--nj-core-color-blue-700)',     bg: 'var(--nj-core-color-blue-100)',     border: 'var(--nj-core-color-blue-300)'     },
+  { key: 'planisware', label: 'Planisware', abbr: 'PLW', color: 'var(--nj-core-color-purple-700)',   bg: 'var(--nj-core-color-purple-100)',   border: 'var(--nj-core-color-purple-300)'   },
+  { key: 'temis',      label: 'Témis',      abbr: 'TMS', color: 'var(--nj-core-color-teal-700)',     bg: 'var(--nj-core-color-teal-100)',     border: 'var(--nj-core-color-teal-300)'     },
+];
+
 export const AGENTS = [
   { id: 'a1', badge: 'A1', title: 'Key Information and Activities Agent', desc: 'Extracts key tender facts, submission requirements, timelines, and pre-award activities.' },
   { id: 'a2', badge: 'A2', title: 'Technical Extraction Agent', desc: 'Extracts and structures technical requirements from the tender documents.' },
@@ -67,16 +73,16 @@ export const DEFAULT_DOC_AGENTS = {
 };
 
 export const INITIAL_TENDERS = [
-  { id: '550e8400-e29b-41d4-a716-446655440001', name: 'CEA UP1 - simplification MA', client: 'CEA',        projectId: 'TRB-2026-041', modified: '23/03/2026', maxStepIdx: 1, lastStep: 'agents',   status: 'analysis_validated'    },
-  { id: '550e8400-e29b-41d4-a716-446655440002', name: 'Navigator',                   client: 'Navigator',  projectId: 'TRB-2026-038', modified: '23/03/2026', maxStepIdx: 1, lastStep: 'agents',   status: 'analysis_in_progress'  },
-  { id: '550e8400-e29b-41d4-a716-446655440003', name: 'test',                        client: 'Sellafield', projectId: 'TRB-2026-031', modified: '11/03/2026', maxStepIdx: 1, lastStep: 'agents',   status: 'uploaded'              },
-  { id: '550e8400-e29b-41d4-a716-446655440004', name: 'CISF waste building',         client: 'NRWDI',      projectId: 'TRB-2026-022', modified: '11/02/2026', maxStepIdx: 3, lastStep: 'planning', status: 'planning_in_progress'  },
-  { id: '550e8400-e29b-41d4-a716-446655440005', name: 'ANDRA MS4',                   client: 'ANDRA',      projectId: 'TRB-2026-019', modified: '06/02/2026', maxStepIdx: 4, lastStep: 'drafting', status: 'proposal_ready'        },
-  { id: '550e8400-e29b-41d4-a716-446655440006', name: 'test',                        client: 'Iter',       projectId: 'TRB-2026-017', modified: '04/02/2026', maxStepIdx: 1, lastStep: 'agents',   status: 'analysis_validated'    },
-  { id: '550e8400-e29b-41d4-a716-446655440007', name: 'sdfsdf',                      client: 'Sener',      projectId: 'TRB-2026-014', modified: '28/01/2026', maxStepIdx: 4, lastStep: 'drafting', status: 'drafting_in_progress'  },
-  { id: '550e8400-e29b-41d4-a716-446655440008', name: 'TAQA Test 2',                 client: 'TAQA',       projectId: 'TRB-2025-098', modified: '15/12/2025', maxStepIdx: 1, lastStep: 'agents',   status: 'analysis_validated'    },
-  { id: '550e8400-e29b-41d4-a716-446655440009', name: 'FluxysZ4',                    client: 'Fluxys',     projectId: 'TRB-2025-091', modified: '04/12/2025', maxStepIdx: 0, lastStep: 'documents', status: 'uploaded'              },
-  { id: '550e8400-e29b-41d4-a716-446655440010', name: 'Test',                        client: 'EDF',        projectId: 'TRB-2025-089', modified: '04/12/2025', maxStepIdx: 1, lastStep: 'agents',   status: 'analysis_in_progress'  },
+  { id: '550e8400-e29b-41d4-a716-446655440001', name: 'CEA UP1 - simplification MA', client: 'CEA',        projectIds: { salesforce: 'SF-2026-041',  planisware: 'PLW-2026-041', temis: undefined          }, modified: '23/03/2026', maxStepIdx: 1, lastStep: 'agents',    status: 'analysis_validated'   },
+  { id: '550e8400-e29b-41d4-a716-446655440002', name: 'Navigator',                   client: 'Navigator',  projectIds: { salesforce: undefined,         planisware: 'PLW-2026-038', temis: undefined          }, modified: '23/03/2026', maxStepIdx: 1, lastStep: 'agents',    status: 'analysis_in_progress' },
+  { id: '550e8400-e29b-41d4-a716-446655440003', name: 'test',                        client: 'Sellafield', projectIds: { salesforce: 'SF-2026-031',  planisware: 'PLW-2026-031', temis: 'TMS-2026-031'    }, modified: '11/03/2026', maxStepIdx: 1, lastStep: 'agents',    status: 'uploaded'             },
+  { id: '550e8400-e29b-41d4-a716-446655440004', name: 'CISF waste building',         client: 'NRWDI',      projectIds: { salesforce: 'SF-2026-022',  planisware: undefined,        temis: undefined          }, modified: '11/02/2026', maxStepIdx: 3, lastStep: 'planning',  status: 'planning_in_progress' },
+  { id: '550e8400-e29b-41d4-a716-446655440005', name: 'ANDRA MS4',                   client: 'ANDRA',      projectIds: { salesforce: 'SF-2026-019',  planisware: 'PLW-2026-019', temis: 'TMS-2026-019'    }, modified: '06/02/2026', maxStepIdx: 4, lastStep: 'drafting',  status: 'proposal_ready'       },
+  { id: '550e8400-e29b-41d4-a716-446655440006', name: 'test',                        client: 'Iter',       projectIds: { salesforce: undefined,         planisware: undefined,        temis: undefined          }, modified: '04/02/2026', maxStepIdx: 1, lastStep: 'agents',    status: 'analysis_validated'   },
+  { id: '550e8400-e29b-41d4-a716-446655440007', name: 'sdfsdf',                      client: 'Sener',      projectIds: { salesforce: undefined,         planisware: 'PLW-2026-014', temis: 'TMS-2026-014'    }, modified: '28/01/2026', maxStepIdx: 4, lastStep: 'drafting',  status: 'drafting_in_progress' },
+  { id: '550e8400-e29b-41d4-a716-446655440008', name: 'TAQA Test 2',                 client: 'TAQA',       projectIds: { salesforce: 'SF-2025-098',  planisware: undefined,        temis: undefined          }, modified: '15/12/2025', maxStepIdx: 1, lastStep: 'agents',    status: 'analysis_validated'   },
+  { id: '550e8400-e29b-41d4-a716-446655440009', name: 'FluxysZ4',                    client: 'Fluxys',     projectIds: { salesforce: undefined,         planisware: undefined,        temis: undefined          }, modified: '04/12/2025', maxStepIdx: 0, lastStep: 'documents', status: 'uploaded'             },
+  { id: '550e8400-e29b-41d4-a716-446655440010', name: 'Test',                        client: 'EDF',        projectIds: { salesforce: 'SF-2025-089',  planisware: 'PLW-2025-089', temis: 'TMS-2025-089'    }, modified: '04/12/2025', maxStepIdx: 1, lastStep: 'agents',    status: 'analysis_in_progress' },
 ];
 
 export const DOC_PAGES = [
