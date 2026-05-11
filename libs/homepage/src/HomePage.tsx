@@ -1,65 +1,63 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { NJButton, NJInputSearch, NJIconButton, NJInlineMessage } from '@engie-group/fluid-design-system-react';
+import { Stepper, Step, StepLabel, StepConnector, stepConnectorClasses } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTenders } from '../model/useTenders';
+
+const CompactConnector = styled(StepConnector)(() => ({
+  [`&.${stepConnectorClasses.alternativeLabel}`]: {
+    top: 11,
+    left: 'calc(-50% + 11px)',
+    right: 'calc(50% + 11px)',
+  },
+  [`& .${stepConnectorClasses.line}`]: {
+    height: 2,
+    border: 0,
+    backgroundColor: '#e0e0e0',
+  },
+  [`&.${stepConnectorClasses.active} .${stepConnectorClasses.line}`]: {
+    backgroundColor: '#1976d2',
+  },
+  [`&.${stepConnectorClasses.completed} .${stepConnectorClasses.line}`]: {
+    backgroundColor: '#1976d2',
+  },
+}));
 import { PROJECT_SOURCES } from '../../../src/data/constants';
 
 const STEPS = [
-  'Tender uploaded',
+  'Tender Uploaded',
   'Tender Analysis',
   'Draft Configuration',
   'Proposal Planning',
-  'Proposal ready',
-] as const;
+  'Proposal Ready',
+];
 
 function InlineStepper({ maxStepIdx, status }: { maxStepIdx: number; status: string }) {
-  // maxStepIdx is synced live by TenderPage on every navigation (0=documents … 4=drafting)
-  // status === 'proposal_ready' is the only manual override → show all steps done
-  const active = status === 'proposal_ready' ? 6 : (maxStepIdx ?? 0) + 1;
+  const activeStep = status === 'proposal_ready' ? STEPS.length : (maxStepIdx ?? 0);
+  const labelIdx = Math.min(activeStep, STEPS.length - 1);
 
   return (
-    <div style={{ display: 'inline-flex', alignItems: 'center', height: 28, gap: 0 }}>
-      {STEPS.map((_, i) => {
-        const step    = i + 1;
-        const done    = step < active;
-        const current = step === active;
-
-        const icon  = done ? 'check_circle' : current ? 'radio_button_checked' : 'radio_button_unchecked';
-        const color = done
-          ? 'var(--nj-semantic-color-background-brand-solid-default)'
-          : current
-          ? 'var(--nj-semantic-color-background-brand-solid-default)'
-          : 'var(--nj-semantic-color-border-neutral-subtle-default)';
-
-        return (
-          <span key={step} style={{ display: 'inline-flex', alignItems: 'center' }}>
-            {i > 0 && (
-              <span style={{
-                display: 'inline-block',
-                width: 14,
-                height: 2,
-                background: step <= active
-                  ? 'var(--nj-semantic-color-background-brand-solid-default)'
-                  : 'var(--nj-semantic-color-border-neutral-subtle-default)',
-                flexShrink: 0,
-              }} />
-            )}
-            <span
-              className="material-icons"
-              aria-hidden="true"
-              style={{ fontSize: 12, color, lineHeight: 1, flexShrink: 0 }}
-            >
-              {icon}
-            </span>
-          </span>
-        );
-      })}
-      <span style={{
-        marginLeft: 8,
-        color: 'var(--nj-semantic-color-text-neutral-secondary-default)',
-        whiteSpace: 'nowrap',
-      }}>
-        {STEPS[Math.min(active, STEPS.length) - 1]}
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+      <Stepper
+        activeStep={activeStep}
+        alternativeLabel
+        connector={<CompactConnector />}
+        sx={{
+          padding: 0, width: 200,
+          '& .MuiStep-root': { padding: 0 },
+          '& .MuiStepLabel-label': { display: 'none' },
+          '& .MuiStepLabel-iconContainer': { padding: 0 },
+        }}
+      >
+        {STEPS.map((label) => (
+          <Step key={label}>
+            <StepLabel />
+          </Step>
+        ))}
+      </Stepper>
+      <span style={{ fontSize: 12, whiteSpace: 'nowrap', color: 'var(--nj-semantic-color-text-neutral-secondary-default)' }}>
+        {STEPS[labelIdx]}
       </span>
     </div>
   );

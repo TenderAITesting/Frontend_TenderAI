@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { NJButton } from '@engie-group/fluid-design-system-react';
+import { NJButton, NJIconButton } from '@engie-group/fluid-design-system-react';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -523,22 +523,22 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
             </span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               {deleteMode && (
-                <NJButton
-                  variant="secondary"
-                  emphasis="subtle"
+                <NJIconButton
+                  icon="close"
+                  aria-label="Cancel"
                   scale="sm"
-                  label="Cancel"
+                  variant="secondary"
                   onClick={() => { setDeleteMode(false); setDeleteConfirmId(null); setDeleteSubConfirmId(null); }}
                 />
               )}
               <div style={{ position: 'relative' }} ref={menuRef}>
-                <button
+                <NJIconButton
+                  icon="more_vert"
+                  aria-label="Options"
+                  scale="sm"
+                  variant="secondary"
                   onClick={() => setMenuOpen(v => !v)}
-                  style={{ background: 'none', border: '1px solid transparent', borderRadius: 4, cursor: 'pointer', padding: '2px 4px', color: 'var(--nj-core-color-reference-neutral-500)', display: 'flex', alignItems: 'center', lineHeight: 1 }}
-                  title="Options"
-                >
-                  <span className="material-icons" style={{ fontSize: 20 }}>more_vert</span>
-                </button>
+                />
                 {menuOpen && (
                   <div style={{
                     position: 'absolute', right: 0, top: '100%', zIndex: 200,

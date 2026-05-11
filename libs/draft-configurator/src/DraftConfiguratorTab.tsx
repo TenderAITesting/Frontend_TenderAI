@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import type { Dispatch, RefObject, SetStateAction } from 'react';
-import { NJButton, NJCheckbox, NJIcon, NJIconButton, NJTag } from '@engie-group/fluid-design-system-react';
+import { NJButton, NJCheckbox, NJIcon, NJIconButton, NJTag, NJToggle } from '@engie-group/fluid-design-system-react';
 import DisclaimerModal from '../../../src/components/DisclaimerModal';
 
 type FilesState = Record<string, string[]>;
@@ -245,22 +245,11 @@ export default function DraftConfiguratorTab({ s, handlers }) {
               <span style={{ fontSize: 13, color: 'var(--nj-semantic-color-text-neutral-primary-default)', flex: 1 }}>
                 Do you want to support your drafting with additional documents (past offers, methodology documents, project references)?
               </span>
-              <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
-                <NJButton
-                  scale="xs"
-                  variant={useAdditionalDocs ? 'primary' : 'secondary'}
-                  emphasis={useAdditionalDocs ? undefined : 'subtle'}
-                  label="Yes"
-                  onClick={() => setUseAdditionalDocs(true)}
-                />
-                <NJButton
-                  scale="xs"
-                  variant={!useAdditionalDocs ? 'primary' : 'secondary'}
-                  emphasis={!useAdditionalDocs ? undefined : 'subtle'}
-                  label="No"
-                  onClick={() => setUseAdditionalDocs(false)}
-                />
-              </div>
+              <NJToggle
+                checked={useAdditionalDocs}
+                onChange={(_e, checked) => setUseAdditionalDocs(checked)}
+                aria-label="Use additional documents"
+              />
             </div>
 
             {/* Document cards — only when Yes */}
