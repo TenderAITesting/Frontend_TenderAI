@@ -1,6 +1,6 @@
-﻿import { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import type { Dispatch, RefObject, SetStateAction } from 'react';
-import { NJButton, NJTag, NJCheckbox, NJInlineMessage, NJIcon } from '@engie-group/fluid-design-system-react';
+import { NJButton, NJCheckbox, NJIcon, NJIconButton, NJTag } from '@engie-group/fluid-design-system-react';
 import DisclaimerModal from '../../../src/components/DisclaimerModal';
 
 type FilesState = Record<string, string[]>;
@@ -33,7 +33,7 @@ function FileUploadZone({ cardKey, files, dragOver, setDragOver, onFiles, onRemo
       />
       <div
         style={{
-          border: `1.5px dashed ${isDragging ? 'var(--nj-core-color-reference-brand-500)' : 'var(--nj-semantic-color-border-neutral-subtle-default)'}`,
+          border: `1.5px dashed ${isDragging ? 'var(--nj-semantic-color-border-brand-strong-default)' : 'var(--nj-semantic-color-border-neutral-subtle-default)'}`,
           borderRadius: 8, padding: '16px 10px 12px',
           background: 'var(--nj-semantic-color-background-neutral-secondary-default)',
           transition: 'border-color .2s', textAlign: 'center', cursor: 'pointer',
@@ -54,27 +54,30 @@ function FileUploadZone({ cardKey, files, dragOver, setDragOver, onFiles, onRemo
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 12, marginBottom: 5, padding: '3px 6px', background: 'var(--nj-semantic-color-background-neutral-primary-default)', borderRadius: 5, border: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)', textAlign: 'left' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
-                  <NJIcon name="insert_drive_file" style={{ fontSize: 13, color: 'var(--nj-core-color-reference-neutral-400)', flexShrink: 0 }} />
+                  <NJIcon name="insert_drive_file" style={{ fontSize: 13, color: 'var(--nj-semantic-color-icon-neutral-secondary-default)', flexShrink: 0 }} />
                   <span style={{ color: 'var(--nj-semantic-color-text-neutral-primary-default)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</span>
                 </div>
-                <span
-                  style={{ cursor: 'pointer', color: 'var(--nj-core-color-reference-neutral-400)', padding: '0 2px', flexShrink: 0, fontSize: 15, lineHeight: 1 }}
-                  onClick={e => { e.stopPropagation(); onRemove(cardKey, name); }}
-                >×</span>
+                <NJIconButton
+                  icon="close"
+                  aria-label="Remove file"
+                  scale="sm"
+                  variant="secondary"
+                  onClick={(e) => { e.stopPropagation(); onRemove(cardKey, name); }}
+                />
               </div>
             ))}
           </div>
         )}
-        <NJIcon name="cloud_upload" style={{ fontSize: 32, color: 'var(--nj-core-color-reference-brand-500)', marginBottom: 8 }} />
+        <NJIcon name="cloud_upload" style={{ fontSize: 32, color: 'var(--nj-semantic-color-icon-brand-primary-default)', marginBottom: 8 }} />
         <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 4 }}>Drag and drop your files here</div>
-        <div style={{ fontSize: 11, color: 'var(--nj-core-color-reference-neutral-500)', marginBottom: 4 }}>OR</div>
+        <div style={{ fontSize: 11, color: 'var(--nj-semantic-color-text-neutral-secondary-default)', marginBottom: 4 }}>OR</div>
         <div
-          style={{ fontSize: 12, fontWeight: 700, color: 'var(--nj-core-color-reference-brand-500)', marginBottom: 6, cursor: 'pointer' }}
+          style={{ fontSize: 12, fontWeight: 700, color: 'var(--nj-semantic-color-text-brand-primary-default)', marginBottom: 6, cursor: 'pointer' }}
           onClick={e => { e.stopPropagation(); onBrowse(); }}
         >
           Browse files
         </div>
-        <div style={{ fontSize: 11, color: 'var(--nj-core-color-reference-neutral-400)' }}>
+        <div style={{ fontSize: 11, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)' }}>
           {cardFiles.length ? 'PDF, Word' : 'Optional · PDF, Word'}
         </div>
       </div>
@@ -88,19 +91,19 @@ const PLAN_CARDS = [
     key: 'standard',
     icon: 'article',
     title: 'Standard plan',
-    body: 'Uses the Tractebel base ToC and standard section guidance.',
+    body: 'Uses the Tractebel base Table of Contents (ToC) and standard section guidance.',
     badge: '⚡ Best for a fast first draft.',
-    badgeAccent: 'var(--nj-core-color-reference-brand-500)',
-    badgeBg: 'var(--nj-semantic-color-background-brand-subtle-default)',
+    badgeVariant: 'blue' as const,
+    badgePill: true,
   },
   {
     key: 'tailored',
     icon: 'tune',
     title: 'Tailored plan',
-    body: 'Uses the Tractebel base ToC, then adapts it with the inputs you select below.',
+    body: 'Uses the Tractebel base Table of Contents (ToC), then adapts it with the inputs you select below.',
     badge: '⭐ Best for complex or strategic tenders.',
-    badgeAccent: 'var(--nj-core-color-reference-status-warning-600)',
-    badgeBg: 'var(--nj-semantic-color-background-status-warning-subtle-default)',
+    badgeVariant: 'orange' as const,
+    badgePill: true,
   },
 ];
 
@@ -124,10 +127,11 @@ export default function DraftConfiguratorTab({ s, handlers }) {
   const { goStep, launchPlanning, setPlanType } = handlers;
   const planType = s.planType ?? 'standard';
 
-  const [files,            setFiles]           = useState<FilesState>({ offers: [], methodology: [], refs: [] });
-  const [included,         setIncluded]        = useState<Record<string, boolean>>({ offers: true, methodology: true, refs: true });
-  const [dragOver,         setDragOver]        = useState<DragOverState>({ offers: false, methodology: false, refs: false });
-  const [pendingUploadKey, setPendingUploadKey] = useState<string | null>(null);
+  const [files,             setFiles]            = useState<FilesState>({ offers: [], methodology: [], refs: [] });
+  const [included,          setIncluded]         = useState<Record<string, boolean>>({ offers: true, methodology: true, refs: true });
+  const [dragOver,          setDragOver]         = useState<DragOverState>({ offers: false, methodology: false, refs: false });
+  const [pendingUploadKey,  setPendingUploadKey] = useState<string | null>(null);
+  const [useAdditionalDocs, setUseAdditionalDocs] = useState<boolean>(false);
 
   const offerRef  = useRef<HTMLInputElement>(null);
   const methodRef = useRef<HTMLInputElement>(null);
@@ -156,12 +160,12 @@ export default function DraftConfiguratorTab({ s, handlers }) {
 
         {/* Section heading */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 8, background: 'var(--nj-semantic-color-background-neutral-secondary-default)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--nj-core-color-reference-brand-500)', flexShrink: 0 }}>
+          <div style={{ width: 36, height: 36, borderRadius: 8, background: 'var(--nj-semantic-color-background-neutral-secondary-default)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--nj-semantic-color-icon-brand-primary-default)', flexShrink: 0 }}>
             <NJIcon name="grid_view" style={{ fontSize: 20 }} />
           </div>
           <span style={{ fontSize: 18, fontWeight: 700 }}>Configure Draft Parameters</span>
         </div>
-        <div style={{ fontSize: 13, color: 'var(--nj-core-color-reference-neutral-500)', marginBottom: 24, paddingLeft: 48 }}>
+        <div style={{ fontSize: 13, color: 'var(--nj-semantic-color-text-neutral-secondary-default)', marginBottom: 24, paddingLeft: 48 }}>
           How should the proposal plan be built?
         </div>
 
@@ -174,7 +178,7 @@ export default function DraftConfiguratorTab({ s, handlers }) {
                 key={card.key}
                 onClick={() => setPlanType(card.key)}
                 style={{
-                  border: `2px solid ${isActive ? 'var(--nj-core-color-reference-brand-500)' : 'var(--nj-semantic-color-border-neutral-minimal-default)'}`,
+                  border: `2px solid ${isActive ? 'var(--nj-semantic-color-border-brand-strong-default)' : 'var(--nj-semantic-color-border-neutral-minimal-default)'}`,
                   borderRadius: 12,
                   padding: 20,
                   cursor: 'pointer',
@@ -188,9 +192,9 @@ export default function DraftConfiguratorTab({ s, handlers }) {
                 {/* Icon */}
                 <div style={{
                   width: 56, height: 56, borderRadius: 12, flexShrink: 0,
-                  background: isActive ? 'var(--nj-core-color-reference-brand-100)' : 'var(--nj-semantic-color-background-neutral-secondary-default)',
+                  background: isActive ? 'var(--nj-semantic-color-background-brand-subtle-default)' : 'var(--nj-semantic-color-background-neutral-secondary-default)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: 'var(--nj-core-color-reference-brand-500)',
+                  color: 'var(--nj-semantic-color-icon-brand-primary-default)',
                 }}>
                   <NJIcon name={card.icon} style={{ fontSize: 28 }} />
                 </div>
@@ -201,9 +205,9 @@ export default function DraftConfiguratorTab({ s, handlers }) {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
                     <div style={{
                       width: 18, height: 18, borderRadius: '50%', flexShrink: 0,
-                      border: `2px solid ${isActive ? 'var(--nj-core-color-reference-brand-500)' : 'var(--nj-semantic-color-border-neutral-subtle-default)'}`,
+                      border: `2px solid ${isActive ? 'var(--nj-semantic-color-border-brand-strong-default)' : 'var(--nj-semantic-color-border-neutral-subtle-default)'}`,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      background: isActive ? 'var(--nj-core-color-reference-brand-500)' : 'transparent',
+                      background: isActive ? 'var(--nj-semantic-color-background-brand-solid-default)' : 'transparent',
                     }}>
                       {isActive && <div style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--nj-semantic-color-background-neutral-primary-default)' }} />}
                     </div>
@@ -211,66 +215,83 @@ export default function DraftConfiguratorTab({ s, handlers }) {
                   </div>
 
                   {/* Description */}
-                  <div style={{ fontSize: 13, color: 'var(--nj-core-color-reference-neutral-500)', marginBottom: 12, lineHeight: 1.55 }}>
+                  <div style={{ fontSize: 13, color: 'var(--nj-semantic-color-text-neutral-secondary-default)', marginBottom: 12, lineHeight: 1.55 }}>
                     {card.body}
                   </div>
 
                   {/* Badge */}
-                  <div style={{
-                    display: 'inline-flex', alignItems: 'center',
-                    fontSize: 12, fontWeight: 500,
-                    color: card.badgeAccent,
-                    background: card.badgeBg,
-                    border: `1px solid ${card.badgeAccent}`,
-                    padding: '3px 10px', borderRadius: 20,
-                  }}>
-                    {card.badge}
-                  </div>
+                  <NJTag variant={card.badgeVariant} scale="sm" label={card.badge} style={card.badgePill ? { borderRadius: 'var(--nj-semantic-size-border-radius-pill)' } : undefined} />
                 </div>
               </div>
             );
           })}
         </div>
 
-        {/* Contextual info banner */}
-        <NJInlineMessage variant="information" style={{ marginBottom: 24 }}>
-          {planType === 'standard' ? (
-            <>Past offers, methodology documents, and references are optional. They are used for <strong>drafting only</strong>.</>
-          ) : (
-            <>Past offers, methodology documents, and references are optional. They are used to <strong>shape the plan</strong> only if you select them.</>
-          )}
-        </NJInlineMessage>
+        {/* Contextual info banner — tailored plan only */}
+        {planType === 'tailored' && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20, padding: '14px 18px', background: 'var(--nj-semantic-color-background-brand-subtle-default)', borderRadius: 10, border: '2px solid var(--nj-semantic-color-border-brand-strong-default)' }}>
+            <NJIcon name="info" style={{ fontSize: 18, color: 'var(--nj-semantic-color-icon-brand-primary-default)', flexShrink: 0 }} />
+            <span style={{ fontSize: 13, color: 'var(--nj-semantic-color-text-neutral-primary-default)' }}>
+              Past offers, methodology documents, and references are optional. They are used to <strong>shape the plan</strong> only if you select them.
+            </span>
+          </div>
+        )}
 
-        {/* ── STANDARD PLAN: 3-column document cards ── */}
+        {/* ── STANDARD PLAN: toggle question + optional 3-column document cards ── */}
         {planType === 'standard' && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
-            {BASE_DOC_CARDS.map(card => (
-              <div key={card.key} className="card" style={{ padding: 18 }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 8 }}>
-                  <div style={{ width: 36, height: 36, borderRadius: 8, background: 'var(--nj-semantic-color-background-neutral-secondary-default)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--nj-core-color-reference-brand-500)', flexShrink: 0 }}>
-                    <NJIcon name={card.icon} style={{ fontSize: 18 }} />
-                  </div>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 5 }}>{card.title}</div>
-                    <NJTag variant="blue" scale="xs" label="Used for drafting only" />
-                  </div>
-                </div>
-                <div style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-500)', marginBottom: 12, lineHeight: 1.55 }}>
-                  {card.desc}
-                </div>
-                <FileUploadZone
-                  cardKey={card.key}
-                  files={files}
-                  dragOver={dragOver}
-                  setDragOver={setDragOver}
-                  onFiles={handleFiles}
-                  onRemove={removeFile}
-                  inputRef={inputRefs[card.key]}
-                  onBrowse={() => setPendingUploadKey(card.key)}
+          <>
+            {/* Toggle bar */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20, padding: '14px 18px', background: 'var(--nj-semantic-color-background-brand-subtle-default)', borderRadius: 10, border: '2px solid var(--nj-semantic-color-border-brand-strong-default)' }}>
+              <span style={{ fontSize: 13, color: 'var(--nj-semantic-color-text-neutral-primary-default)', flex: 1 }}>
+                Do you want to support your drafting with additional documents (past offers, methodology documents, project references)?
+              </span>
+              <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
+                <NJButton
+                  scale="sm"
+                  variant={useAdditionalDocs ? 'primary' : 'secondary'}
+                  emphasis={useAdditionalDocs ? undefined : 'subtle'}
+                  label="Yes"
+                  onClick={() => setUseAdditionalDocs(true)}
+                />
+                <NJButton
+                  scale="sm"
+                  variant={!useAdditionalDocs ? 'primary' : 'secondary'}
+                  emphasis={!useAdditionalDocs ? undefined : 'subtle'}
+                  label="No"
+                  onClick={() => setUseAdditionalDocs(false)}
                 />
               </div>
-            ))}
-          </div>
+            </div>
+
+            {/* Document cards — only when Yes */}
+            {useAdditionalDocs && (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+                {BASE_DOC_CARDS.map(card => (
+                  <div key={card.key} className="card" style={{ padding: 18 }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 8 }}>
+                      <div style={{ width: 36, height: 36, borderRadius: 8, background: 'var(--nj-semantic-color-background-neutral-secondary-default)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--nj-semantic-color-icon-brand-primary-default)', flexShrink: 0 }}>
+                        <NJIcon name={card.icon} style={{ fontSize: 18 }} />
+                      </div>
+                      <div style={{ fontWeight: 700, fontSize: 13, marginTop: 6 }}>{card.title}</div>
+                    </div>
+                    <div style={{ fontSize: 12, color: 'var(--nj-semantic-color-text-neutral-secondary-default)', marginBottom: 12, lineHeight: 1.55 }}>
+                      {card.desc}
+                    </div>
+                    <FileUploadZone
+                      cardKey={card.key}
+                      files={files}
+                      dragOver={dragOver}
+                      setDragOver={setDragOver}
+                      onFiles={handleFiles}
+                      onRemove={removeFile}
+                      inputRef={inputRefs[card.key]}
+                      onBrowse={() => setPendingUploadKey(card.key)}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
 
         {/* ── TAILORED PLAN: 4-column document cards ── */}
@@ -283,21 +304,18 @@ export default function DraftConfiguratorTab({ s, handlers }) {
               {TAILORED_DOC_CARDS.map(card => (
                 <div key={card.key} className="card" style={{ padding: 18, display: 'flex', flexDirection: 'column' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-                    <div style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--nj-semantic-color-background-neutral-secondary-default)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--nj-core-color-reference-brand-500)', flexShrink: 0 }}>
+                    <div style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--nj-semantic-color-background-neutral-secondary-default)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--nj-semantic-color-icon-brand-primary-default)', flexShrink: 0 }}>
                       <NJIcon name={card.icon} style={{ fontSize: 16 }} />
                     </div>
                     <span style={{ fontWeight: 700, fontSize: 13, lineHeight: 1.3 }}>{card.title}</span>
                   </div>
 
-                  <div style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-500)', marginBottom: 12, lineHeight: 1.55, flex: 1 }}>
+                  <div style={{ fontSize: 12, color: 'var(--nj-semantic-color-text-neutral-secondary-default)', marginBottom: 12, lineHeight: 1.55, flex: 1 }}>
                     {card.desc}
                   </div>
 
                   {card.locked ? (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 500, color: 'var(--nj-semantic-color-text-status-success-primary-default)', background: 'var(--nj-semantic-color-background-status-success-subtle-default)', padding: '7px 10px', borderRadius: 6, border: '1px solid var(--nj-core-color-reference-status-success-300)' }}>
-                      <NJIcon name="check_circle" style={{ fontSize: 14 }} />
-                      Included by default
-                    </div>
+                    <NJTag variant="green" scale="sm" label="Included by default" style={{ borderRadius: 'var(--nj-semantic-size-border-radius-pill)', alignSelf: 'flex-start' }} />
                   ) : (
                     <>
                       <FileUploadZone
@@ -322,7 +340,7 @@ export default function DraftConfiguratorTab({ s, handlers }) {
                           Include in ToC generation
                         </span>
                       </div>
-                      <div style={{ fontSize: 11, color: 'var(--nj-core-color-reference-neutral-400)', marginTop: 5, display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <div style={{ fontSize: 11, color: 'var(--nj-semantic-color-text-neutral-tertiary-default)', marginTop: 5, display: 'flex', alignItems: 'center', gap: 4 }}>
                         <NJIcon name="info" style={{ fontSize: 12 }} />
                         Files remain available for drafting.
                       </div>
