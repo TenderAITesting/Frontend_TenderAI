@@ -165,7 +165,7 @@ function ConfidenceBadge({ confidence, large }: { confidence: number; large?: bo
 function CollapsibleBlock({
   iconText, title, titleColor, children, readOnlyLabel, headerRight,
 }: {
-  iconText: string;
+  iconText: React.ReactNode;
   title: string;
   titleColor?: string;
   children: React.ReactNode;
@@ -184,7 +184,7 @@ function CollapsibleBlock({
         gap: 8,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 14, lineHeight: 1, flexShrink: 0 }}>{iconText}</span>
+          <span style={{ fontSize: 14, lineHeight: 1, flexShrink: 0, display: 'flex', alignItems: 'center' }}>{iconText}</span>
           <span style={{
             fontSize: 13, fontWeight: 600,
             color: titleColor || 'var(--nj-semantic-color-text-neutral-primary-default)',
@@ -241,37 +241,32 @@ function EditControls({ editMode, onEdit, onSave, onCancel }: {
 export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
   const { goStep, freezeAndDraft } = handlers;
 
-  // Section data
   const [sections, setSections] = useState<Section[]>(INITIAL_SECTIONS);
-
-  // Selection: key is String(section.id) for sections, sub.id for subsections
   const [selectedKey, setSelectedKey] = useState<string>('7');
-
   const [expandedSections, setExpandedSections] = useState<Set<number>>(new Set([2, 7]));
 
-  // Edit modes (independent for title and guidance)
   const [editTitle, setEditTitle] = useState(false);
   const [editGuidance, setEditGuidance] = useState(false);
   const [editedTitle, setEditedTitle] = useState('');
   const [editedGuidance, setEditedGuidance] = useState('');
 
-  // Three-dots menu
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Drag & drop (always active)
-  const dragId = useRef<number | null>(null);
+  const dragId    = useRef<number | null>(null);
+  const dragSubId = useRef<string | null>(null);
+  const dragSubParentId = useRef<number | null>(null);
 
-  // Delete mode: shows trash icons on each row
   const [deleteMode, setDeleteMode] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
   const [deleteSubConfirmId, setDeleteSubConfirmId] = useState<string | null>(null);
 
-  // Add section inline form
   const [showAddSection, setShowAddSection] = useState(false);
   const [newSectionTitle, setNewSectionTitle] = useState('');
 
-  // Freeze confirmation modal
+  const [showAddSubsection, setShowAddSubsection] = useState(false);
+  const [newSubsectionTitle, setNewSubsectionTitle] = useState('');
+
   const [showFreezeModal, setShowFreezeModal] = useState(false);
 
   // ─── Derived selected item ───────────────────────────────────────────────
@@ -293,6 +288,23 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
   const selGaps       = selected?.kind === 'section' ? selected.section.evidenceGaps : selected?.sub.evidenceGaps ?? [];
   const selLabel      = selected?.kind === 'section' ? `Section ${selected.section.id}` : selected?.sub.id ?? '';
   const selColors     = getConfidenceColors(selConfidence);
+
+  // ─── Renumber helper ─────────────────────────────────────────────────────
+
+  function renumber(secs: Section[], curKey: string): [Section[], string] {
+    let newKey = curKey;
+    const out = secs.map((sec, si) => {
+      const newId = si + 1;
+      if (curKey === String(sec.id)) newKey = String(newId);
+      const subsections = sec.subsections.map((sub, subi) => {
+        const newSubId = `${newId}.${subi + 1}`;
+        if (curKey === sub.id) newKey = newSubId;
+        return { ...sub, id: newSubId };
+      });
+      return { ...sec, id: newId, subsections };
+    });
+    return [out, newKey];
+  }
 
   // ─── Handlers ────────────────────────────────────────────────────────────
 
@@ -356,6 +368,38 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
     setSelectedKey(String(newId));
   }
 
+  function handleAddSubsection() {
+    if (!newSubsectionTitle.trim()) return;
+    const parentSecId = selected?.kind === 'section'
+      ? selected.section.id
+      : selected?.kind === 'subsection'
+      ? selected.parent.id
+      : null;
+    if (parentSecId === null) return;
+
+    const newSections = sections.map(sec => {
+      if (sec.id !== parentSecId) return sec;
+      const newSubId = `${sec.id}.${sec.subsections.length + 1}`;
+      const newSub: Subsection = {
+        id: newSubId,
+        title: newSubsectionTitle.trim(),
+        confidence: 0,
+        guidance: '',
+        evidenceGaps: [],
+      };
+      return { ...sec, subsections: [...sec.subsections, newSub] };
+    });
+
+    const parentSec = newSections.find(s => s.id === parentSecId);
+    const newSubId = parentSec?.subsections[parentSec.subsections.length - 1]?.id ?? String(parentSecId);
+
+    setSections(newSections);
+    setExpandedSections(prev => new Set([...prev, parentSecId]));
+    setSelectedKey(newSubId);
+    setNewSubsectionTitle('');
+    setShowAddSubsection(false);
+  }
+
   function handleDeleteSection(id: number) {
     const remaining = sections.filter(sec => sec.id !== id);
     setSections(remaining);
@@ -384,15 +428,37 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
   function handleDragOver(e: React.DragEvent) { e.preventDefault(); }
   function handleDrop(targetId: number) {
     if (dragId.current === null || dragId.current === targetId) return;
-    setSections(prev => {
-      const from = prev.findIndex(sec => sec.id === dragId.current);
-      const to   = prev.findIndex(sec => sec.id === targetId);
-      const next = [...prev];
-      const [moved] = next.splice(from, 1);
-      next.splice(to, 0, moved);
-      return next;
-    });
+    const from = sections.findIndex(sec => sec.id === dragId.current);
+    const to   = sections.findIndex(sec => sec.id === targetId);
+    const next = [...sections];
+    const [moved] = next.splice(from, 1);
+    next.splice(to, 0, moved);
+    const [numbered, newKey] = renumber(next, selectedKey);
+    setSections(numbered);
+    setSelectedKey(newKey);
     dragId.current = null;
+  }
+
+  function handleSubDragStart(secId: number, subId: string) {
+    dragSubId.current = subId;
+    dragSubParentId.current = secId;
+  }
+  function handleSubDrop(secId: number, targetSubId: string) {
+    if (!dragSubId.current || dragSubId.current === targetSubId) return;
+    if (dragSubParentId.current !== secId) return;
+    const secIdx = sections.findIndex(s => s.id === secId);
+    if (secIdx === -1) return;
+    const subs = [...sections[secIdx].subsections];
+    const from = subs.findIndex(s => s.id === dragSubId.current);
+    const to   = subs.findIndex(s => s.id === targetSubId);
+    const [moved] = subs.splice(from, 1);
+    subs.splice(to, 0, moved);
+    const newSections = sections.map((sec, i) => i === secIdx ? { ...sec, subsections: subs } : sec);
+    const [numbered, newKey] = renumber(newSections, selectedKey);
+    setSections(numbered);
+    setSelectedKey(newKey);
+    dragSubId.current = null;
+    dragSubParentId.current = null;
   }
 
   // ─── Render ───────────────────────────────────────────────────────────────
@@ -403,6 +469,11 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
     { range: '40–59%',  score: 50, label: 'Weak support'   },
     { range: '0–39%',   score: 20, label: 'Insufficient'   },
   ];
+
+  // Which section id is the parent of the add-subsection form
+  const addSubParentId = showAddSubsection
+    ? (selected?.kind === 'section' ? selected.section.id : selected?.kind === 'subsection' ? selected.parent.id : null)
+    : null;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
@@ -474,7 +545,7 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
                     background: 'var(--nj-semantic-color-background-neutral-primary-default)',
                     border: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
                     borderRadius: 6, boxShadow: '0 4px 12px rgba(0,0,0,.12)',
-                    minWidth: 160, overflow: 'hidden', marginTop: 4,
+                    minWidth: 172, overflow: 'hidden', marginTop: 4,
                   }}>
                     <button
                       onClick={() => { setMenuOpen(false); setShowAddSection(true); setNewSectionTitle(''); }}
@@ -484,6 +555,24 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
                     >
                       <span className="material-icons" style={{ fontSize: 16, color: 'var(--nj-core-color-reference-neutral-500)' }}>add</span>
                       Add section
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (!selected) return;
+                        setMenuOpen(false);
+                        if (selected.kind === 'section') {
+                          setExpandedSections(prev => new Set([...prev, selected.section.id]));
+                        }
+                        setShowAddSubsection(true);
+                        setNewSubsectionTitle('');
+                      }}
+                      disabled={!selected}
+                      style={{ width: '100%', background: 'none', border: 'none', cursor: selected ? 'pointer' : 'default', padding: '9px 14px', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: selected ? 'var(--nj-semantic-color-text-neutral-primary-default)' : 'var(--nj-core-color-reference-neutral-400)', textAlign: 'left', opacity: selected ? 1 : 0.5 }}
+                      onMouseEnter={e => { if (selected) (e.currentTarget as HTMLButtonElement).style.background = 'var(--nj-semantic-color-background-neutral-secondary-default)'; }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'none'; }}
+                    >
+                      <span className="material-icons" style={{ fontSize: 16, color: selected ? 'var(--nj-core-color-reference-neutral-500)' : 'var(--nj-core-color-reference-neutral-300)' }}>playlist_add</span>
+                      Add subsection
                     </button>
                     <button
                       onClick={() => { setMenuOpen(false); setDeleteMode(true); setDeleteConfirmId(null); }}
@@ -629,16 +718,24 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
                   )}
 
                   {/* Subsection rows */}
-                  {isExpanded && hasChildren && sec.subsections.map(sub => {
+                  {isExpanded && hasChildren && sec.subsections.map((sub) => {
                     const isSubSelected = selectedKey === sub.id;
                     return (
                       <React.Fragment key={sub.id}>
                         <div
+                          draggable={true}
+                          onDragStart={() => handleSubDragStart(sec.id, sub.id)}
+                          onDragOver={handleDragOver}
+                          onDrop={() => handleSubDrop(sec.id, sub.id)}
                           onClick={() => handleSelect(sub.id)}
                           style={{
                             display: 'grid',
-                            gridTemplateColumns: deleteMode ? '36px 1fr auto 28px' : '36px 1fr auto',
-                            alignItems: 'center', padding: '8px 12px', paddingLeft: 44,
+                            gridTemplateColumns: deleteMode
+                              ? '20px 36px 1fr auto 28px'
+                              : '20px 36px 1fr auto',
+                            alignItems: 'center',
+                            padding: '7px 12px',
+                            paddingLeft: 24,
                             borderLeft: isSubSelected
                               ? '3px solid var(--nj-core-color-reference-brand-500)'
                               : '3px solid transparent',
@@ -646,11 +743,14 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
                               ? 'var(--nj-core-color-reference-brand-100, #eff6ff)'
                               : 'transparent',
                             borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
-                            cursor: 'pointer', gap: 4, transition: 'background .1s',
+                            cursor: 'grab', gap: 4, transition: 'background .1s',
                           }}
                           onMouseEnter={e => { if (!isSubSelected) e.currentTarget.style.background = 'var(--nj-semantic-color-background-neutral-secondary-default)'; }}
                           onMouseLeave={e => { if (!isSubSelected) e.currentTarget.style.background = 'transparent'; }}
                         >
+                          {/* Drag handle */}
+                          <span style={{ fontSize: 14, color: 'var(--nj-core-color-reference-neutral-400)', cursor: 'grab', lineHeight: 1, userSelect: 'none' }}>⠿</span>
+
                           <span style={{ fontSize: 11, color: 'var(--nj-core-color-reference-neutral-400)', fontFamily: "'Lato', sans-serif" }}>
                             {sub.id}
                           </span>
@@ -694,6 +794,33 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
                       </React.Fragment>
                     );
                   })}
+
+                  {/* Add subsection inline form — shown below this section's subsections */}
+                  {addSubParentId === sec.id && (
+                    <div style={{
+                      padding: '10px 16px 10px 44px',
+                      borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
+                      background: 'var(--nj-semantic-color-background-neutral-secondary-default)',
+                    }}>
+                      <input
+                        className="inp"
+                        placeholder="New subsection title…"
+                        value={newSubsectionTitle}
+                        onChange={e => setNewSubsectionTitle(e.target.value)}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter') handleAddSubsection();
+                          if (e.key === 'Escape') { setShowAddSubsection(false); setNewSubsectionTitle(''); }
+                        }}
+                        autoFocus
+                        style={{ marginBottom: 8, fontSize: 12 }}
+                      />
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <NJButton variant="primary" scale="sm" label="Add" onClick={handleAddSubsection} />
+                        <NJButton variant="secondary" emphasis="subtle" scale="sm" label="Cancel"
+                          onClick={() => { setShowAddSubsection(false); setNewSubsectionTitle(''); }} />
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -774,7 +901,7 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
 
               {selConfidence < 40 && (
                 <div className="warn-box" style={{ marginTop: 12 }}>
-                  <span style={{ fontSize: 14, flexShrink: 0 }}>&#9651;</span>
+                  <span className="material-icons" style={{ fontSize: 18, flexShrink: 0, color: 'var(--nj-semantic-color-text-status-warning-contrast-default)' }}>warning</span>
                   <span style={{ fontSize: 12, color: 'var(--nj-semantic-color-text-status-warning-contrast-default)' }}>
                     Additional evidence recommended before drafting.
                   </span>
@@ -784,7 +911,7 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
 
             {/* Drafting guidance */}
             <CollapsibleBlock
-              iconText="&#9998;"
+              iconText={<span className="material-icons" style={{ fontSize: 16, color: 'var(--nj-core-color-reference-neutral-500)' }}>edit_note</span>}
               title="Drafting guidance"
               headerRight={<EditControls editMode={editGuidance} onEdit={startEditGuidance} onSave={saveEditGuidance} onCancel={cancelEditGuidance} />}
             >
@@ -808,7 +935,7 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
 
             {/* Evidence gaps */}
             <CollapsibleBlock
-              iconText="&#9651;"
+              iconText={<span className="material-icons" style={{ fontSize: 16, color: 'var(--nj-semantic-color-text-status-warning-contrast-default)' }}>warning</span>}
               title="Evidence gaps"
               titleColor="var(--nj-semantic-color-text-status-warning-contrast-default)"
               readOnlyLabel="AI-generated — read only"
