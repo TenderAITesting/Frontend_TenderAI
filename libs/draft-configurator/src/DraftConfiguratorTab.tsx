@@ -60,7 +60,7 @@ function FileUploadZone({ cardKey, files, dragOver, setDragOver, onFiles, onRemo
                 <NJIconButton
                   icon="close"
                   aria-label="Remove file"
-                  scale="sm"
+                  scale="xs"
                   variant="secondary"
                   onClick={(e) => { e.stopPropagation(); onRemove(cardKey, name); }}
                 />
@@ -92,7 +92,7 @@ const PLAN_CARDS = [
     icon: 'article',
     title: 'Standard plan',
     body: 'Uses the Tractebel base Table of Contents (ToC) and standard section guidance.',
-    badge: '⚡ Best for a fast first draft.',
+    badge: '⚡ Best for a fast first draft',
     badgeVariant: 'blue' as const,
     badgePill: true,
   },
@@ -101,7 +101,7 @@ const PLAN_CARDS = [
     icon: 'tune',
     title: 'Tailored plan',
     body: 'Uses the Tractebel base Table of Contents (ToC), then adapts it with the inputs you select below.',
-    badge: '⭐ Best for complex or strategic tenders.',
+    badge: '⭐ Best for complex or strategic tenders',
     badgeVariant: 'orange' as const,
     badgePill: true,
   },
@@ -220,7 +220,7 @@ export default function DraftConfiguratorTab({ s, handlers }) {
                   </div>
 
                   {/* Badge */}
-                  <NJTag variant={card.badgeVariant} scale="sm" label={card.badge} style={card.badgePill ? { borderRadius: 'var(--nj-semantic-size-border-radius-pill)' } : undefined} />
+                  <NJTag variant={card.badgeVariant} scale="xs" label={card.badge} style={card.badgePill ? { borderRadius: 'var(--nj-semantic-size-border-radius-pill)' } : undefined} />
                 </div>
               </div>
             );
@@ -247,14 +247,14 @@ export default function DraftConfiguratorTab({ s, handlers }) {
               </span>
               <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
                 <NJButton
-                  scale="sm"
+                  scale="xs"
                   variant={useAdditionalDocs ? 'primary' : 'secondary'}
                   emphasis={useAdditionalDocs ? undefined : 'subtle'}
                   label="Yes"
                   onClick={() => setUseAdditionalDocs(true)}
                 />
                 <NJButton
-                  scale="sm"
+                  scale="xs"
                   variant={!useAdditionalDocs ? 'primary' : 'secondary'}
                   emphasis={!useAdditionalDocs ? undefined : 'subtle'}
                   label="No"
@@ -315,7 +315,7 @@ export default function DraftConfiguratorTab({ s, handlers }) {
                   </div>
 
                   {card.locked ? (
-                    <NJTag variant="green" scale="sm" label="Included by default" style={{ borderRadius: 'var(--nj-semantic-size-border-radius-pill)', alignSelf: 'flex-start' }} />
+                    <NJTag variant="green" scale="xs" label="Included by default" style={{ borderRadius: 'var(--nj-semantic-size-border-radius-pill)', alignSelf: 'flex-start' }} />
                   ) : (
                     <>
                       <FileUploadZone
