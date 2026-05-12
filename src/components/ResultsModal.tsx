@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import { NJButton, NJLink } from '@engie-group/fluid-design-system-react';
 import agent1Data from '../data/Agent1.xlsx';
 import agent2Data from '../data/Agent2.xlsx';
@@ -168,6 +168,28 @@ function renderWithPageRefs(text: string, openSrc: (p: string) => void): React.R
   );
 }
 
+// ─── ExcelJS helper ──────────────────────────────────────────────────────────
+
+async function loadWorkbook(buffer: ArrayBuffer): Promise<ExcelJS.Workbook> {
+  const wb = new ExcelJS.Workbook();
+  await wb.xlsx.load(buffer);
+  return wb;
+}
+
+function worksheetToAoa(ws: ExcelJS.Worksheet): any[][] {
+  const rows: any[][] = [];
+  let maxCols = 0;
+  ws.eachRow({ includeEmpty: false }, (row) => {
+    const cells: any[] = [];
+    row.eachCell({ includeEmpty: true }, (cell, colNum) => {
+      cells[colNum - 1] = cell.text ?? '';
+    });
+    maxCols = Math.max(maxCols, cells.length);
+    rows.push(cells);
+  });
+  return rows.map(r => { while (r.length < maxCols) r.push(''); return r; });
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function ResultsModal({ s, handlers }: ResultsModalProps) {
@@ -317,13 +339,13 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
         setTimeout(() => autoExpandStructuredCells(data), 100);
       } else {
         const buffer = await readFileAsArrayBuffer(f);
-        const workbook = XLSX.read(buffer, { type: 'array' });
-        setSheetNames(workbook.SheetNames);
-        if (workbook.SheetNames.length > 0) {
-          setActiveSheet(workbook.SheetNames[0]);
-          const data = normalizeRowLengths(
-            XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1, defval: '', raw: false }) as any[][]
-          );
+        const workbook = await loadWorkbook(buffer);
+        const names = workbook.worksheets.map(ws => ws.name);
+        setSheetNames(names);
+        if (names.length > 0) {
+          setActiveSheet(names[0]);
+          const ws = workbook.getWorksheet(names[0]);
+          const data = normalizeRowLengths(ws ? worksheetToAoa(ws) : []);
           setSheetData(data);
           setOriginalSheetData(JSON.parse(JSON.stringify(data)));
           setTimeout(() => autoExpandStructuredCells(data), 100);
@@ -344,10 +366,9 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
       setLoading(true);
       try {
         const buffer = await readFileAsArrayBuffer(file);
-        const workbook = XLSX.read(buffer, { type: 'array' });
-        const data = normalizeRowLengths(
-          XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1, defval: '', raw: false }) as any[][]
-        );
+        const workbook = await loadWorkbook(buffer);
+        const ws = workbook.getWorksheet(sheetName);
+        const data = normalizeRowLengths(ws ? worksheetToAoa(ws) : []);
         setSheetData(data);
         setOriginalSheetData(JSON.parse(JSON.stringify(data)));
         setTimeout(() => autoExpandStructuredCells(data), 100);
@@ -475,24 +496,45 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
 
   const saveAsExcel = async () => {
     try {
-      const workbook = XLSX.utils.book_new();
+      const wb = new ExcelJS.Workbook();
       if (file && !isCsvFile) {
-        const originalData = await readFileAsArrayBuffer(file);
-        const originalWorkbook = XLSX.read(originalData, { type: 'array' });
-        originalWorkbook.SheetNames.forEach(sheetName => {
-          XLSX.utils.book_append_sheet(
-            workbook,
-            sheetName === activeSheet ? XLSX.utils.aoa_to_sheet(sheetData) : originalWorkbook.Sheets[sheetName],
-            sheetName
-          );
+        const originalBuffer = await readFileAsArrayBuffer(file);
+        const originalWb = await loadWorkbook(originalBuffer);
+        originalWb.worksheets.forEach(originalWs => {
+          const ws = wb.addWorksheet(originalWs.name);
+          if (originalWs.name === activeSheet) {
+            sheetData.forEach(row => ws.addRow(row));
+          } else {
+            originalWs.eachRow({ includeEmpty: false }, (row, rowNum) => {
+              const newRow = ws.getRow(rowNum);
+              row.eachCell({ includeEmpty: true }, (cell, colNum) => {
+                newRow.getCell(colNum).value = cell.value;
+              });
+              newRow.commit();
+            });
+          }
         });
       } else {
-        XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(sheetData), activeSheet || 'Sheet1');
+        const ws = wb.addWorksheet(activeSheet || 'Sheet1');
+        sheetData.forEach(row => ws.addRow(row));
       }
+      const buffer = await wb.xlsx.writeBuffer();
+      const blob = new Blob([buffer as ArrayBuffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      const url = URL.createObjectURL(blob);
       const now = new Date();
       const timestamp = now.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, '').replace('T', '_');
-      const baseName = tenderId && agentName ? `${tenderId}_${agentName}_${timestamp}` : (file?.name || displayFileName || 'results').replace(/\.[^/.]+$/, `_${timestamp}`);
-      XLSX.writeFile(workbook, `${baseName}.xlsx`);
+      const baseName = tenderId && agentName
+        ? `${tenderId}_${agentName}_${timestamp}`
+        : (file?.name || displayFileName || 'results').replace(/\.[^/.]+$/, `_${timestamp}`);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${baseName}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     } catch (e) {
       console.error('Error downloading Excel file:', e);
     }
