@@ -9,6 +9,7 @@ SPA React pour l'interface utilisateur du workflow 5 étapes de génération de 
 - **React Router** v7 avec loaders — routing et pre-fetching
 - **TanStack React Query** v5 — gestion état serveur
 - **ENGIE Fluid Design System** v6 — composants UI (`NJButton`, `NJModal`, `NJTable`, etc.)
+- **MUI** v9 (`@mui/material`) + **Emotion** (`@emotion/react`, `@emotion/styled`) — utilisés uniquement pour le composant `Stepper` dans `HomePage` (stepper de progression inline dans le tableau)
 - **Okta Auth JS** v8 + **okta-react** v6 — authentification OAuth 2.0 ENGIE (non activée)
 - **ExcelJS** v4 + **xlsx** v0.18 — génération et parsing de fichiers Excel
 - **uuid** v14 — génération d'identifiants côté client
@@ -52,10 +53,10 @@ Frontend_TenderAI/
 │   │   ├── SrcModal.tsx
 │   │   └── UpdateDocsModal.tsx
 │   ├── data/
-│   │   ├── constants.ts         # Agents, templates ToC, mock tenders initiaux
+│   │   ├── constants.ts         # Agents, templates ToC, 10 mock tenders initiaux, A3_STATIC_DATA, DOC_PAGES
 │   │   ├── mockStore.ts         # Store mock (module-level, remplace le backend)
-│   │   ├── Agent1.xlsx          # Template Excel agent 1
-│   │   └── Agent2.xlsx          # Template Excel agent 2
+│   │   ├── Agent1.xlsx          # Template Excel agent 1 (importé comme JSON via xlsxJsonPlugin)
+│   │   └── Agent2.xlsx          # Template Excel agent 2 (idem) — A3 utilise A3_STATIC_DATA inline
 │   ├── loaders/
 │   │   └── tenderLoader.ts      # React Router loader pour /tender/:id/:step
 │   └── model/
@@ -64,15 +65,17 @@ Frontend_TenderAI/
 ├── libs/                        # Bibliothèques de features
 │   ├── auth/                    # Authentification (Okta, bypassée en dev)
 │   ├── http-client/             # Client HTTP (stub, USE_MOCK = true)
-│   ├── layout/                  # TopBar (logo, user info)
+│   ├── layout/                  # TopBar (logo, user info) + TopBarContext (slot pour injection de contenu par les routes enfants)
 │   ├── homepage/                # Page liste des tenders
 │   ├── upload-page/             # Formulaire création / édition tender
 │   ├── tender-documents/        # Étape 1 — Upload documents
 │   ├── tender-analysis/         # Étape 2 — Lancement et suivi agents
 │   ├── draft-configurator/      # Étape 3 — Configuration de la proposition
 │   ├── proposal-planning/       # Étape 4 — Édition de la table des matières
-│   └── proposal-drafting/       # Étape 5 — Rédaction (stub)
+│   ├── proposal-drafting/       # Étape 5 — Rédaction (stub)
+│   └── tender-page/             # Répertoire vide (scaffold non utilisé — à supprimer ou implémenter)
 │
+├── preview/                     # Maquettes HTML statiques (TenderAI.html, v2) — hors build, à titre de référence
 ├── index.html                   # HTML racine (lang="fr", Lato via Google Fonts)
 ├── vite.config.ts               # Alias @libs / @src, plugin XLSX custom
 ├── tsconfig.app.json            # Config TS app (strict: false)
@@ -138,7 +141,7 @@ La navigation avant est verrouillée par `isNew` + `maxStepIdx` : un tender nouv
 | `a2` | Technical Requirements | Cartographie des exigences techniques |
 | `a3` | Project Risks | Risques légaux, conformité, opérationnels |
 
-A3 ne peut être sélectionné que si A1 ou A2 est aussi sélectionné pour le même document.
+A3 ne peut être sélectionné que si **A2** est aussi sélectionné pour le même document (la case A3 est bloquée si `docAgents[doc].a2 === false`).
 
 ## Endpoints backend (à connecter)
 
@@ -249,6 +252,10 @@ Définis dans `vite.config.ts` et `tsconfig.app.json` :
 **Composants ENGIE Fluid :** Utiliser exclusivement les composants du design system ENGIE (`NJButton`, `NJModal`, `NJFormItem`, `NJTable`, etc.). Ne pas introduire d'autres bibliothèques UI sans validation.
 
 **TypeScript strict désactivé :** `tsconfig.app.json` a `strict: false`, `noUnusedLocals: false`, `noUnusedParameters: false`. Ne pas activer sans corriger les erreurs existantes au préalable.
+
+**ESLint ne couvre pas TypeScript :** `eslint.config.js` ne lint que les fichiers `.js/.jsx`. Les fichiers `.ts/.tsx` ne sont pas analysés. Pour activer le lint TypeScript il faudra installer `typescript-eslint` et configurer le parser.
+
+**Pattern TopBar :** `libs/layout` exporte `TopBarProvider`, `TopBar`, et `useTopBar`. Le slot de contenu de la topbar est injecté par les routes enfants via `useTopBar().setSlot(...)` (pattern utilisé dans `TenderPage.tsx` pour afficher breadcrumb + nom du tender). Ne pas mettre le contenu contextuel directement dans `TopBar`.
 
 ## Déploiement
 

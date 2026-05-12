@@ -63,7 +63,7 @@ export default function TenderView() {
     ...freshDocs(),
   }));
 
-  const timerRef = useRef(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const set = useCallback((patch) => {
     setS(prev => ({ ...prev, ...(typeof patch === 'function' ? patch(prev) : patch) }));

@@ -145,8 +145,8 @@ function parseStructuredData(cellValue: any): any[] | null {
   try {
     const manualParsed = manualParseStructuredData(s);
     if (manualParsed && manualParsed.length > 0) return manualParsed;
-  } catch (e) {
-    console.log('Could not parse structured data:', e);
+  } catch {
+    // both JSON and manual parse failed — return null to show raw cell value
   }
 
   return null;
@@ -175,7 +175,7 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
   const { onClose, onReRunAI, onUpdateDocs, onFeedback, onValidate, openSrc } = handlers;
 
   // ── UI state ──
-  const [fullscreen] = useState(true);
+  const fullscreen = true;
   const [isEditing, setIsEditing] = useState(false);
 
   const [hasChanges, setHasChanges] = useState(false);
@@ -190,8 +190,8 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
   const [sheetNames, setSheetNames] = useState<string[]>([]);
   const [activeSheet, setActiveSheet] = useState('');
   const [isCsvFile, setIsCsvFile] = useState(false);
-  const [delimiter] = useState(',');
-  const [encoding] = useState('UTF-8');
+  const delimiter = ',';
+  const encoding = 'UTF-8';
 
   // ── Load data when agent or file changes ──
   useEffect(() => {
@@ -384,7 +384,7 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
         setSheetData(newData);
         setHasChanges(true);
       }
-    } catch (e) { console.error('Error editing nested data:', e); }
+    } catch (e) { setError(`Failed to edit cell: ${e instanceof Error ? e.message : String(e)}`); }
   };
 
   const addNestedItem = (rowIndex: number, cellIndex: number) => {
@@ -397,7 +397,7 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
       newData[rowIndex][cellIndex] = JSON.stringify(parsedData);
       setSheetData(newData);
       setHasChanges(true);
-    } catch (e) { console.error('Error adding nested item:', e); }
+    } catch (e) { setError(`Failed to add item: ${e instanceof Error ? e.message : String(e)}`); }
   };
 
   const deleteNestedItem = (rowIndex: number, cellIndex: number, itemIndex: number) => {
@@ -410,7 +410,7 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
         setSheetData(newData);
         setHasChanges(true);
       }
-    } catch (e) { console.error('Error deleting nested item:', e); }
+    } catch (e) { setError(`Failed to delete item: ${e instanceof Error ? e.message : String(e)}`); }
   };
 
   const addRow = () => {
@@ -494,7 +494,7 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
       const baseName = tenderId && agentName ? `${tenderId}_${agentName}_${timestamp}` : (file?.name || displayFileName || 'results').replace(/\.[^/.]+$/, `_${timestamp}`);
       XLSX.writeFile(workbook, `${baseName}.xlsx`);
     } catch (e) {
-      console.error('Error downloading Excel file:', e);
+      setError(`Failed to download Excel: ${e instanceof Error ? e.message : String(e)}`);
     }
   };
 
@@ -507,6 +507,7 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(fileUrl);
   };
 
   const handleReRunAI = () => {

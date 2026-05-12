@@ -4,6 +4,7 @@ import { NJButton, NJInputSearch, NJIconButton, NJInlineMessage } from '@engie-g
 import { Stepper, Step, StepLabel, StepConnector, stepConnectorClasses } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTenders } from '../model/useTenders';
+import { PROJECT_SOURCES } from '../../../src/data/constants';
 
 const CompactConnector = styled(StepConnector)(() => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -23,7 +24,6 @@ const CompactConnector = styled(StepConnector)(() => ({
     backgroundColor: '#1976d2',
   },
 }));
-import { PROJECT_SOURCES } from '../../../src/data/constants';
 
 const STEPS = [
   'Tender Uploaded',
