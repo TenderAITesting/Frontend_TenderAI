@@ -1,4 +1,5 @@
 import { NJButton, NJIconButton, NJRadioGroup, NJRadio } from '@engie-group/fluid-design-system-react';
+import styles from './ExportModal.module.css';
 
 const LANGS = [
   ['EN', 'English'],
@@ -13,18 +14,18 @@ export default function ExportModal({ exportLang, onSetLang, onConfirm, onClose 
   const canConfirm = exportLang !== null;
 
   return (
-    <div className="disc-overlay" onClick={onClose}>
-      <div className="disc-box fadein" style={{ maxWidth: 400 }} onClick={e => e.stopPropagation()}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          <div style={{ fontSize: 15, fontWeight: 700 }}>Export Language</div>
+    <div className={styles["disc-overlay"]} onClick={onClose}>
+      <div className={styles["disc-box"]} onClick={e => e.stopPropagation()}>
+        <div className={styles["export-header"]}>
+          <div className={styles["export-title"]}>Export Language</div>
           <NJIconButton icon="close" aria-label="Close" scale="sm" variant="secondary" onClick={onClose} />
         </div>
 
-        <p style={{ fontSize: 13, color: 'var(--nj-core-color-reference-neutral-500)', marginBottom: 18 }}>
+        <p className={styles["export-desc"]}>
           Select the language for the exported Word document.
         </p>
 
-        <div style={{ marginBottom: 24 }}>
+        <div className={styles["export-radio-group"]}>
           <NJRadioGroup orientation="column" style={{ gap: 10 }}>
             {LANGS.map(([code, label]) => (
               <NJRadio
@@ -38,7 +39,7 @@ export default function ExportModal({ exportLang, onSetLang, onConfirm, onClose 
           </NJRadioGroup>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+        <div className={styles["export-footer"]}>
           <NJButton variant="secondary" emphasis="subtle" label="Cancel" onClick={onClose} />
           <NJButton
             variant="primary"

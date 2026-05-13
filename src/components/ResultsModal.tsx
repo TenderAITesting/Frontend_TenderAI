@@ -4,6 +4,7 @@ import { NJButton, NJLink } from '@engie-group/fluid-design-system-react';
 import agent1Data from '../data/Agent1.xlsx';
 import agent2Data from '../data/Agent2.xlsx';
 import { A3_STATIC_DATA } from '../data/constants';
+import styles from './ResultsModal.module.css';
 
 // ─── Static fallback data ─────────────────────────────────────────────────────
 
@@ -156,9 +157,9 @@ function parseStructuredData(cellValue: any): any[] | null {
 
 function renderWithPageRefs(text: string, openSrc: (p: string) => void): React.ReactNode {
   const parts = text.split(/(p\.\s*\d+)/g);
-  if (parts.length === 1) return <span style={{ wordBreak: 'break-word' }}>{text}</span>;
+  if (parts.length === 1) return <span className={styles["rm-cell-text"]}>{text}</span>;
   return (
-    <span style={{ wordBreak: 'break-word' }}>
+    <span className={styles["rm-cell-text"]}>
       {parts.map((part, i) =>
         /^p\.\s*\d+$/.test(part)
           ? <NJLink key={i} href="#" onClick={e => { e.preventDefault(); openSrc(part.replace(/\s+/, '')); }}>{part.replace(/\s+/, '')} ↗</NJLink>
@@ -571,45 +572,32 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
   const renderEditableNestedTable = (data: any[], rowIndex: number, cellIndex: number) => {
     if (!Array.isArray(data) || data.length === 0) return null;
     const allKeys = [...new Set<string>(data.flatMap(item => Object.keys(item)))];
-    const thSt: React.CSSProperties = {
-      textAlign: 'left', padding: '4px 8px',
-      background: 'var(--nj-semantic-color-background-neutral-secondary-default)',
-      borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
-      fontSize: 10, fontWeight: 700, color: 'var(--nj-core-color-reference-neutral-500)', whiteSpace: 'nowrap',
-    };
-    const tdSt: React.CSSProperties = {
-      padding: '5px 8px', verticalAlign: 'top', fontSize: 12, wordBreak: 'break-word',
-      borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
-    };
     return (
       <div>
-        <div style={{ marginBottom: 4 }}>
-          <button
-            onClick={() => addNestedItem(rowIndex, cellIndex)}
-            style={{ background: 'none', border: '1px solid var(--nj-core-color-reference-brand-500)', cursor: 'pointer', padding: '2px 8px', borderRadius: 4, fontSize: 11, color: 'var(--nj-core-color-reference-brand-500)', fontWeight: 600 }}
-          >
+        <div className={styles["rm-nested-add-bar"]}>
+          <button onClick={() => addNestedItem(rowIndex, cellIndex)} className={styles["rm-nested-add-btn"]}>
             + Add Item
           </button>
         </div>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <table className={styles["rm-nested-table"]}>
           <thead>
             <tr>
-              <th style={thSt}>Actions</th>
-              {allKeys.map(key => <th key={key} style={thSt}>{key.charAt(0).toUpperCase() + key.slice(1)}</th>)}
+              <th className={styles["rm-nested-th"]}>Actions</th>
+              {allKeys.map(key => <th key={key} className={styles["rm-nested-th"]}>{key.charAt(0).toUpperCase() + key.slice(1)}</th>)}
             </tr>
           </thead>
           <tbody>
             {data.map((item, idx) => (
               <tr key={idx}>
-                <td style={tdSt}>
+                <td className={styles["rm-nested-td"]}>
                   <button
                     onClick={() => deleteNestedItem(rowIndex, cellIndex, idx)}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--nj-core-color-reference-status-danger-500)', fontSize: 14, fontWeight: 700, padding: '0 4px', lineHeight: 1 }}
+                    className={styles["rm-nested-del-btn"]}
                     title="Delete this item"
                   >×</button>
                 </td>
                 {allKeys.map(key => (
-                  <td key={key} style={tdSt}>
+                  <td key={key} className={styles["rm-nested-td"]}>
                     {Array.isArray(item[key]) ? (
                       <div
                         contentEditable suppressContentEditableWarning
@@ -618,7 +606,7 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
                           handleNestedDataEdit(rowIndex, cellIndex, idx, key, values);
                         }}
                         onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); (e.target as HTMLDivElement).blur(); } }}
-                        style={{ minHeight: 20, outline: 'none' }}
+                        className={styles["rm-editable-cell"]}
                       >
                         {item[key].join(', ')}
                       </div>
@@ -627,7 +615,7 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
                         contentEditable suppressContentEditableWarning
                         onBlur={e => handleNestedDataEdit(rowIndex, cellIndex, idx, key, (e.target as HTMLDivElement).textContent || '')}
                         onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); (e.target as HTMLDivElement).blur(); } }}
-                        style={{ minHeight: 20, outline: 'none' }}
+                        className={styles["rm-editable-cell"]}
                       >
                         {item[key] || ''}
                       </div>
@@ -645,27 +633,17 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
   const renderNestedTable = (data: any[], cellKey: string) => {
     if (!Array.isArray(data) || data.length === 0) return null;
     const allKeys = [...new Set<string>(data.flatMap(item => Object.keys(item)))];
-    const thSt: React.CSSProperties = {
-      textAlign: 'left', padding: '4px 8px',
-      background: 'var(--nj-semantic-color-background-neutral-secondary-default)',
-      borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
-      fontSize: 10, fontWeight: 700, color: 'var(--nj-core-color-reference-neutral-500)', whiteSpace: 'nowrap',
-    };
-    const tdSt: React.CSSProperties = {
-      padding: '5px 8px', verticalAlign: 'top', fontSize: 12, wordBreak: 'break-word',
-      borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
-    };
     return (
-      <table key={cellKey} style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <table key={cellKey} className={styles["rm-nested-table"]}>
         <thead>
-          <tr>{allKeys.map(key => <th key={key} style={thSt}>{key.charAt(0).toUpperCase() + key.slice(1)}</th>)}</tr>
+          <tr>{allKeys.map(key => <th key={key} className={styles["rm-nested-th"]}>{key.charAt(0).toUpperCase() + key.slice(1)}</th>)}</tr>
         </thead>
         <tbody>
           {data.map((item, i) => (
             <tr key={i}>
               {allKeys.map(key => {
                 const v = Array.isArray(item[key]) ? item[key].join(', ') : String(item[key] ?? '');
-                return <td key={key} style={tdSt}>{/p\.\s*\d+/.test(v) ? renderWithPageRefs(v, openSrc) : v || '—'}</td>;
+                return <td key={key} className={styles["rm-nested-td"]}>{/p\.\s*\d+/.test(v) ? renderWithPageRefs(v, openSrc) : v || '—'}</td>;
               })}
             </tr>
           ))}
@@ -686,29 +664,29 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
     if (header === 'page') {
       return cellValue
         ? <NJLink href="#" onClick={e => { e.preventDefault(); openSrc(`p.${cellValue}`); }}>p.{cellValue} ↗</NJLink>
-        : <span style={{ color: 'var(--nj-core-color-reference-neutral-300)', fontStyle: 'italic' }}>—</span>;
+        : <span className={styles["rm-cell-empty"]}>—</span>;
     }
 
     // Safety impact column → colored YES / NO badge
     if (header === 'safety_impact') {
       return cellValue === 'YES'
-        ? <span style={{ color: 'var(--nj-core-color-reference-status-danger-500)', fontWeight: 700, fontSize: 10 }}>YES</span>
+        ? <span className={styles["rm-badge-yes"]}>YES</span>
         : cellValue === 'NO'
-        ? <span style={{ color: 'var(--nj-core-color-reference-neutral-400)', fontWeight: 700, fontSize: 10 }}>NO</span>
-        : <span style={{ color: 'var(--nj-core-color-reference-neutral-300)', fontStyle: 'italic' }}>—</span>;
+        ? <span className={styles["rm-badge-no"]}>NO</span>
+        : <span className={styles["rm-cell-empty"]}>—</span>;
     }
 
     // Risk score column → colored HIGH / MEDIUM / LOW badge
     if (header === 'risk_score') {
-      const scoreStyles: Record<string, React.CSSProperties> = {
-        HIGH:   { color: 'var(--nj-core-color-reference-status-danger-700)',  background: 'var(--nj-core-color-reference-status-danger-100)',  border: '1px solid var(--nj-core-color-reference-status-danger-200)'  },
-        MEDIUM: { color: 'var(--nj-core-color-reference-status-warning-600)', background: 'var(--nj-core-color-reference-status-warning-100)', border: '1px solid var(--nj-core-color-reference-status-warning-300)' },
-        LOW:    { color: 'var(--nj-core-color-reference-status-success-700)', background: 'var(--nj-core-color-reference-status-success-100)', border: '1px solid var(--nj-core-color-reference-status-success-300)' },
+      const riskClass: Record<string, string> = {
+        HIGH:   styles["rm-risk-high"],
+        MEDIUM: styles["rm-risk-medium"],
+        LOW:    styles["rm-risk-low"],
       };
-      const st = scoreStyles[cellValue];
-      return st
-        ? <span style={{ fontWeight: 700, fontSize: 11, padding: '3px 10px', borderRadius: 12, whiteSpace: 'nowrap', ...st }}>{cellValue}</span>
-        : <span style={{ color: 'var(--nj-core-color-reference-neutral-300)', fontStyle: 'italic' }}>—</span>;
+      const rc = riskClass[cellValue];
+      return rc
+        ? <span className={`${styles["rm-risk-badge"]} ${rc}`}>{cellValue}</span>
+        : <span className={styles["rm-cell-empty"]}>—</span>;
     }
 
     const structuredData = parseStructuredData(cellValue);
@@ -719,10 +697,7 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
       return (
         <div>
           {structuredData.length > 1 && (
-            <button
-              onClick={() => toggleCellExpansion(rowIndex, cellIndex)}
-              style={{ background: 'var(--nj-core-color-reference-brand-500)', border: 'none', cursor: 'pointer', padding: '3px 10px', borderRadius: 4, fontSize: 11, color: '#fff', fontWeight: 600, marginBottom: 6, display: 'inline-block' }}
-            >
+            <button onClick={() => toggleCellExpansion(rowIndex, cellIndex)} className={styles["rm-toggle-btn"]}>
               {isExpanded ? '▼' : '▶'} {isEditing ? 'Edit Details' : 'View Details'} ({structuredData.length} items)
             </button>
           )}
@@ -739,10 +714,7 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
       const isExpanded = expandedCells[cellKey];
       const displayVal = isExpanded ? cellValue : `${cellValue.substring(0, 100)}...`;
       const toggleBtn = (
-        <button
-          onClick={() => toggleCellExpansion(rowIndex, cellIndex)}
-          style={{ background: 'none', border: 'none', padding: 0, fontSize: 11, color: 'var(--nj-core-color-reference-brand-500)', cursor: 'pointer', textDecoration: 'underline', whiteSpace: 'nowrap' }}
-        >
+        <button onClick={() => toggleCellExpansion(rowIndex, cellIndex)} className={styles["rm-show-more-btn"]}>
           {isExpanded ? 'Show Less' : 'Show More'}
         </button>
       );
@@ -753,7 +725,7 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
               contentEditable suppressContentEditableWarning
               onBlur={e => { const v = (e.target as HTMLDivElement).textContent || ''; if (v !== cellValue) handleCellEdit(rowIndex, cellIndex, v); }}
               onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); (e.target as HTMLDivElement).blur(); } }}
-              style={{ minHeight: 20, outline: 'none', wordBreak: 'break-word', lineHeight: 1.5 }}
+              className={styles["rm-editable-cell-wide"]}
             >
               {displayVal}
             </div>
@@ -763,7 +735,7 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
       }
       return (
         <div>
-          <span style={{ wordBreak: 'break-word' }}>
+          <span className={styles["rm-cell-text"]}>
             {/p\.\s*\d+/.test(displayVal) ? renderWithPageRefs(displayVal, openSrc) : displayVal}
           </span>{' '}
           {toggleBtn}
@@ -777,7 +749,7 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
           contentEditable suppressContentEditableWarning
           onBlur={e => { const v = (e.target as HTMLDivElement).textContent || ''; if (v !== cellValue) handleCellEdit(rowIndex, cellIndex, v); }}
           onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); (e.target as HTMLDivElement).blur(); } }}
-          style={{ minHeight: 20, outline: 'none' }}
+          className={styles["rm-editable-cell"]}
         >
           {cellValue}
         </div>
@@ -786,22 +758,7 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
 
     return /p\.\s*\d+/.test(cellValue)
       ? renderWithPageRefs(cellValue, openSrc)
-      : cellValue || <span style={{ color: 'var(--nj-core-color-reference-neutral-300)', fontStyle: 'italic' }}>—</span>;
-  };
-
-  // ── Shared styles ──
-  const thSt: React.CSSProperties = {
-    textAlign: 'left', padding: '7px 10px',
-    background: 'var(--nj-semantic-color-background-neutral-secondary-default)',
-    borderBottom: '2px solid var(--nj-semantic-color-border-neutral-minimal-default)',
-    fontSize: 10, fontWeight: 700, color: 'var(--nj-core-color-reference-neutral-500)',
-    letterSpacing: '.07em', whiteSpace: 'nowrap',
-    position: 'sticky', top: 0, zIndex: 1,
-  };
-  const deleteCtrlSt: React.CSSProperties = {
-    background: 'none', border: 'none', cursor: 'pointer',
-    color: 'var(--nj-core-color-reference-status-danger-500)',
-    fontSize: 13, fontWeight: 700, padding: '0 2px', lineHeight: 1,
+      : cellValue || <span className={styles["rm-cell-empty"]}>—</span>;
   };
 
   const hasExcel = resultsAgent === 'a1' || resultsAgent === 'a2' || resultsAgent === 'a3' || !!file;
@@ -809,9 +766,9 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
   const isResponsible = !responsibleName; // En l'absence d'auth, tout le monde peut éditer
 
   const agentPlaceholder = (
-    <div style={{ padding: 40, textAlign: 'center', color: 'var(--nj-core-color-reference-neutral-500)' }}>
-      <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--nj-semantic-color-text-neutral-primary-default)', marginBottom: 8 }}>Agent's results</div>
-      <div style={{ fontSize: 13, lineHeight: 1.7, maxWidth: 360, margin: '0 auto' }}>
+    <div className={styles["rm-placeholder"]}>
+      <div className={styles["rm-placeholder-title"]}>Agent's results</div>
+      <div className={styles["rm-placeholder-desc"]}>
         The extracted results for this agent are available in the downloaded Excel file.<br />
         Use the <strong>Download Excel</strong> button below to access the full output.
       </div>
@@ -819,52 +776,38 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
   );
 
   return (
-    <div className="overlay" onClick={onClose}>
+    <div className={styles["rm-overlay"]} onClick={onClose}>
       <div
-        className="modal-box"
-        style={fullscreen ? { maxWidth: 'calc(100vw - 40px)', width: 'calc(100vw - 40px)', maxHeight: 'calc(100vh - 40px)', height: 'calc(100vh - 40px)' } : {}}
+        className={`${styles["rm-modal-box"]}${fullscreen ? ` ${styles["rm-modal-fullscreen"]}` : ''}`}
         onClick={e => e.stopPropagation()}
       >
         {/* ── Header ── */}
-        <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
+        <div className={styles["rm-header"]}>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 700 }}>
+            <div className={styles["rm-header-title"]}>
               {AGENT_TITLES[resultsAgent] || 'Agent Results'}
-              {isEditing && <span style={{ marginLeft: 8, fontSize: 11, color: 'var(--nj-core-color-reference-brand-500)', fontWeight: 400 }}>— Edit mode</span>}
-              {hasChanges && <span style={{ marginLeft: 8, fontSize: 11, color: 'var(--nj-core-color-reference-status-warning-500)', fontWeight: 400 }}>— Unsaved changes</span>}
+              {isEditing && <span className={styles["rm-edit-badge"]}>— Edit mode</span>}
+              {hasChanges && <span className={styles["rm-changes-badge"]}>— Unsaved changes</span>}
             </div>
-            <div style={{ fontSize: 11, color: 'var(--nj-core-color-reference-neutral-500)', marginTop: 2 }}>
+            <div className={styles["rm-header-meta"]}>
               {displayFileName || `agent${(resultsAgent || 'a1').slice(1)}_results.xlsx`}
               {!isEditing && ' — Read-only'}
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 6 }}>
-            <button
-              aria-label="Close"
-              onClick={onClose}
-              style={{
-                background: 'none', border: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)',
-                borderRadius: 6, width: 32, height: 32,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer', fontSize: 15, lineHeight: 1,
-                color: 'var(--nj-semantic-color-text-neutral-primary-default)',
-              }}
-            >✕</button>
+          <div className={styles["rm-header-actions"]}>
+            <button aria-label="Close" onClick={onClose} className={styles["rm-close-btn"]}>✕</button>
           </div>
         </div>
 
         {/* ── Sheet tabs ── */}
         {!isCsvFile && sheetNames.length > 1 && (
-          <div style={{ display: 'flex', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)', padding: '0 20px', flexShrink: 0, overflowX: 'auto' }}>
+          <div className={styles["rm-tabs"]}>
             {sheetNames.map(name => (
-              <button key={name} onClick={() => handleSheetChange(name)} style={{
-                padding: '10px 16px', border: 'none',
-                borderBottom: activeSheet === name ? '2px solid var(--nj-core-color-reference-brand-500)' : '2px solid transparent',
-                background: 'none', cursor: 'pointer', fontSize: 13, whiteSpace: 'nowrap',
-                fontWeight: activeSheet === name ? 700 : 400,
-                color: activeSheet === name ? 'var(--nj-core-color-reference-brand-500)' : 'var(--nj-core-color-reference-neutral-500)',
-                marginBottom: -1, transition: 'color .15s',
-              }}>
+              <button
+                key={name}
+                onClick={() => handleSheetChange(name)}
+                className={`${styles["rm-tab"]}${activeSheet === name ? ` ${styles["rm-tab-active"]}` : ''}`}
+              >
                 {name}
               </button>
             ))}
@@ -872,39 +815,39 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
         )}
 
         {/* ── Content ── */}
-        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '16px 20px', display: 'flex', flexDirection: 'column' }}>
+        <div className={styles["rm-content"]}>
           {loading ? (
-            <div style={{ padding: 40, textAlign: 'center', color: 'var(--nj-core-color-reference-neutral-400)' }}>Loading data…</div>
+            <div className={styles["rm-loading"]}>Loading data…</div>
           ) : error ? (
-            <div style={{ padding: 16, color: 'var(--nj-core-color-reference-status-danger-500)', fontSize: 13 }}>{error}</div>
+            <div className={styles["rm-error"]}>{error}</div>
           ) : !hasExcel ? agentPlaceholder
           : !hasData ? (
-            <div style={{ padding: 40, textAlign: 'center', color: 'var(--nj-core-color-reference-neutral-400)', fontSize: 13 }}>No data.</div>
+            <div className={styles["rm-no-data"]}>No data.</div>
           ) : (
             <>
-              <div style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-400)', marginBottom: 8, flexShrink: 0 }}>
+              <div className={styles["rm-row-count"]}>
                 Showing {sheetData.length - 1} rows
-                {hasChanges && <span style={{ marginLeft: 8, color: 'var(--nj-core-color-reference-status-warning-500)' }}>— Unsaved changes</span>}
+                {hasChanges && <span className={styles["rm-row-count-changes"]}>— Unsaved changes</span>}
               </div>
-              <div style={{ overflowX: 'auto', flex: 1, minHeight: 0 }}>
-                <table style={{ borderCollapse: 'collapse', width: '100%' }}>
+              <div className={styles["rm-table-scroll"]}>
+                <table className={styles["rm-table"]}>
                   <thead>
                     {/* Column-delete row (edit mode only) */}
                     {isEditing && isResponsible && sheetData.length > 0 && (
                       <tr>
-                        <th style={{ padding: '2px 4px', background: 'var(--nj-semantic-color-background-neutral-secondary-default)' }}></th>
+                        <th className={styles["rm-col-del-th"]}></th>
                         {(Array.isArray(sheetData[0]) ? sheetData[0] : Object.keys(sheetData[0])).map((_: any, ci: number) => (
-                          <th key={ci} style={{ padding: '2px 4px', background: 'var(--nj-semantic-color-background-neutral-secondary-default)', textAlign: 'center' }}>
-                            <button onClick={() => deleteColumn(ci)} style={deleteCtrlSt} title={`Delete column ${ci + 1}`}>×</button>
+                          <th key={ci} className={styles["rm-col-del-th-center"]}>
+                            <button onClick={() => deleteColumn(ci)} className={styles["rm-delete-ctrl"]} title={`Delete column ${ci + 1}`}>×</button>
                           </th>
                         ))}
                       </tr>
                     )}
                     {/* Header row */}
                     <tr>
-                      {isEditing && isResponsible && <th style={{ ...thSt, width: 28 }}></th>}
+                      {isEditing && isResponsible && <th className={`${styles["rm-th"]} ${styles["rm-th-narrow"]}`}></th>}
                       {(Array.isArray(sheetData[0]) ? sheetData[0] : Object.values(sheetData[0])).map((h: any, i: number) => (
-                        <th key={i} style={thSt}>{String(h ?? '').toUpperCase()}</th>
+                        <th key={i} className={styles["rm-th"]}>{String(h ?? '').toUpperCase()}</th>
                       ))}
                     </tr>
                   </thead>
@@ -916,12 +859,12 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
                       >
                         {/* Row-delete button (edit mode) */}
                         {isEditing && isResponsible && (
-                          <td style={{ padding: '4px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)', verticalAlign: 'top', textAlign: 'center' }}>
-                            <button onClick={() => deleteRow(ri + 1)} style={deleteCtrlSt} title={`Delete row ${ri + 1}`}>×</button>
+                          <td className={styles["rm-row-delete-td"]}>
+                            <button onClick={() => deleteRow(ri + 1)} className={styles["rm-delete-ctrl"]} title={`Delete row ${ri + 1}`}>×</button>
                           </td>
                         )}
                         {(Array.isArray(row) ? row : Object.values(row)).map((cell: any, ci: number) => (
-                          <td key={ci} style={{ padding: '8px 10px', verticalAlign: 'top', fontSize: 13, borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)' }}>
+                          <td key={ci} className={styles["rm-data-td"]}>
                             {renderCellContent(cell, ri + 1, ci)}
                           </td>
                         ))}
@@ -933,9 +876,9 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
 
               {/* Add row / column buttons (edit mode) */}
               {isEditing && isResponsible && (
-                <div style={{ display: 'flex', gap: 8, marginTop: 10, flexShrink: 0 }}>
-                  <button onClick={addRow} style={{ background: 'none', border: '1px solid var(--nj-core-color-reference-brand-500)', borderRadius: 4, padding: '4px 12px', fontSize: 12, color: 'var(--nj-core-color-reference-brand-500)', cursor: 'pointer', fontWeight: 600 }}>+ Add Row</button>
-                  <button onClick={addColumn} style={{ background: 'none', border: '1px solid var(--nj-core-color-reference-brand-500)', borderRadius: 4, padding: '4px 12px', fontSize: 12, color: 'var(--nj-core-color-reference-brand-500)', cursor: 'pointer', fontWeight: 600 }}>+ Add Column</button>
+                <div className={styles["rm-edit-actions"]}>
+                  <button onClick={addRow} className={styles["rm-add-btn"]}>+ Add Row</button>
+                  <button onClick={addColumn} className={styles["rm-add-btn"]}>+ Add Column</button>
                 </div>
               )}
             </>
@@ -943,8 +886,8 @@ export default function ResultsModal({ s, handlers }: ResultsModalProps) {
         </div>
 
         {/* ── Footer ── */}
-        <div style={{ padding: '12px 20px', borderTop: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0, flexWrap: 'wrap', rowGap: 8 }}>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div className={styles["rm-footer"]}>
+          <div className={styles["rm-footer-left"]}>
             {isResponsible && isEditing ? (
               <>
                 <NJButton variant="primary" emphasis="subtle" scale="sm" icon="save" label="Save" onClick={handleSave} disabled={!hasChanges} />

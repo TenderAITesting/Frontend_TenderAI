@@ -1,0 +1,26 @@
+:root {
+  --nj-core-font-family-sans-serif: 'Lato', system-ui, sans-serif;
+  --nj-core-font-family-monospace: 'Lato', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--nj-core-font-family-sans-serif);
+  background: var(--nj-semantic-color-background-neutral-secondary-default);
+  color: var(--nj-semantic-color-text-neutral-primary-default);
+  font-size: 14px;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+button { cursor: pointer; font-family: inherit; }
+input, select, textarea { font-family: inherit; }
+p { line-height: 1.5; }
+
+#root { display: flex; flex-direction: column; min-height: 100vh; }
+.app-layout { display: flex; flex-direction: column; min-height: 100vh; }
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--nj-semantic-color-background-neutral-secondary-default); }
+::-webkit-scrollbar-thumb { background: var(--nj-semantic-color-border-neutral-subtle-default); border-radius: 4px; }

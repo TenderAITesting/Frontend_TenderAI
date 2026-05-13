@@ -1,0 +1,49 @@
+@keyframes fadein { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+
+.src-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.42);
+  display: flex; align-items: center; justify-content: center; z-index: 900;
+}
+.src-modal-box {
+  background: var(--nj-semantic-color-background-neutral-primary-default);
+  border-radius: 12px; width: 93%; max-width: 700px;
+  height: 82vh; overflow: hidden; display: flex; flex-direction: column;
+  box-shadow: var(--nj-semantic-elevation-shadow-24-dp); animation: fadein .2s ease;
+}
+
+.src-header {
+  padding: 13px 20px;
+  border-bottom: 1px solid var(--nj-semantic-color-border-neutral-minimal-default);
+  display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+}
+.src-header-left {
+  display: flex; align-items: center; gap: 10px;
+}
+.src-header-icon {
+  font-size: 18px; color: var(--nj-core-color-reference-neutral-500);
+}
+.src-file-title {
+  font-size: 13px; font-weight: 700;
+}
+.src-page-info {
+  font-size: 11px; color: var(--nj-core-color-reference-brand-500); margin-top: 1px;
+}
+.src-scroll {
+  overflow-y: auto; flex: 1;
+}
+.src-page {
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--nj-semantic-color-border-neutral-minimal-default);
+}
+.src-page-label {
+  background: var(--nj-semantic-color-background-neutral-secondary-default);
+  padding: 6px 24px; font-size: 10px; font-weight: 700;
+  color: var(--nj-core-color-reference-neutral-500); letter-spacing: .08em;
+  border-bottom: 1px solid var(--nj-semantic-color-border-neutral-minimal-default);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.src-page-content {
+  padding: 28px 32px; min-height: 200px; font-size: 13px; line-height: 1.8;
+  color: var(--nj-semantic-color-text-neutral-primary-default);
+  background: var(--nj-semantic-color-background-neutral-primary-default);
+}

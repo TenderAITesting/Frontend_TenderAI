@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { NJButton } from '@engie-group/fluid-design-system-react';
 import { useTopBar } from '../libs/layout';
+import styles from './TenderPage.module.css';
 import BannerStepper from './components/Stepper';
 import UploadTab from '../libs/tender-documents';
 import TenderAnalysisTab from '../libs/tender-analysis';
@@ -103,7 +104,7 @@ export default function TenderView() {
 
   if (!tender) {
     return (
-      <div style={{ padding: 40, textAlign: 'center' }}>
+      <div className={styles["tp-not-found"]}>
         <p>Tender not found.</p>
         <NJButton variant="primary" label="Back to Dashboard" onClick={() => navigate('/homepage')} />
       </div>
@@ -228,29 +229,19 @@ export default function TenderView() {
   useEffect(() => {
     if (!tender) { setSlot(null); return; }
     setSlot(
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div className={styles["tp-slot"]}>
         <button
+          className={styles["tp-slot-back-btn"]}
           onClick={() => navigate('/homepage')}
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: 5,
-            background: 'none', border: 'none', padding: '3px 6px',
-            fontSize: 13, fontWeight: 500, cursor: 'pointer',
-            color: 'var(--nj-core-color-reference-brand-500)',
-            borderRadius: 4,
-          }}
           onMouseEnter={e => (e.currentTarget.style.background = 'var(--nj-semantic-color-background-neutral-secondary-default)')}
           onMouseLeave={e => (e.currentTarget.style.background = 'none')}
         >
           Dashboard
         </button>
-        <div style={{ width: 1, height: 20, background: 'var(--nj-semantic-color-border-neutral-minimal-default)' }} />
-        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--nj-semantic-color-text-neutral-primary-default)' }}>
-          {tender.name}
-        </span>
+        <div className={styles["tp-slot-divider"]} />
+        <span className={styles["tp-slot-name"]}>{tender.name}</span>
         {tender.client && (
-          <span style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-500)' }}>
-            · {tender.client}
-          </span>
+          <span className={styles["tp-slot-client"]}>· {tender.client}</span>
         )}
       </div>
     );
@@ -267,7 +258,7 @@ export default function TenderView() {
   const sc = { ...s, tenderStep, currentTender: id, tenders: [tender] };
 
   return (
-    <div style={{ height: 'calc(100vh - 52px)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+    <div className={styles["tp-container"]}>
       <BannerStepper
         tenderStep={tenderStep}
         isNew={s.isNew}
@@ -275,7 +266,7 @@ export default function TenderView() {
         onGoStep={handlers.goStep}
       />
 
-      <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+      <div className={styles["tp-content"]}>
         {tenderStep === 'documents' && <UploadTab            s={sc} handlers={handlers} />}
         {tenderStep === 'agents'    && <TenderAnalysisTab    s={sc} handlers={handlers} fmtTime={fmtTime} />}
         {tenderStep === 'config'    && <DraftConfiguratorTab s={sc} handlers={handlers} />}

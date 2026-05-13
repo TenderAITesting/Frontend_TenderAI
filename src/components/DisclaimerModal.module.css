@@ -1,0 +1,35 @@
+@keyframes fadein { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+
+.disc-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.5);
+  display: flex; align-items: center; justify-content: center; z-index: 800;
+}
+.disc-box {
+  background: var(--nj-semantic-color-background-neutral-primary-default);
+  border-radius: 12px; width: 92%; max-width: 460px;
+  padding: 28px; box-shadow: var(--nj-semantic-elevation-shadow-16-dp);
+  animation: fadein .18s ease;
+}
+
+.disc-header {
+  display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px;
+}
+.disc-icon {
+  width: 40px; height: 40px;
+  background: var(--nj-core-color-reference-status-warning-100);
+  border: 1.5px solid var(--nj-core-color-reference-status-warning-400);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.disc-title {
+  font-size: 15px; font-weight: 700; margin-bottom: 4px;
+}
+.disc-subtitle {
+  font-size: 12px; color: var(--nj-core-color-reference-neutral-500);
+}
+.disc-danger-text {
+  color: var(--nj-semantic-color-text-status-danger-primary-default);
+}
+.disc-footer {
+  display: flex; justify-content: flex-end; gap: 10px;
+}

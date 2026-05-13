@@ -1,0 +1,48 @@
+@keyframes fadein { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+
+.disc-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.5);
+  display: flex; align-items: center; justify-content: center; z-index: 800;
+}
+.disc-box {
+  background: var(--nj-semantic-color-background-neutral-primary-default);
+  border-radius: 12px; width: 92%; max-width: 480px;
+  padding: 28px; box-shadow: var(--nj-semantic-elevation-shadow-16-dp);
+  animation: fadein .18s ease;
+}
+
+.update-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;
+}
+.update-title {
+  font-size: 15px; font-weight: 700;
+}
+.update-file-input {
+  display: none;
+}
+.update-drop-zone {
+  border: 2px dashed var(--nj-semantic-color-border-neutral-subtle-default);
+  border-radius: 10px; padding: 28px 16px; text-align: center;
+  background: var(--nj-semantic-color-background-neutral-secondary-default);
+  margin-bottom: 18px; transition: border-color .2s; cursor: pointer;
+}
+.update-drop-zone-active {
+  border-color: var(--nj-core-color-reference-brand-500);
+}
+.update-drop-label {
+  font-size: 14px; font-weight: 700; margin-bottom: 6px;
+}
+.update-drop-or {
+  font-size: 13px; color: var(--nj-core-color-reference-neutral-500); margin-bottom: 6px;
+}
+.update-browse {
+  font-size: 14px; font-weight: 700;
+  color: var(--nj-core-color-reference-brand-500);
+  margin-bottom: 12px; cursor: pointer;
+}
+.update-formats {
+  font-size: 12px; color: var(--nj-core-color-reference-neutral-400);
+}
+.update-footer {
+  display: flex; justify-content: flex-end; gap: 10px;
+}

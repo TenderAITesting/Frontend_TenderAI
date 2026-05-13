@@ -1,6 +1,5 @@
 import { createBrowserRouter, RouterProvider, Outlet, Navigate, useParams, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import './App.css';
 import { USER } from './data/constants';
 import { TopBar, TopBarProvider } from '../libs/layout';
 import { LoginPage } from '../libs/auth';
@@ -24,7 +23,7 @@ function TenderDefaultRedirect() {
 function AppLayout() {
   return (
     <TopBarProvider>
-      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <div className="app-layout">
         <TopBar user={USER} />
         <Outlet />
       </div>

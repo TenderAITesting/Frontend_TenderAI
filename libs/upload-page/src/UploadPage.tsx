@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { NJButton, NJFormItem, NJHeading } from '@engie-group/fluid-design-system-react';
 import { USER, PROJECT_SOURCES } from '../../../src/data/constants';
 import { useTenders } from '../../homepage/model/useTenders';
+import styles from './UploadPage.module.css';
 
 export default function NewProjectView() {
   const navigate = useNavigate();
@@ -66,9 +67,9 @@ export default function NewProjectView() {
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', padding: '52px 24px', minHeight: 'calc(100vh - 52px)' }}>
-      <div className="card fadein" style={{ width: '100%', maxWidth: 640, padding: '38px 42px' }}>
-        <div style={{ marginBottom: 22 }}>
+    <div className={styles["up-container"]}>
+      <div className={`${styles["card"]} ${styles["fadein"]} ${styles["up-card"]}`}>
+        <div className={styles["up-back-btn"]}>
           <NJButton
             variant="secondary"
             emphasis="subtle"
@@ -82,13 +83,13 @@ export default function NewProjectView() {
         <NJHeading as="h3" style={{ marginBottom: 6 }}>
           {editMode ? 'Edit Project' : 'Project Information'}
         </NJHeading>
-        <p style={{ color: 'var(--nj-core-color-reference-neutral-500)', marginBottom: 28, fontSize: 14 }}>
+        <p className={styles["up-desc"]}>
           {editMode
             ? 'Update the project details below.'
             : 'Fill in the project details before uploading your tender documents.'}
         </p>
 
-        <div style={{ marginBottom: 16 }}>
+        <div className={styles["up-field"]}>
           <NJFormItem
             id="proj-name"
             label="Project name *"
@@ -99,7 +100,7 @@ export default function NewProjectView() {
           />
         </div>
 
-        <div style={{ marginBottom: 16 }}>
+        <div className={styles["up-field"]}>
           <NJFormItem
             id="proj-client"
             label="Client *"
@@ -110,18 +111,11 @@ export default function NewProjectView() {
           />
         </div>
 
-        <div style={{ marginBottom: 16 }}>
-          <div style={{
-            color: 'var(--nj-semantic-color-text-neutral-secondary-default)',
-            fontSize: 'var(--nj-semantic-font-size-text-sm-desktop)',
-            lineHeight: '20px',
-            marginBottom: 8,
-          }}>
-            Project ID
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 10 }}>
+        <div className={styles["up-field"]}>
+          <div className={styles["up-pid-label"]}>Project ID</div>
+          <div className={styles["up-pid-grid"]}>
             {PROJECT_SOURCES.map(src => (
-              <div key={src.key} className="proj-id-cell" style={{ position: 'relative' }}>
+              <div key={src.key} className={styles["proj-id-cell"]}>
                 <NJFormItem
                   id={`proj-${src.key}`}
                   label={src.label}
@@ -130,18 +124,16 @@ export default function NewProjectView() {
                   onChange={(e: any) => updateProjectId(src.key, e.target.value)}
                   placeholder={`${src.label} ID…`}
                 />
-                <span style={{
-                  position: 'absolute', top: 2, right: 0,
-                  background: src.bg, color: src.color, border: `1px solid ${src.border}`,
-                  fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 3, letterSpacing: '.05em',
-                  pointerEvents: 'none',
-                }}>{src.abbr}</span>
+                <span
+                  className={styles["up-pid-badge"]}
+                  style={{ background: src.bg, color: src.color, border: `1px solid ${src.border}` }}
+                >{src.abbr}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 30 }}>
+        <div className={styles["up-names-grid"]}>
           <NJFormItem
             id="proj-lastname"
             label="Responsible Last name"
@@ -158,7 +150,7 @@ export default function NewProjectView() {
           />
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+        <div className={styles["up-footer"]}>
           <NJButton
             variant="primary"
             icon={editMode ? 'save' : 'arrow_forward'}

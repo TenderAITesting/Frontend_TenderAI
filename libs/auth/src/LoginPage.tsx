@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import styles from './LoginPage.module.css';
 
 // TODO: BACKEND — décommenter quand le tenant ENGIE Okta est disponible
 // import { useOktaAuth } from '@okta/okta-react';
@@ -22,8 +23,8 @@ export default function LoginPage() {
   }, [navigate]);
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 'calc(100vh - 52px)' }}>
-      <p style={{ fontSize: 13, color: 'var(--nj-core-color-reference-neutral-500)' }}>
+    <div className={styles["login-container"]}>
+      <p className={styles["login-message"]}>
         Redirecting…
       </p>
     </div>

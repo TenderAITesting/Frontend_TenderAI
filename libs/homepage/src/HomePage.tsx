@@ -5,6 +5,7 @@ import { Stepper, Step, StepLabel, StepConnector, stepConnectorClasses } from '@
 import { styled } from '@mui/material/styles';
 import { useTenders } from '../model/useTenders';
 import { PROJECT_SOURCES } from '../../../src/data/constants';
+import styles from './HomePage.module.css';
 
 const CompactConnector = styled(StepConnector)(() => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -38,7 +39,7 @@ function InlineStepper({ maxStepIdx, status }: { maxStepIdx: number; status: str
   const labelIdx = Math.min(activeStep, STEPS.length - 1);
 
   return (
-    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+    <div className={styles["hp-stepper-wrap"]}>
       <Stepper
         activeStep={activeStep}
         alternativeLabel
@@ -56,7 +57,7 @@ function InlineStepper({ maxStepIdx, status }: { maxStepIdx: number; status: str
           </Step>
         ))}
       </Stepper>
-      <span style={{ fontSize: 12, whiteSpace: 'nowrap', color: 'var(--nj-semantic-color-text-neutral-secondary-default)' }}>
+      <span className={styles["hp-step-label"]}>
         {STEPS[labelIdx]}
       </span>
     </div>
@@ -79,10 +80,10 @@ export default function DashboardView() {
   }, [tenders, searchTerm]);
 
   return (
-    <div style={{ minHeight: 'calc(100vh - 52px)', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ flex: 1, padding: 24 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+    <div className={styles["hp-container"]}>
+      <div className={styles["hp-content"]}>
+        <div className={styles["hp-toolbar"]}>
+          <div className={styles["hp-toolbar-left"]}>
             <NJInputSearch
               style={{ width: 320 }}
               placeholder="Search projects, clients, or project IDs…"
@@ -95,8 +96,8 @@ export default function DashboardView() {
           </div>
         </div>
 
-        <div className="card" style={{ overflow: 'hidden' }}>
-          <table className="data-table">
+        <div className={styles["card"]}>
+          <table className={styles["data-table"]}>
             <thead>
               <tr>
                 <th>Project name</th>
@@ -104,59 +105,42 @@ export default function DashboardView() {
                 <th>Project Id</th>
                 <th>Last Modified</th>
                 <th>Status</th>
-                <th style={{ textAlign: 'right' }}>Actions</th>
+                <th className={styles["hp-actions-th"]}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredTenders.map((t) => (
                 <tr key={t.id}>
                   <td>
-                    <span
-                      style={{ color: 'var(--nj-core-color-reference-brand-500)', fontWeight: 600, cursor: 'pointer' }}
-                      onClick={() => navigate(`/tender/${t.id}`)}
-                    >{t.name}</span>
+                    <span className={styles["hp-tender-link"]} onClick={() => navigate(`/tender/${t.id}`)}>
+                      {t.name}
+                    </span>
                   </td>
                   <td>{t.client || '—'}</td>
                   <td>
-                    <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', alignItems: 'center' }}>
+                    <div className={styles["hp-proj-ids"]}>
                       {PROJECT_SOURCES.filter(src => t.projectIds?.[src.key]).map(src => (
-                        <span key={src.key} title={src.label} style={{
-                          display: 'inline-flex', alignItems: 'center',
-                          gap: 'var(--nj-semantic-size-spacing-4)',
-                          background: src.bg, color: src.color, border: `1px solid ${src.border}`,
-                          fontSize: 'var(--nj-semantic-font-size-text-xs-desktop)',
-                          fontWeight: 'var(--nj-semantic-font-weight-bold)',
-                          padding: 'var(--nj-semantic-size-spacing-4) var(--nj-semantic-size-spacing-8)',
-                          borderRadius: 'var(--nj-semantic-size-border-radius-sm)',
-                          whiteSpace: 'nowrap',
-                        }}>
-                          <span style={{ opacity: 0.65 }}>{src.abbr}</span>
+                        <span
+                          key={src.key}
+                          title={src.label}
+                          className={styles["hp-proj-badge"]}
+                          style={{ background: src.bg, color: src.color, border: `1px solid ${src.border}` }}
+                        >
+                          <span className={styles["hp-proj-badge-abbr"]}>{src.abbr}</span>
                           {t.projectIds[src.key]}
                         </span>
                       ))}
                       {!PROJECT_SOURCES.some(src => t.projectIds?.[src.key]) && (
-                        <span style={{
-                          display: 'inline-flex', alignItems: 'center',
-                          background: 'var(--nj-semantic-color-background-neutral-secondary-default)',
-                          color: 'var(--nj-semantic-color-text-neutral-contrast-default)',
-                          border: '1px solid var(--nj-semantic-color-border-neutral-subtle-default)',
-                          fontSize: 'var(--nj-semantic-font-size-text-xs-desktop)',
-                          fontWeight: 'var(--nj-semantic-font-weight-regular)',
-                          padding: 'var(--nj-semantic-size-spacing-4) var(--nj-semantic-size-spacing-8)',
-                          borderRadius: 'var(--nj-semantic-size-border-radius-sm)',
-                          whiteSpace: 'nowrap',
-                        }}>missing</span>
+                        <span className={styles["hp-proj-badge-missing"]}>missing</span>
                       )}
                     </div>
                   </td>
-                  <td style={{ color: 'var(--nj-core-color-reference-neutral-500)', fontFamily: "'Lato', sans-serif", fontSize: 12 }}>
-                    {t.modified}
-                  </td>
-                  <td style={{ whiteSpace: 'nowrap' }}>
+                  <td className={styles["hp-modified-date"]}>{t.modified}</td>
+                  <td className={styles["hp-status-td"]}>
                     <InlineStepper maxStepIdx={t.maxStepIdx ?? 0} status={t.status} />
                   </td>
-                  <td style={{ textAlign: 'right' }} onClick={e => e.stopPropagation()}>
-                    <div style={{ display: 'inline-flex', gap: 4 }}>
+                  <td className={styles["hp-actions-td"]} onClick={e => e.stopPropagation()}>
+                    <div className={styles["hp-actions-btns"]}>
                       <NJIconButton
                         icon="edit"
                         aria-label="Edit tender"
@@ -180,7 +164,7 @@ export default function DashboardView() {
         </div>
       </div>
 
-      <div style={{ flexShrink: 0, padding: '0 24px 16px' }}>
+      <div className={styles["hp-footer"]}>
         <NJInlineMessage variant="warning">
           <strong>Document Retention:</strong> Uploaded documents are stored for a maximum of{' '}
           <strong>90 days</strong>. This period is reinitialized each time a document is edited or modified.

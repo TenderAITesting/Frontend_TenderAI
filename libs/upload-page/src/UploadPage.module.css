@@ -1,0 +1,46 @@
+@keyframes fadein { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+
+.card {
+  background: var(--nj-semantic-color-background-neutral-primary-default);
+  border-radius: 10px;
+  border: 1px solid var(--nj-semantic-color-border-neutral-minimal-default);
+}
+.fadein { animation: fadein .22s ease; }
+
+.up-container {
+  display: flex; justify-content: center; align-items: flex-start;
+  padding: 52px 24px; min-height: calc(100vh - 52px);
+}
+.up-card {
+  width: 100%; max-width: 640px; padding: 38px 42px;
+}
+.up-back-btn {
+  margin-bottom: 22px;
+}
+.up-desc {
+  color: var(--nj-core-color-reference-neutral-500); margin-bottom: 28px; font-size: 14px;
+}
+.up-field {
+  margin-bottom: 16px;
+}
+.up-pid-label {
+  color: var(--nj-semantic-color-text-neutral-secondary-default);
+  font-size: var(--nj-semantic-font-size-text-sm-desktop);
+  line-height: 20px; margin-bottom: 8px;
+}
+.up-pid-grid {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px;
+}
+.proj-id-cell { position: relative; }
+.proj-id-cell .nj-form-item__label { font-size: 11px !important; }
+.up-pid-badge {
+  position: absolute; top: 2px; right: 0;
+  font-size: 9px; font-weight: 700; padding: 1px 5px;
+  border-radius: 3px; letter-spacing: .05em; pointer-events: none;
+}
+.up-names-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 30px;
+}
+.up-footer {
+  display: flex; justify-content: flex-end; gap: 10px;
+}

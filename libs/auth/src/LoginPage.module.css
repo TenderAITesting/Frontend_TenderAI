@@ -1,0 +1,7 @@
+.login-container {
+  display: flex; justify-content: center; align-items: center;
+  height: calc(100vh - 52px);
+}
+.login-message {
+  font-size: 13px; color: var(--nj-core-color-reference-neutral-500);
+}

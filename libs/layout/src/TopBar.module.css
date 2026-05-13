@@ -1,0 +1,35 @@
+.topbar {
+  background: var(--nj-semantic-color-background-neutral-primary-default);
+  border-bottom: 1px solid var(--nj-semantic-color-border-neutral-minimal-default);
+  height: 52px; padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 500;
+  box-shadow: var(--nj-semantic-elevation-shadow-2-dp); flex-shrink: 0;
+}
+.tractebel-badge {
+  font-size: var(--nj-semantic-font-size-text-xs-desktop);
+  font-weight: var(--nj-semantic-font-weight-bold);
+  padding: var(--nj-semantic-size-spacing-4) var(--nj-semantic-size-spacing-8);
+  border-radius: var(--nj-semantic-size-border-radius-sm);
+  background: var(--nj-core-color-ultramarine-900);
+  color: var(--nj-semantic-color-background-neutral-primary-default);
+  flex-shrink: 0;
+}
+.topbar-left {
+  display: flex; align-items: center; gap: 12px;
+}
+.topbar-logo {
+  height: 36px; width: auto;
+}
+.topbar-divider {
+  width: 1px; height: 24px;
+  background: var(--nj-semantic-color-border-neutral-minimal-default);
+}
+.topbar-right {
+  display: flex; align-items: center; gap: 12px;
+}
+.topbar-username {
+  font-size: var(--nj-semantic-font-size-text-xs-desktop);
+  font-weight: var(--nj-semantic-font-weight-regular);
+  color: var(--nj-semantic-color-text-neutral-contrast-default);
+}

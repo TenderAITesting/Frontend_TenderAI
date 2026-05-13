@@ -1,27 +1,24 @@
 import { NJAvatarRoot } from '@engie-group/fluid-design-system-react';
 import tractebelLogo from '../../../src/assets/logo.png';
 import { useTopBar } from './TopBarContext';
+import styles from './TopBar.module.css';
 
 export default function TopBar({ user }) {
   const { slot } = useTopBar();
   return (
-    <div className="topbar">
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <img src={tractebelLogo} alt="Tractebel Engie" style={{ height: 36, width: 'auto' }} />
-        {!slot && <span className="tractebel-badge">TENDER AI</span>}
+    <div className={styles["topbar"]}>
+      <div className={styles["topbar-left"]}>
+        <img src={tractebelLogo} alt="Tractebel Engie" className={styles["topbar-logo"]} />
+        {!slot && <span className={styles["tractebel-badge"]}>TENDER AI</span>}
         {slot && (
           <>
-            <div style={{ width: 1, height: 24, background: 'var(--nj-semantic-color-border-neutral-minimal-default)' }} />
+            <div className={styles["topbar-divider"]} />
             {slot}
           </>
         )}
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <span style={{
-          fontSize: 'var(--nj-semantic-font-size-text-xs-desktop)',
-          fontWeight: 'var(--nj-semantic-font-weight-regular)',
-          color: 'var(--nj-semantic-color-text-neutral-contrast-default)',
-        }}>
+      <div className={styles["topbar-right"]}>
+        <span className={styles["topbar-username"]}>
           {user.first} {user.last}
         </span>
         <NJAvatarRoot scale="sm" initials={user.initials} label={`${user.first} ${user.last}`} />

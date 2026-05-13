@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { NJButton, NJIconButton } from '@engie-group/fluid-design-system-react';
+import styles from './TocStep.module.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -144,20 +145,18 @@ function getConfidenceColors(confidence: number) {
 function ConfidenceBadge({ confidence, large }: { confidence: number; large?: boolean }) {
   const c = getConfidenceColors(confidence);
   return (
-    <span style={{
-      display: 'inline-flex', alignItems: 'center', gap: 4,
-      padding: large ? '5px 12px' : '2px 8px',
-      borderRadius: 20,
-      background: c.bg,
-      border: `1px solid ${c.border}`,
-      color: c.text,
-      fontSize: large ? 14 : 11,
-      fontWeight: 700,
-      whiteSpace: 'nowrap',
-      flexShrink: 0,
-    }}>
+    <span
+      className={styles["toc-badge"]}
+      style={{
+        padding: large ? '5px 12px' : '2px 8px',
+        background: c.bg,
+        border: `1px solid ${c.border}`,
+        color: c.text,
+        fontSize: large ? 14 : 11,
+      }}
+    >
       {confidence}%
-      {large && <span style={{ fontWeight: 400, fontSize: 12 }}> — {c.label}</span>}
+      {large && <span className={styles["toc-badge-sublabel"]}> — {c.label}</span>}
     </span>
   );
 }
@@ -173,39 +172,25 @@ function CollapsibleBlock({
   headerRight?: React.ReactNode;
 }) {
   return (
-    <div style={{
-      border: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
-      borderRadius: 8, marginBottom: 10, overflow: 'hidden',
-    }}>
-      <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '10px 14px',
-        background: 'var(--nj-semantic-color-background-neutral-secondary-default)',
-        gap: 8,
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 14, lineHeight: 1, flexShrink: 0, display: 'flex', alignItems: 'center' }}>{iconText}</span>
-          <span style={{
-            fontSize: 13, fontWeight: 600,
-            color: titleColor || 'var(--nj-semantic-color-text-neutral-primary-default)',
-          }}>
+    <div className={styles["toc-collapsible"]}>
+      <div className={styles["toc-collapsible-header"]}>
+        <div className={styles["toc-collapsible-header-left"]}>
+          <span className={styles["toc-collapsible-icon"]}>{iconText}</span>
+          <span
+            className={styles["toc-collapsible-title"]}
+            style={titleColor ? { color: titleColor } : undefined}
+          >
             {title}
           </span>
           {readOnlyLabel && (
-            <span style={{
-              fontSize: 10, color: 'var(--nj-core-color-reference-neutral-400)',
-              display: 'flex', alignItems: 'center', gap: 3, fontWeight: 400,
-            }}>
+            <span className={styles["toc-collapsible-readonly"]}>
               &#128274; {readOnlyLabel}
             </span>
           )}
         </div>
         {headerRight}
       </div>
-      <div style={{
-        padding: 14,
-        background: 'var(--nj-semantic-color-background-neutral-primary-default)',
-      }}>
+      <div className={styles["toc-collapsible-content"]}>
         {children}
       </div>
     </div>
@@ -215,25 +200,16 @@ function CollapsibleBlock({
 function EditControls({ editMode, onEdit, onSave, onCancel }: {
   editMode: boolean; onEdit: () => void; onSave: () => void; onCancel: () => void;
 }) {
-  const btn = (primary?: boolean): React.CSSProperties => ({
-    background: primary ? 'var(--nj-core-color-reference-brand-500)' : 'transparent',
-    border: `1px solid ${primary ? 'transparent' : 'var(--nj-semantic-color-border-neutral-subtle-default, #d1d5db)'}`,
-    borderRadius: 6, cursor: 'pointer',
-    width: 28, height: 28, padding: 0,
-    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-    color: primary ? '#fff' : 'var(--nj-core-color-reference-neutral-500)',
-    fontSize: 15, lineHeight: 1, flexShrink: 0, transition: 'opacity .15s',
-  });
   const icon = (name: string) => (
     <span className="material-icons" style={{ fontSize: 16, lineHeight: 1 }}>{name}</span>
   );
   if (editMode) return (
-    <div style={{ display: 'flex', gap: 4 }}>
-      <button style={btn(true)} onClick={onSave} title="Enregistrer">{icon('save')}</button>
-      <button style={btn()} onClick={onCancel} title="Cancel">{icon('undo')}</button>
+    <div className={styles["toc-ctrl-btn-group"]}>
+      <button className={`${styles["toc-ctrl-btn"]} ${styles["toc-ctrl-btn-primary"]}`} onClick={onSave} title="Enregistrer">{icon('save')}</button>
+      <button className={styles["toc-ctrl-btn"]} onClick={onCancel} title="Cancel">{icon('undo')}</button>
     </div>
   );
-  return <button style={btn()} onClick={onEdit} title="Modifier">{icon('edit')}</button>;
+  return <button className={styles["toc-ctrl-btn"]} onClick={onEdit} title="Modifier">{icon('edit')}</button>;
 }
 
 // ─── Main component ────────────────────────────────────────────────────────────
@@ -476,23 +452,16 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
     : null;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+    <div className={styles["toc-container"]}>
 
       {/* ── Legend bar ─────────────────────────────────────────────────────── */}
-      <div style={{
-        background: 'var(--nj-semantic-color-background-neutral-primary-default)',
-        borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
-        padding: '8px 24px', display: 'flex', gap: 28, alignItems: 'center', flexShrink: 0,
-      }}>
+      <div className={styles["toc-legend-bar"]}>
         {LEGEND.map(({ range, score, label }) => {
           const c = getConfidenceColors(score);
           return (
-            <div key={range} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{
-                width: 8, height: 8, borderRadius: '50%',
-                background: c.dot, flexShrink: 0, display: 'inline-block',
-              }} />
-              <span style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-500)' }}>
+            <div key={range} className={styles["toc-legend-item"]}>
+              <span className={styles["toc-legend-dot"]} style={{ background: c.dot }} />
+              <span className={styles["toc-legend-text"]}>
                 <strong style={{ color: c.text, fontWeight: 700 }}>{range}</strong>
                 {' '}{label}
               </span>
@@ -502,26 +471,15 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
       </div>
 
       {/* ── Split panels ───────────────────────────────────────────────────── */}
-      <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+      <div className={styles["toc-panels"]}>
 
         {/* ── LEFT PANEL ─────────────────────────────────────────────────────── */}
-        <div style={{
-          width: '45%', display: 'flex', flexDirection: 'column', overflow: 'hidden',
-          borderRight: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
-          background: 'var(--nj-semantic-color-background-neutral-primary-default)',
-        }}>
+        <div className={styles["toc-left-panel"]}>
 
           {/* Panel header */}
-          <div style={{
-            padding: '12px 16px', display: 'flex',
-            justifyContent: 'space-between', alignItems: 'center',
-            flexShrink: 0,
-            borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
-          }}>
-            <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--nj-core-color-reference-brand-500)' }}>
-              Golden Table of Contents
-            </span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div className={styles["toc-panel-header"]}>
+            <span className={styles["toc-panel-title"]}>Golden Table of Contents</span>
+            <div className={styles["toc-header-actions"]}>
               {deleteMode && (
                 <NJIconButton
                   icon="close"
@@ -531,7 +489,7 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
                   onClick={() => { setDeleteMode(false); setDeleteConfirmId(null); setDeleteSubConfirmId(null); }}
                 />
               )}
-              <div style={{ position: 'relative' }} ref={menuRef}>
+              <div className={styles["toc-menu-container"]} ref={menuRef}>
                 <NJIconButton
                   icon="more_vert"
                   aria-label="Options"
@@ -540,23 +498,16 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
                   onClick={() => setMenuOpen(v => !v)}
                 />
                 {menuOpen && (
-                  <div style={{
-                    position: 'absolute', right: 0, top: '100%', zIndex: 200,
-                    background: 'var(--nj-semantic-color-background-neutral-primary-default)',
-                    border: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
-                    borderRadius: 6, boxShadow: '0 4px 12px rgba(0,0,0,.12)',
-                    minWidth: 172, overflow: 'hidden', marginTop: 4,
-                  }}>
+                  <div className={styles["toc-menu-dropdown"]}>
                     <button
+                      className={styles["toc-menu-btn"]}
                       onClick={() => { setMenuOpen(false); setShowAddSection(true); setNewSectionTitle(''); }}
-                      style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: '9px 14px', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--nj-semantic-color-text-neutral-primary-default)', textAlign: 'left' }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--nj-semantic-color-background-neutral-secondary-default)'; }}
-                      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'none'; }}
                     >
                       <span className="material-icons" style={{ fontSize: 16, color: 'var(--nj-core-color-reference-neutral-500)' }}>add</span>
                       Add section
                     </button>
                     <button
+                      className={styles["toc-menu-btn"]}
                       onClick={() => {
                         if (!selected) return;
                         setMenuOpen(false);
@@ -567,18 +518,14 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
                         setNewSubsectionTitle('');
                       }}
                       disabled={!selected}
-                      style={{ width: '100%', background: 'none', border: 'none', cursor: selected ? 'pointer' : 'default', padding: '9px 14px', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: selected ? 'var(--nj-semantic-color-text-neutral-primary-default)' : 'var(--nj-core-color-reference-neutral-400)', textAlign: 'left', opacity: selected ? 1 : 0.5 }}
-                      onMouseEnter={e => { if (selected) (e.currentTarget as HTMLButtonElement).style.background = 'var(--nj-semantic-color-background-neutral-secondary-default)'; }}
-                      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'none'; }}
+                      style={{ cursor: selected ? 'pointer' : 'default', color: selected ? undefined : 'var(--nj-core-color-reference-neutral-400)', opacity: selected ? 1 : 0.5 }}
                     >
                       <span className="material-icons" style={{ fontSize: 16, color: selected ? 'var(--nj-core-color-reference-neutral-500)' : 'var(--nj-core-color-reference-neutral-300)' }}>playlist_add</span>
                       Add subsection
                     </button>
                     <button
+                      className={`${styles["toc-menu-btn"]} ${styles["toc-menu-btn-danger"]}`}
                       onClick={() => { setMenuOpen(false); setDeleteMode(true); setDeleteConfirmId(null); }}
-                      style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: '9px 14px', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--nj-core-color-reference-status-error-600, #dc2626)', textAlign: 'left' }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--nj-semantic-color-background-neutral-secondary-default)'; }}
-                      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'none'; }}
                     >
                       <span className="material-icons" style={{ fontSize: 16 }}>delete_outline</span>
                       Delete section
@@ -590,23 +537,19 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
           </div>
 
           {/* Column headers */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: deleteMode ? '20px 36px 1fr auto 28px' : '20px 36px 1fr auto',
-            padding: '7px 12px', flexShrink: 0,
-            background: 'var(--nj-semantic-color-background-neutral-secondary-default)',
-            borderBottom: '1.5px solid var(--nj-semantic-color-border-neutral-minimal-default)',
-            gap: 4,
-          }}>
+          <div
+            className={styles["toc-col-headers"]}
+            style={{ gridTemplateColumns: deleteMode ? '20px 36px 1fr auto 28px' : '20px 36px 1fr auto' }}
+          >
             <span />
-            <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--nj-core-color-reference-neutral-500)', letterSpacing: '.06em' }}>#</span>
-            <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--nj-core-color-reference-neutral-500)', letterSpacing: '.06em' }}>SECTION / SUBSECTION</span>
-            <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--nj-core-color-reference-neutral-500)', letterSpacing: '.06em', textAlign: 'right' }}>CONFIDENCE</span>
+            <span className={styles["toc-col-label"]}>#</span>
+            <span className={styles["toc-col-label"]}>SECTION / SUBSECTION</span>
+            <span className={styles["toc-col-label-right"]}>CONFIDENCE</span>
             {deleteMode && <span />}
           </div>
 
           {/* Rows */}
-          <div style={{ flex: 1, overflowY: 'auto' }}>
+          <div className={styles["toc-rows"]}>
             {sections.map(sec => {
               const isSecSelected = selectedKey === String(sec.id);
               const isExpanded    = expandedSections.has(sec.id);
@@ -621,50 +564,25 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
                     onDragOver={handleDragOver}
                     onDrop={() => handleDrop(sec.id)}
                     onClick={() => handleSelect(String(sec.id))}
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: deleteMode ? '20px 36px 1fr auto 28px' : '20px 36px 1fr auto',
-                      alignItems: 'center',
-                      padding: '10px 12px',
-                      cursor: 'grab',
-                      borderLeft: isSecSelected
-                        ? '3px solid var(--nj-core-color-reference-brand-500)'
-                        : '3px solid transparent',
-                      background: isSecSelected
-                        ? 'var(--nj-core-color-reference-brand-100, #eff6ff)'
-                        : 'transparent',
-                      borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
-                      transition: 'background .1s',
-                      gap: 4,
-                    }}
+                    className={`${styles["toc-sec-row"]}${isSecSelected ? ` ${styles["toc-sec-row-selected"]}` : ''}`}
+                    style={{ gridTemplateColumns: deleteMode ? '20px 36px 1fr auto 28px' : '20px 36px 1fr auto' }}
                     onMouseEnter={e => { if (!isSecSelected) e.currentTarget.style.background = 'var(--nj-semantic-color-background-neutral-secondary-default)'; }}
                     onMouseLeave={e => { if (!isSecSelected) e.currentTarget.style.background = 'transparent'; }}
                   >
                     {/* Drag handle */}
-                    <span style={{ fontSize: 14, color: 'var(--nj-core-color-reference-neutral-400)', cursor: 'grab', lineHeight: 1, userSelect: 'none' }}>⠿</span>
+                    <span className={styles["toc-drag-handle"]}>⠿</span>
 
                     {/* Number */}
-                    <span style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-400)', fontFamily: "'Lato', sans-serif", alignSelf: 'start', paddingTop: 1 }}>
-                      {sec.id}
-                    </span>
+                    <span className={styles["toc-row-num"]}>{sec.id}</span>
 
                     {/* Title + chevron */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, minWidth: 0, overflow: 'hidden' }}>
+                    <div className={styles["toc-row-title-wrap"]}>
                       {hasChildren && (
-                        <span
-                          onClick={e => toggleExpand(sec.id, e)}
-                          style={{ fontSize: 9, color: 'var(--nj-core-color-reference-neutral-400)', cursor: 'pointer', flexShrink: 0, lineHeight: 1, padding: '0 2px', userSelect: 'none' }}
-                        >
+                        <span className={styles["toc-chevron"]} onClick={e => toggleExpand(sec.id, e)}>
                           {isExpanded ? '▼' : '▶'}
                         </span>
                       )}
-                      <span style={{
-                        fontSize: 13, fontWeight: 700,
-                        color: isSecSelected
-                          ? 'var(--nj-core-color-reference-brand-700, var(--nj-core-color-reference-brand-500))'
-                          : 'var(--nj-semantic-color-text-neutral-primary-default)',
-                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1,
-                      }}>
+                      <span className={`${styles["toc-sec-title"]}${isSecSelected ? ` ${styles["toc-sec-title-selected"]}` : ''}`}>
                         {sec.title}
                       </span>
                     </div>
@@ -675,12 +593,8 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
                     {/* Trash icon in delete mode */}
                     {deleteMode && (
                       <button
+                        className={styles["toc-delete-btn"]}
                         onClick={e => { e.stopPropagation(); setDeleteConfirmId(deleteConfirmId === sec.id ? null : sec.id); }}
-                        style={{
-                          background: 'none', border: 'none', cursor: 'pointer', padding: 2,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          color: 'var(--nj-core-color-reference-status-error-500, #ef4444)', flexShrink: 0,
-                        }}
                         title="Delete this section"
                       >
                         <span className="material-icons" style={{ fontSize: 18 }}>delete_outline</span>
@@ -690,27 +604,19 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
 
                   {/* Delete confirmation */}
                   {deleteConfirmId === sec.id && (
-                    <div style={{
-                      margin: '0 12px 4px',
-                      padding: '10px 14px',
-                      background: 'var(--nj-core-color-reference-status-error-100, #fef2f2)',
-                      border: '1px solid var(--nj-core-color-reference-status-error-300, #fca5a5)',
-                      borderRadius: 6, display: 'flex', flexDirection: 'column', gap: 10,
-                    }}>
+                    <div className={styles["toc-delete-confirm"]}>
                       <div>
-                        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--nj-core-color-reference-status-error-700, #dc2626)' }}>
-                          Delete "{sec.title}"?
-                        </span>
+                        <span className={styles["toc-delete-title"]}>Delete "{sec.title}"?</span>
                         {sec.subsections.length > 0 && (
-                          <div style={{ marginTop: 6, display: 'flex', alignItems: 'flex-start', gap: 6 }}>
+                          <div className={styles["toc-delete-warn"]}>
                             <span className="material-icons" style={{ fontSize: 14, color: 'var(--nj-core-color-reference-status-error-600, #dc2626)', flexShrink: 0, marginTop: 1 }}>warning</span>
-                            <span style={{ fontSize: 11, color: 'var(--nj-core-color-reference-status-error-700, #dc2626)', lineHeight: 1.5 }}>
+                            <span className={styles["toc-delete-warn-text"]}>
                               This section has {sec.subsections.length} subsection{sec.subsections.length > 1 ? 's' : ''} ({sec.subsections.map(s => s.id).join(', ')}) that will also be deleted.
                             </span>
                           </div>
                         )}
                       </div>
-                      <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                      <div className={styles["toc-delete-actions"]}>
                         <NJButton variant="secondary" emphasis="subtle" scale="sm" label="Cancel" onClick={() => setDeleteConfirmId(null)} />
                         <NJButton variant="primary" scale="sm" label="Delete" onClick={() => handleDeleteSection(sec.id)} />
                       </div>
@@ -728,47 +634,23 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
                           onDragOver={handleDragOver}
                           onDrop={() => handleSubDrop(sec.id, sub.id)}
                           onClick={() => handleSelect(sub.id)}
-                          style={{
-                            display: 'grid',
-                            gridTemplateColumns: deleteMode
-                              ? '20px 36px 1fr auto 28px'
-                              : '20px 36px 1fr auto',
-                            alignItems: 'center',
-                            padding: '7px 12px',
-                            paddingLeft: 24,
-                            borderLeft: isSubSelected
-                              ? '3px solid var(--nj-core-color-reference-brand-500)'
-                              : '3px solid transparent',
-                            background: isSubSelected
-                              ? 'var(--nj-core-color-reference-brand-100, #eff6ff)'
-                              : 'transparent',
-                            borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
-                            cursor: 'grab', gap: 4, transition: 'background .1s',
-                          }}
+                          className={`${styles["toc-sub-row"]}${isSubSelected ? ` ${styles["toc-sub-row-selected"]}` : ''}`}
+                          style={{ gridTemplateColumns: deleteMode ? '20px 36px 1fr auto 28px' : '20px 36px 1fr auto' }}
                           onMouseEnter={e => { if (!isSubSelected) e.currentTarget.style.background = 'var(--nj-semantic-color-background-neutral-secondary-default)'; }}
                           onMouseLeave={e => { if (!isSubSelected) e.currentTarget.style.background = 'transparent'; }}
                         >
                           {/* Drag handle */}
-                          <span style={{ fontSize: 14, color: 'var(--nj-core-color-reference-neutral-400)', cursor: 'grab', lineHeight: 1, userSelect: 'none' }}>⠿</span>
+                          <span className={styles["toc-drag-handle"]}>⠿</span>
 
-                          <span style={{ fontSize: 11, color: 'var(--nj-core-color-reference-neutral-400)', fontFamily: "'Lato', sans-serif" }}>
-                            {sub.id}
-                          </span>
-                          <span style={{
-                            fontSize: 12,
-                            color: isSubSelected
-                              ? 'var(--nj-core-color-reference-brand-700, var(--nj-core-color-reference-brand-500))'
-                              : 'var(--nj-semantic-color-text-neutral-contrast-default, #555)',
-                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                            fontWeight: isSubSelected ? 600 : 400,
-                          }}>
+                          <span className={styles["toc-sub-num"]}>{sub.id}</span>
+                          <span className={`${styles["toc-sub-title"]}${isSubSelected ? ` ${styles["toc-sub-title-selected"]}` : ''}`}>
                             {sub.title}
                           </span>
                           <ConfidenceBadge confidence={sub.confidence} />
                           {deleteMode && (
                             <button
+                              className={styles["toc-delete-btn"]}
                               onClick={e => { e.stopPropagation(); setDeleteSubConfirmId(deleteSubConfirmId === sub.id ? null : sub.id); }}
-                              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--nj-core-color-reference-status-error-500, #ef4444)', flexShrink: 0 }}
                               title="Delete this subsection"
                             >
                               <span className="material-icons" style={{ fontSize: 18 }}>delete_outline</span>
@@ -776,16 +658,9 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
                           )}
                         </div>
                         {deleteSubConfirmId === sub.id && (
-                          <div style={{
-                            margin: '0 12px 4px 44px', padding: '10px 14px',
-                            background: 'var(--nj-core-color-reference-status-error-100, #fef2f2)',
-                            border: '1px solid var(--nj-core-color-reference-status-error-300, #fca5a5)',
-                            borderRadius: 6, display: 'flex', flexDirection: 'column', gap: 10,
-                          }}>
-                            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--nj-core-color-reference-status-error-700, #dc2626)' }}>
-                              Delete "{sub.title}"?
-                            </span>
-                            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                          <div className={styles["toc-delete-confirm-sub"]}>
+                            <span className={styles["toc-delete-title"]}>Delete "{sub.title}"?</span>
+                            <div className={styles["toc-delete-actions"]}>
                               <NJButton variant="secondary" emphasis="subtle" scale="sm" label="Cancel" onClick={() => setDeleteSubConfirmId(null)} />
                               <NJButton variant="primary" scale="sm" label="Delete" onClick={() => handleDeleteSubsection(sec.id, sub.id)} />
                             </div>
@@ -797,13 +672,9 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
 
                   {/* Add subsection inline form — shown below this section's subsections */}
                   {addSubParentId === sec.id && (
-                    <div style={{
-                      padding: '10px 16px 10px 44px',
-                      borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
-                      background: 'var(--nj-semantic-color-background-neutral-secondary-default)',
-                    }}>
+                    <div className={styles["toc-add-sub-form"]}>
                       <input
-                        className="inp"
+                        className={styles["inp"]}
                         placeholder="New subsection title…"
                         value={newSubsectionTitle}
                         onChange={e => setNewSubsectionTitle(e.target.value)}
@@ -814,7 +685,7 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
                         autoFocus
                         style={{ marginBottom: 8, fontSize: 12 }}
                       />
-                      <div style={{ display: 'flex', gap: 8 }}>
+                      <div className={styles["toc-form-actions"]}>
                         <NJButton variant="primary" scale="sm" label="Add" onClick={handleAddSubsection} />
                         <NJButton variant="secondary" emphasis="subtle" scale="sm" label="Cancel"
                           onClick={() => { setShowAddSubsection(false); setNewSubsectionTitle(''); }} />
@@ -827,13 +698,9 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
 
             {/* Add section inline form */}
             {showAddSection && (
-              <div style={{
-                padding: '12px 16px',
-                borderTop: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
-                background: 'var(--nj-semantic-color-background-neutral-secondary-default)',
-              }}>
+              <div className={styles["toc-add-sec-form"]}>
                 <input
-                  className="inp"
+                  className={styles["inp"]}
                   placeholder="New section title…"
                   value={newSectionTitle}
                   onChange={e => setNewSectionTitle(e.target.value)}
@@ -844,7 +711,7 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
                   autoFocus
                   style={{ marginBottom: 8 }}
                 />
-                <div style={{ display: 'flex', gap: 8 }}>
+                <div className={styles["toc-form-actions"]}>
                   <NJButton variant="primary" scale="sm" label="Add" onClick={handleAddSection} />
                   <NJButton variant="secondary" emphasis="subtle" scale="sm" label="Cancel"
                     onClick={() => { setShowAddSection(false); setNewSectionTitle(''); }} />
@@ -855,41 +722,30 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
         </div>
 
         {/* ── RIGHT PANEL ──────────────────────────────────────────────────────── */}
-        <div style={{
-          flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden',
-          background: 'var(--nj-semantic-color-background-neutral-secondary-default)',
-        }}>
-          <div style={{ flex: 1, overflowY: 'auto', padding: 20 }}>
+        <div className={styles["toc-right-panel"]}>
+          <div className={styles["toc-right-scroll"]}>
 
             {/* Section / subsection header card */}
-            <div style={{
-              background: 'var(--nj-semantic-color-background-neutral-primary-default)',
-              border: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)',
-              borderRadius: 8, padding: 16, marginBottom: 12,
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 11, color: 'var(--nj-core-color-reference-brand-500)', fontWeight: 600, marginBottom: 6, letterSpacing: '.04em' }}>
-                    {selLabel}
-                  </div>
+            <div className={styles["toc-detail-card"]}>
+              <div className={styles["toc-detail-header"]}>
+                <div className={styles["toc-detail-left"]}>
+                  <div className={styles["toc-detail-label"]}>{selLabel}</div>
                   {editTitle ? (
                     <>
-                      <span style={{ fontSize: 11, color: 'var(--nj-core-color-reference-neutral-400)', display: 'block', marginBottom: 4 }}>Section title</span>
+                      <span className={styles["toc-edit-hint"]}>Section title</span>
                       <input
-                        className="inp"
+                        className={styles["inp"]}
                         value={editedTitle}
                         onChange={e => setEditedTitle(e.target.value)}
                         style={{ fontSize: 15, fontWeight: 700 }}
                       />
                     </>
                   ) : (
-                    <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--nj-semantic-color-text-neutral-primary-default)', lineHeight: 1.3 }}>
-                      {selTitle}
-                    </h2>
+                    <h2 className={styles["toc-detail-title"]}>{selTitle}</h2>
                   )}
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, flexShrink: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div className={styles["toc-detail-right"]}>
+                  <div className={styles["toc-detail-badge-row"]}>
                     <ConfidenceBadge confidence={selConfidence} large />
                     <EditControls editMode={editTitle} onEdit={startEditTitle} onSave={saveEditTitle} onCancel={cancelEditTitle} />
                   </div>
@@ -900,7 +756,7 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
               </div>
 
               {selConfidence < 40 && (
-                <div className="warn-box" style={{ marginTop: 12 }}>
+                <div className={styles["warn-box"]} style={{ marginTop: 12 }}>
                   <span className="material-icons" style={{ fontSize: 18, flexShrink: 0, color: 'var(--nj-semantic-color-text-status-warning-contrast-default)' }}>warning</span>
                   <span style={{ fontSize: 12, color: 'var(--nj-semantic-color-text-status-warning-contrast-default)' }}>
                     Additional evidence recommended before drafting.
@@ -917,17 +773,13 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
             >
               {editGuidance ? (
                 <textarea
-                  className="inp"
+                  className={styles["inp"]}
                   value={editedGuidance}
                   onChange={e => setEditedGuidance(e.target.value)}
                   style={{ minHeight: 120, resize: 'vertical', width: '100%', fontSize: 13 }}
                 />
               ) : (
-                <p style={{
-                  fontSize: 13, lineHeight: 1.6,
-                  color: selGuidance ? 'var(--nj-semantic-color-text-neutral-primary-default)' : 'var(--nj-core-color-reference-neutral-400)',
-                  fontStyle: selGuidance ? 'normal' : 'italic',
-                }}>
+                <p className={selGuidance ? styles["toc-guidance-text"] : styles["toc-guidance-empty"]}>
                   {selGuidance || 'No guidance provided.'}
                 </p>
               )}
@@ -941,15 +793,11 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
               readOnlyLabel="AI-generated — read only"
             >
               {(selGaps ?? []).length === 0 ? (
-                <p style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-400)', fontStyle: 'italic' }}>
-                  No evidence gaps detected.
-                </p>
+                <p className={styles["toc-gaps-empty"]}>No evidence gaps detected.</p>
               ) : (
-                <ul style={{ paddingLeft: 18, margin: 0 }}>
+                <ul className={styles["toc-gaps-list"]}>
                   {(selGaps ?? []).map((gap, i) => (
-                    <li key={i} style={{ fontSize: 13, color: 'var(--nj-semantic-color-text-neutral-primary-default)', lineHeight: 1.7 }}>
-                      {gap}
-                    </li>
+                    <li key={i} className={styles["toc-gap-item"]}>{gap}</li>
                   ))}
                 </ul>
               )}
@@ -961,7 +809,7 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
       </div>
 
       {/* ── Bottom action bar ───────────────────────────────────────────────── */}
-      <div className="bottom-bar">
+      <div className={styles["bottom-bar"]}>
         <NJButton
           variant="secondary" emphasis="subtle" scale="md"
           icon="arrow_back" label="Draft Configurator"
@@ -976,16 +824,14 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
 
       {/* ── Freeze confirmation modal ───────────────────────────────────────── */}
       {showFreezeModal && (
-        <div className="overlay" onClick={() => setShowFreezeModal(false)}>
-          <div className="disc-box" onClick={e => e.stopPropagation()}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 12, color: 'var(--nj-semantic-color-text-neutral-primary-default)' }}>
-              Freeze Table of Contents?
-            </h3>
-            <p style={{ fontSize: 13, lineHeight: 1.6, marginBottom: 20, color: 'var(--nj-core-color-reference-neutral-500)' }}>
+        <div className={styles["overlay"]} onClick={() => setShowFreezeModal(false)}>
+          <div className={styles["disc-box"]} onClick={e => e.stopPropagation()}>
+            <h3 className={styles["toc-freeze-title"]}>Freeze Table of Contents?</h3>
+            <p className={styles["toc-freeze-body"]}>
               You are about to freeze the Table of Contents. No further structural changes will be possible.
               The proposal drafting agent will start automatically.
             </p>
-            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+            <div className={styles["toc-freeze-actions"]}>
               <NJButton variant="secondary" emphasis="subtle" scale="md" label="Cancel" onClick={() => setShowFreezeModal(false)} />
               <NJButton variant="primary" scale="md" icon="arrow_forward" label="Confirm & Freeze" onClick={() => { setShowFreezeModal(false); freezeAndDraft(); }} />
             </div>

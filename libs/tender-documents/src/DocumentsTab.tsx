@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { NJButton, NJCheckbox, NJIconButton, NJIcon, NJSelectItem, NJSelectRoot } from '@engie-group/fluid-design-system-react';
 import { AGENTS } from '../../../src/data/constants';
 import DisclaimerModal from '../../../src/components/DisclaimerModal';
+import styles from './DocumentsTab.module.css';
 
 const COL_LABELS = {
   a1: 'Tender Key Information',
@@ -27,64 +28,56 @@ export default function UploadTab({ s, handlers }) {
   const fileInputRef = useRef(null);
 
   return (
-    <div style={{ padding: 24, height: '100%', overflowY: 'auto', boxSizing: 'border-box' }}>
+    <div className={styles["dt-container"]}>
       {/* Drop zone */}
       <div
-        style={{
-          border: `2px dashed ${dragOver ? 'var(--nj-core-color-reference-brand-500)' : 'var(--nj-semantic-color-border-neutral-subtle-default)'}`,
-          borderRadius: 10, padding: '32px 16px', textAlign: 'center',
-          background: 'var(--nj-semantic-color-background-neutral-secondary-default)',
-          marginBottom: 20, transition: 'border-color .2s', cursor: 'pointer',
-        }}
+        className={`${styles["dt-drop-zone"]}${dragOver ? ` ${styles["dt-drop-zone-active"]}` : ''}`}
         onDragOver={e => { e.preventDefault(); setDragOver(true); }}
         onDragLeave={() => setDragOver(false)}
         onDrop={e => { e.preventDefault(); setDragOver(false); openDisc('tenderupload'); }}
       >
-        <input ref={fileInputRef} type="file" accept=".pdf,.docx" multiple style={{ display: 'none' }} />
+        <input ref={fileInputRef} type="file" accept=".pdf,.docx" multiple className={styles["dt-hidden"]} />
         <NJIcon name="cloud_upload" style={{ fontSize: 40, color: 'var(--nj-core-color-reference-brand-500)', marginBottom: 12 }} />
-        <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 6 }}>Drag and drop your documents here</div>
-        <div style={{ fontSize: 13, color: 'var(--nj-core-color-reference-neutral-500)', marginBottom: 6 }}>OR</div>
-        <div
-          style={{ fontSize: 14, fontWeight: 700, color: 'var(--nj-core-color-reference-brand-500)', marginBottom: 12, cursor: 'pointer' }}
-          onClick={() => setShowUploadDisc(true)}
-        >
+        <div className={styles["dt-drop-label"]}>Drag and drop your documents here</div>
+        <div className={styles["dt-drop-or"]}>OR</div>
+        <div className={styles["dt-drop-browse"]} onClick={() => setShowUploadDisc(true)}>
           Browse files
         </div>
-        <div style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-400)' }}>Accepted formats: PDF, Word</div>
+        <div className={styles["dt-drop-formats"]}>Accepted formats: PDF, Word</div>
       </div>
 
       {/* List header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+      <div className={styles["dt-list-header"]}>
         <div>
-          <span style={{ fontSize: 13, fontWeight: 700 }}>Project Documents</span>
-          <span style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-500)', marginLeft: 6 }}>({docs.length} uploaded)</span>
+          <span className={styles["dt-doc-title"]}>Project Documents</span>
+          <span className={styles["dt-doc-count"]}>({docs.length} uploaded)</span>
         </div>
       </div>
 
       {/* Matrix table */}
-      <div className="card" style={{ overflow: 'hidden', marginBottom: 20 }}>
-        <table className="mx-table">
+      <div className={`${styles["card"]} ${styles["dt-card"]}`}>
+        <table className={styles["mx-table"]}>
           <thead>
             <tr>
-              <th style={{ width: '40%' }}>Document</th>
+              <th className={styles["dt-col-doc"]}>Document</th>
               {AGENTS.map(a => (
-                <th key={a.id} title={a.desc} style={{ cursor: 'help' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--nj-semantic-color-text-neutral-primary-default)' }}>{COL_LABELS[a.id] || a.title}</span>
+                <th key={a.id} title={a.desc} className={styles["dt-col-agent"]}>
+                  <div className={styles["dt-agent-header"]}>
+                    <span className={styles["dt-agent-label"]}>{COL_LABELS[a.id] || a.title}</span>
                   </div>
                 </th>
               ))}
-              <th style={{ width: 44 }} />
+              <th className={styles["dt-col-actions"]} />
             </tr>
           </thead>
           <tbody>
             {docs.map(doc => (
               <tr key={doc.key}>
                 <td>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div className={styles["dt-doc-cell"]}>
                     <div>
-                      <div style={{ fontSize: 13, fontWeight: 500 }}>{doc.name}</div>
-                      <div style={{ fontSize: 11, color: 'var(--nj-core-color-reference-neutral-500)' }}>{doc.size} · Uploaded {doc.ago}</div>
+                      <div className={styles["dt-doc-name"]}>{doc.name}</div>
+                      <div className={styles["dt-doc-meta"]}>{doc.size} · Uploaded {doc.ago}</div>
                     </div>
                   </div>
                 </td>
@@ -92,7 +85,7 @@ export default function UploadTab({ s, handlers }) {
                   const isA3 = ag.id === 'a3';
                   const blocked = isA3 && !docAgents[doc.key]?.a2;
                   return (
-                    <td key={ag.id} style={{ opacity: blocked ? 0.3 : 1 }} title={blocked ? 'Select Agent 2 first for this document' : ''}>
+                    <td key={ag.id} className={blocked ? styles["dt-agent-cell-blocked"] : ''} title={blocked ? 'Select Agent 2 first for this document' : ''}>
                       <NJCheckbox
                         checked={!!docAgents[doc.key]?.[ag.id]}
                         disabled={blocked}
@@ -101,21 +94,21 @@ export default function UploadTab({ s, handlers }) {
                     </td>
                   );
                 })}
-                <td style={{ textAlign: 'right', paddingRight: 12 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4 }}>
+                <td className={styles["dt-actions-td"]}>
+                  <div className={styles["dt-actions-inner"]}>
                     <NJIconButton
                       icon="visibility"
                       aria-label="Preview document"
                       scale="xs"
                       variant="secondary"
-                                            onClick={() => setPreviewDoc(doc)}
+                      onClick={() => setPreviewDoc(doc)}
                     />
                     <NJIconButton
                       icon="delete"
                       aria-label="Remove document"
                       scale="xs"
                       variant="secondary"
-                                            onClick={() => deleteDoc(doc.key)}
+                      onClick={() => deleteDoc(doc.key)}
                     />
                   </div>
                 </td>
@@ -126,10 +119,10 @@ export default function UploadTab({ s, handlers }) {
       </div>
 
       {/* Language + Process */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 10 }}>
+      <div className={styles["dt-footer"]}>
+        <div className={styles["dt-footer-right"]}>
           <div>
-            <div className="inp-label" style={{ marginBottom: 7, textAlign: 'right' }}>TENDER ANALYSIS LANGUAGE</div>
+            <div className={`${styles["inp-label"]} ${styles["dt-inp-label-right"]}`}>TENDER ANALYSIS LANGUAGE</div>
             <NJSelectRoot
               label="Language"
               listNavigationLabel="Use up and down arrows and Enter to select a language"
@@ -144,18 +137,18 @@ export default function UploadTab({ s, handlers }) {
             </NJSelectRoot>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
+          <div className={styles["dt-actions-col"]}>
             {(!isNew && !docsUpdated) ? (
               <>
                 <NJButton variant="secondary" emphasis="subtle" disabled icon="check" label="Process Documents" style={{ pointerEvents: 'none' }} />
-                <span style={{ fontSize: 10, color: 'var(--nj-core-color-reference-neutral-400)', letterSpacing: '.04em' }}>
+                <span className={styles["dt-note"]}>
                   DOCUMENTS ALREADY PROCESSED — ADD NEW DOCS TO RE-PROCESS
                 </span>
               </>
             ) : (
               <>
                 <NJButton variant="primary" icon="play_arrow" label="Process Documents" onClick={startProc} />
-                <span style={{ fontSize: 10, color: 'var(--nj-core-color-reference-neutral-400)', letterSpacing: '.04em' }}>
+                <span className={styles["dt-note"]}>
                   RUNS ALL CONFIGURED AGENTS FOR {docs.length} DOCUMENTS
                 </span>
               </>
@@ -167,25 +160,24 @@ export default function UploadTab({ s, handlers }) {
         </div>
       </div>
       {previewDoc && (
-        <div className="overlay" onClick={() => setPreviewDoc(null)} style={{ zIndex: 500 }}>
+        <div className={`${styles["overlay"]} ${styles["dt-preview-overlay"]}`} onClick={() => setPreviewDoc(null)}>
           <div
-            className="modal-box"
-            style={{ maxWidth: 720, width: '90vw', maxHeight: 'calc(100vh - 60px)', display: 'flex', flexDirection: 'column' }}
+            className={`${styles["modal-box"]} ${styles["dt-preview-box"]}`}
             onClick={e => e.stopPropagation()}
           >
-            <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--nj-semantic-color-border-neutral-minimal-default)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className={styles["dt-preview-header"]}>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 700 }}>{previewDoc.name}</div>
-                <div style={{ fontSize: 11, color: 'var(--nj-core-color-reference-neutral-500)', marginTop: 2 }}>{previewDoc.size} · Uploaded {previewDoc.ago}</div>
+                <div className={styles["dt-preview-name"]}>{previewDoc.name}</div>
+                <div className={styles["dt-preview-meta"]}>{previewDoc.size} · Uploaded {previewDoc.ago}</div>
               </div>
               <NJIconButton icon="close" aria-label="Close" scale="sm" variant="secondary" onClick={() => setPreviewDoc(null)} />
             </div>
-            <div style={{ flex: 1, overflowY: 'auto', padding: 24, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 380, background: 'var(--nj-semantic-color-background-neutral-secondary-default)' }}>
-              <div style={{ width: '100%', maxWidth: 520, background: 'var(--nj-semantic-color-background-neutral-primary-default)', borderRadius: 8, boxShadow: 'var(--nj-semantic-elevation-shadow-2-dp)', padding: '32px 28px', textAlign: 'center' }}>
+            <div className={styles["dt-preview-body"]}>
+              <div className={styles["dt-preview-card"]}>
                 <NJIcon name="description" style={{ fontSize: 56, color: 'var(--nj-core-color-reference-brand-500)', marginBottom: 14 }} />
-                <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 6 }}>{previewDoc.name}</div>
-                <div style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-500)', marginBottom: 20 }}>{previewDoc.size}</div>
-                <div style={{ fontSize: 12, color: 'var(--nj-core-color-reference-neutral-400)', lineHeight: 1.7, maxWidth: 320, margin: '0 auto' }}>
+                <div className={styles["dt-preview-file-name"]}>{previewDoc.name}</div>
+                <div className={styles["dt-preview-file-size"]}>{previewDoc.size}</div>
+                <div className={styles["dt-preview-note"]}>
                   Document preview is not available in this environment.<br />Use the download option to open the file locally.
                 </div>
               </div>
