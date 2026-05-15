@@ -301,7 +301,7 @@ export default function DraftConfiguratorTab({ s, handlers }) {
       </div>
 
       {/* Bottom bar */}
-      <div className={styles["bottom-bar"]}>
+      <div className="bottom-bar">
         <NJButton variant="secondary" emphasis="subtle" scale="md" icon="arrow_back" label="Tender Analysis" onClick={() => goStep('agents')} />
         <NJButton
           variant="primary"

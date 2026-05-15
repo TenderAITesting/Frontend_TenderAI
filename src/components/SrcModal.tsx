@@ -1,5 +1,5 @@
 import { NJIconButton } from '@engie-group/fluid-design-system-react';
-import { DOC_PAGES } from '../data/constants';
+import { DOC_PAGES } from '../data/seed';
 import styles from './SrcModal.module.css';
 
 export default function SrcModal({ page, onClose }) {

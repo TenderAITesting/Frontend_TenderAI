@@ -1,5 +1,3 @@
-@keyframes fadein { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
-
 .card {
   background: var(--nj-semantic-color-background-neutral-primary-default);
   border-radius: 10px; border: 1px solid var(--nj-semantic-color-border-neutral-minimal-default);
@@ -27,22 +25,11 @@
 .mx-table tbody tr:last-child td { border-bottom: none; }
 .inp-label { font-size: 11px; font-weight: 700; color: var(--nj-core-color-reference-neutral-500); letter-spacing: .06em; margin-bottom: 5px; }
 
-/* overlay + modal-box — App.css copies */
-.overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,.42);
-  display: flex; align-items: center; justify-content: center; z-index: 500;
-}
 .modal-box {
   background: var(--nj-semantic-color-background-neutral-primary-default);
   border-radius: 12px; width: 93%;
   overflow: hidden; display: flex; flex-direction: column;
   box-shadow: var(--nj-semantic-elevation-shadow-24-dp); animation: fadein .2s ease;
-}
-.bottom-bar {
-  background: var(--nj-semantic-color-background-neutral-primary-default);
-  border-top: 1px solid var(--nj-semantic-color-border-neutral-minimal-default);
-  padding: 12px 24px; display: flex;
-  justify-content: space-between; align-items: center; flex-shrink: 0;
 }
 
 .dt-container { padding: 24px; height: 100%; overflow-y: auto; box-sizing: border-box; }

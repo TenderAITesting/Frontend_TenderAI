@@ -159,7 +159,7 @@ export default function TenderAnalysisTab({ s, handlers, fmtTime }) {
 
       </div>
 
-      <div className={`${styles["bottom-bar"]} ${styles["ta-bottom-bar"]}`}>
+      <div className={`bottom-bar ${styles["ta-bottom-bar"]}`}>
         {!allSelectedValidated && anySelected && (
           <div className={styles["ta-bottom-hint"]}>
             <NJIcon name="info" style={{ fontSize: 14, color: 'var(--nj-core-color-reference-neutral-400)' }} />

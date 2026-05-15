@@ -1,5 +1,5 @@
 ﻿import { NJButton, NJHeading } from '@engie-group/fluid-design-system-react';
-import { NAV_SECS, DRAFT_SECS, DRAFTED_SECS } from '../../../src/data/constants';
+import { NAV_SECS, DRAFT_SECS, DRAFTED_SECS } from '../../../src/config/app-config';
 import styles from './DraftStep.module.css';
 
 const DRAFT_BODIES = {
@@ -66,7 +66,7 @@ export default function DraftingStep({ s, handlers }) {
           </div>
         </div>
 
-        <div className={styles["bottom-bar"]}>
+        <div className="bottom-bar">
           <NJButton variant="secondary" emphasis="subtle" scale="md" icon="arrow_back" label="Proposal Planning" onClick={() => goStep('planning')} />
           <div className={styles["ds-bottom-actions"]}>
             <NJButton variant="secondary" emphasis="subtle" scale="md" icon="edit" label="Edit Section" />

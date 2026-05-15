@@ -2,8 +2,7 @@ import type { QueryClient } from '@tanstack/react-query';
 import type { LoaderFunctionArgs } from 'react-router-dom';
 import { httpClient } from '../../libs/http-client';
 import { getMockTenders } from '../data/mockStore';
-
-const USE_MOCK = true; // TODO: BACKEND — passer à false
+import { USE_MOCK } from '../config/env';
 
 // Factory : reçoit queryClient pour précharger le tender avant le rendu.
 // En mode mock : no-op — useTender() lit depuis le mockStore.

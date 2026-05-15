@@ -24,3 +24,25 @@ p { line-height: 1.5; }
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: var(--nj-semantic-color-background-neutral-secondary-default); }
 ::-webkit-scrollbar-thumb { background: var(--nj-semantic-color-border-neutral-subtle-default); border-radius: 4px; }
+
+/* ── Shared component styles ──────────────────────────────────────────────── */
+@keyframes fadein { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+
+.bottom-bar {
+  background: var(--nj-semantic-color-background-neutral-primary-default);
+  border-top: 1px solid var(--nj-semantic-color-border-neutral-minimal-default);
+  padding: 12px 24px; display: flex;
+  justify-content: space-between; align-items: center; flex-shrink: 0;
+}
+
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.42);
+  display: flex; align-items: center; justify-content: center; z-index: 700;
+}
+
+.modal-dialog {
+  background: var(--nj-semantic-color-background-neutral-primary-default);
+  border-radius: 12px; width: 92%; max-width: 460px;
+  padding: 28px; box-shadow: var(--nj-semantic-elevation-shadow-16-dp);
+  animation: fadein .18s ease;
+}

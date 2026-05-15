@@ -809,7 +809,7 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
       </div>
 
       {/* ── Bottom action bar ───────────────────────────────────────────────── */}
-      <div className={styles["bottom-bar"]}>
+      <div className="bottom-bar">
         <NJButton
           variant="secondary" emphasis="subtle" scale="md"
           icon="arrow_back" label="Draft Configurator"
@@ -824,8 +824,8 @@ export default function PlanningStep({ handlers }: { s: any; handlers: any }) {
 
       {/* ── Freeze confirmation modal ───────────────────────────────────────── */}
       {showFreezeModal && (
-        <div className={styles["overlay"]} onClick={() => setShowFreezeModal(false)}>
-          <div className={styles["disc-box"]} onClick={e => e.stopPropagation()}>
+        <div className="modal-overlay" onClick={() => setShowFreezeModal(false)}>
+          <div className="modal-dialog" onClick={e => e.stopPropagation()}>
             <h3 className={styles["toc-freeze-title"]}>Freeze Table of Contents?</h3>
             <p className={styles["toc-freeze-body"]}>
               You are about to freeze the Table of Contents. No further structural changes will be possible.

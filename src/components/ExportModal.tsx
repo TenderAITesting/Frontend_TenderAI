@@ -1,14 +1,6 @@
 import { NJButton, NJIconButton, NJRadioGroup, NJRadio } from '@engie-group/fluid-design-system-react';
+import { LANG_OPTIONS } from '../config/app-config';
 import styles from './ExportModal.module.css';
-
-const LANGS = [
-  ['EN', 'English'],
-  ['FR', 'French'],
-  ['NL', 'Dutch'],
-  ['DE', 'German'],
-  ['ES', 'Spanish'],
-  ['PT', 'Portuguese'],
-];
 
 export default function ExportModal({ exportLang, onSetLang, onConfirm, onClose }) {
   const canConfirm = exportLang !== null;
@@ -27,13 +19,13 @@ export default function ExportModal({ exportLang, onSetLang, onConfirm, onClose 
 
         <div className={styles["export-radio-group"]}>
           <NJRadioGroup orientation="column" style={{ gap: 10 }}>
-            {LANGS.map(([code, label]) => (
+            {LANG_OPTIONS.map(({ value, label }) => (
               <NJRadio
-                key={code}
-                value={code}
+                key={value}
+                value={value}
                 label={label}
-                checked={exportLang === code}
-                onChange={() => onSetLang(code)}
+                checked={exportLang === value}
+                onChange={() => onSetLang(value)}
               />
             ))}
           </NJRadioGroup>

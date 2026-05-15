@@ -1,8 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getMockTenders, setMockTenders } from '../../../src/data/mockStore';
 import { httpClient } from '../../http-client';
-
-const USE_MOCK = true; // TODO: BACKEND — passer à false et connecter l'API
+import { USE_MOCK } from '../../../src/config/env';
 
 export function useTenders() {
   const queryClient = useQueryClient();

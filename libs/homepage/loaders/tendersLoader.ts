@@ -1,7 +1,6 @@
 import type { QueryClient } from '@tanstack/react-query';
 import { httpClient } from '../../http-client';
-
-const USE_MOCK = true; // TODO: BACKEND — passer à false
+import { USE_MOCK } from '../../../src/config/env';
 
 // Factory : reçoit queryClient pour précharger le cache React Query avant le rendu.
 // En mode mock : no-op — useTenders() gère les données via le mockStore.

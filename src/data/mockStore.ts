@@ -1,4 +1,4 @@
-import { INITIAL_TENDERS } from './constants';
+import { INITIAL_TENDERS } from './seed';
 
 // Source de vérité unique pour les tenders en mode mock.
 // Module-level pour persister entre les navigations sans Context.

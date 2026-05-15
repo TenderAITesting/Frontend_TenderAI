@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { NJButton, NJCheckbox, NJIconButton, NJIcon, NJSelectItem, NJSelectRoot } from '@engie-group/fluid-design-system-react';
-import { AGENTS } from '../../../src/data/constants';
+import { AGENTS, LANG_OPTIONS } from '../../../src/config/app-config';
 import DisclaimerModal from '../../../src/components/DisclaimerModal';
 import styles from './DocumentsTab.module.css';
 
@@ -9,15 +9,6 @@ const COL_LABELS = {
   a2: 'Technical Requirements',
   a3: 'Project Risks',
 };
-
-const LANG_OPTIONS = [
-  { value: 'EN', label: 'English' },
-  { value: 'FR', label: 'French' },
-  { value: 'NL', label: 'Dutch' },
-  { value: 'DE', label: 'German' },
-  { value: 'ES', label: 'Spanish' },
-  { value: 'PT', label: 'Portuguese' },
-];
 
 export default function UploadTab({ s, handlers }) {
   const { docs, docAgents, isNew, docsUpdated, lang } = s;
@@ -160,7 +151,7 @@ export default function UploadTab({ s, handlers }) {
         </div>
       </div>
       {previewDoc && (
-        <div className={`${styles["overlay"]} ${styles["dt-preview-overlay"]}`} onClick={() => setPreviewDoc(null)}>
+        <div className={`modal-overlay ${styles["dt-preview-overlay"]}`} onClick={() => setPreviewDoc(null)}>
           <div
             className={`${styles["modal-box"]} ${styles["dt-preview-box"]}`}
             onClick={e => e.stopPropagation()}

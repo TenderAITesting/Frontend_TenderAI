@@ -3,12 +3,6 @@
   50% { box-shadow: 0 0 0 5px transparent; }
 }
 
-.bottom-bar {
-  background: var(--nj-semantic-color-background-neutral-primary-default);
-  border-top: 1px solid var(--nj-semantic-color-border-neutral-minimal-default);
-  padding: 12px 24px; display: flex;
-  justify-content: space-between; align-items: center; flex-shrink: 0;
-}
 .elapsed-inline {
   display: inline-flex; align-items: center; gap: 6px;
   background: var(--nj-core-color-reference-status-warning-100);

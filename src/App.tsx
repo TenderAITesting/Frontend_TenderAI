@@ -1,6 +1,6 @@
 import { createBrowserRouter, RouterProvider, Outlet, Navigate, useParams, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { USER } from './data/constants';
+import { USER } from './config/app-config';
 import { TopBar, TopBarProvider } from '../libs/layout';
 import { LoginPage } from '../libs/auth';
 import { HomePage, tendersLoader } from '../libs/homepage';

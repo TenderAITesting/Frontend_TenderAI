@@ -1,10 +1,4 @@
-@keyframes fadein { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
-
 /* Overlay & box */
-.rm-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,.42);
-  display: flex; align-items: center; justify-content: center; z-index: 700;
-}
 .rm-modal-box {
   background: var(--nj-semantic-color-background-neutral-primary-default);
   border-radius: 12px; width: 93%; max-width: 860px;

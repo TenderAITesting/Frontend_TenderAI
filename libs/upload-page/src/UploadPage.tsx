@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { NJButton, NJFormItem, NJHeading } from '@engie-group/fluid-design-system-react';
-import { USER, PROJECT_SOURCES } from '../../../src/data/constants';
+import { USER, PROJECT_SOURCES } from '../../../src/config/app-config';
 import { useTenders } from '../../homepage/model/useTenders';
 import styles from './UploadPage.module.css';
 

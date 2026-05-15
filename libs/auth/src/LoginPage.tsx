@@ -7,7 +7,7 @@ import styles from './LoginPage.module.css';
 // import { Security } from '@okta/okta-react';
 // import { oktaAuth } from '../model/useAuth';
 
-const BYPASS_AUTH = true; // TODO: BACKEND — passer à false (enableOktaAuth: true)
+import { BYPASS_AUTH } from '../../../src/config/env';
 
 export default function LoginPage() {
   const navigate = useNavigate();

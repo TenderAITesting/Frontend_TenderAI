@@ -4,7 +4,7 @@ import { NJButton, NJInputSearch, NJIconButton, NJInlineMessage } from '@engie-g
 import { Stepper, Step, StepLabel, StepConnector, stepConnectorClasses } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTenders } from '../model/useTenders';
-import { PROJECT_SOURCES } from '../../../src/data/constants';
+import { PROJECT_SOURCES } from '../../../src/config/app-config';
 import styles from './HomePage.module.css';
 
 const CompactConnector = styled(StepConnector)(() => ({

@@ -10,7 +10,7 @@
 //   pkce: true,
 // });
 
-const BYPASS_AUTH = true; // TODO: BACKEND — passer à false quand enableOktaAuth: true
+import { BYPASS_AUTH } from '../../../src/config/env';
 
 export const MOCK_USER = {
   first: 'Romain',

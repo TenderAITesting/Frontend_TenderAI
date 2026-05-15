@@ -1,8 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getMockTenders } from '../data/mockStore';
 import { httpClient } from '../../libs/http-client';
-
-const USE_MOCK = true; // TODO: BACKEND — passer à false et connecter l'API
+import { USE_MOCK } from '../config/env';
 
 // Lit depuis le cache ['tenders'] si disponible, sinon cherche dans le mockStore.
 // initialData en mode mock = synchrone, évite un cycle render vide qui bloquerait

@@ -11,7 +11,7 @@ const LABELS = {
 export default function DisclaimerModal({ type, onClose, onConfirm }) {
   return (
     <div className={styles["disc-overlay"]} onClick={onClose}>
-      <div className={styles["disc-box"]} onClick={e => e.stopPropagation()}>
+      <div className="modal-dialog" onClick={e => e.stopPropagation()}>
         <div className={styles["disc-header"]}>
           <div className={styles["disc-icon"]}>
             <NJIcon

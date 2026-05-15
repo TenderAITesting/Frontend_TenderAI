@@ -17,13 +17,6 @@
   color: var(--nj-core-color-reference-brand-700); font-weight: 600;
   border-left-color: var(--nj-core-color-reference-brand-500);
 }
-.bottom-bar {
-  background: var(--nj-semantic-color-background-neutral-primary-default);
-  border-top: 1px solid var(--nj-semantic-color-border-neutral-minimal-default);
-  padding: 12px 24px; display: flex;
-  justify-content: space-between; align-items: center; flex-shrink: 0;
-}
-
 .ds-container { display: flex; height: 100%; }
 .ds-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 .ds-scroll { flex: 1; overflow-y: auto; }
